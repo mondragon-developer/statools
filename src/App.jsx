@@ -1,11 +1,12 @@
+
 import React from 'react'
 import './App.css'
-import StaToolsLandingPage from './components/StaToolsLandingPage'
+import HomePage from './pages/HomePage'
 
 function App() {
   return (
     <>
-      <StaToolsLandingPage />
+      <HomePage />
     </>
   )
 }
