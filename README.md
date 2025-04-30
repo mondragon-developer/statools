@@ -1,4 +1,5 @@
 ### MDragon Data Tools
+
 A modern statistics class website built with React, Vite, and Tailwind CSS. This project aims to provide an intuitive interface for students to access statistical tools, resources, and learning materials.
 Live site: https://mondragon-developer.github.io/statools/
 Features
@@ -26,6 +27,7 @@ Electric Yellow: #FFFF00
 Light Platinum: #E6E6E6
 
 ## Project Setup
+
 # Prerequisites
 
 Node.js (version 18 or later)
@@ -47,35 +49,34 @@ bashnpm run dev
 Open your browser and navigate to:
 http://localhost:5173
 
-
 ## Development Workflow
 
 Create or modify components in the src/components directory
 Test changes locally using npm run dev
 Commit changes with meaningful commit messages
 Push to GitHub to trigger automatic deployment:
-bashgit add .
+git add .
 git commit -m "Description of changes"
 git push origin main
 
-
 ## Project Structure
+
 statools/
 ├── .github/
-│   └── workflows/        # GitHub Actions workflow files
-│       └── deploy.yml    # Deployment workflow
-├── public/               # Static assets
+│ └── workflows/ # GitHub Actions workflow files
+│ └── deploy.yml # Deployment workflow
+├── public/ # Static assets
 ├── src/
-│   ├── components/       # React components
-│   ├── App.jsx           # Main application component
-│   ├── App.css           # Application styles
-│   ├── index.css         # Global styles (includes Tailwind)
-│   └── main.jsx          # Application entry point
-├── index.html            # HTML template
-├── package.json          # Project dependencies and scripts
-├── postcss.config.cjs    # PostCSS configuration
-├── tailwind.config.cjs   # Tailwind CSS configuration
-└── vite.config.js        # Vite configuration
+│ ├── components/ # React components
+│ ├── App.jsx # Main application component
+│ ├── App.css # Application styles
+│ ├── index.css # Global styles (includes Tailwind)
+│ └── main.jsx # Application entry point
+├── index.html # HTML template
+├── package.json # Project dependencies and scripts
+├── postcss.config.cjs # PostCSS configuration
+├── tailwind.config.cjs # Tailwind CSS configuration
+└── vite.config.js # Vite configuration
 Deployment
 The site is automatically deployed to GitHub Pages whenever changes are pushed to the main branch. The deployment process:
 
@@ -85,6 +86,7 @@ Built files are deployed to the gh-pages branch
 GitHub Pages serves the site from this branch
 
 # Troubleshooting
+
 If you encounter issues with Tailwind CSS configuration or other setup problems, refer to the Troubleshooting Guide.
 Common issues:
 
@@ -100,6 +102,7 @@ Create tutorials and guides for common statistical methods
 Add user authentication for saving preferences
 
 # Contributing
+
 Contributions are welcome! Feel free to submit issues or pull requests.
 License
 MIT License
