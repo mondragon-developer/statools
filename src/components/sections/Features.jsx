@@ -1,27 +1,10 @@
-import React from 'react';
-import { Calculator, PieChart, BookOpen } from 'lucide-react';
-import FeatureCard from '../ui/FeatureCard';
+import React from "react";
+import { BookOpen, Calculator, HouseIcon } from "lucide-react";
+import FeatureCard from "../ui/FeatureCard";
+import CalculatorResourcesCard from "../ui/CalculatorResourcesCard";
+import Spline from "@splinetool/react-spline";
 
 const Features = () => {
-  // Define the features data
-  const features = [
-    { 
-      icon: <Calculator size={48} className="text-turquoise mb-4" />,
-      title: "Statistical Calculators",
-      description: "Easy-to-use calculators for hypothesis testing, regression analysis, ANOVA, and more."
-    },
-    { 
-      icon: <PieChart size={48} className="text-turquoise mb-4" />,
-      title: "Data Visualization",
-      description: "Tools to create professional charts, plots, and visual representations of your data."
-    },
-    { 
-      icon: <BookOpen size={48} className="text-turquoise mb-4" />,
-      title: "Learning Resources",
-      description: "Comprehensive guides, tutorials, and examples to master statistical concepts."
-    }
-  ];
-
   return (
     <section className="bg-white py-16" id="tools">
       <div className="container mx-auto px-4">
@@ -29,14 +12,29 @@ const Features = () => {
           Statistical Resources
         </h2>
         <div className="grid md:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <FeatureCard 
-              key={index}
-              icon={feature.icon}
-              title={feature.title}
-              description={feature.description}
-            />
-          ))}
+          {/* Spline Visualization Card */}
+          <div className="bg-platinum p-6 rounded-lg hover:shadow-lg transition-shadow">
+            <div className="w-full h-80 mb-6">
+              <Spline
+                scene="https://prod.spline.design/1GfxCCZbNPvMURDn/scene.splinecode"
+                className="rounded-lg"
+              />
+            </div>
+            <h3 className="text-2xl font-bold text-darkGrey my-4 text-center">Statistical Calculators</h3>
+            <p className="text-darkGrey opacity-80 text-center">
+              Easy-to-use calculators for hypothesis testing, regression analysis, confidence intervals, and more.
+            </p>
+          </div>
+
+          {/* Calculator Links Card */}
+          <CalculatorResourcesCard />
+
+          {/* Learning Resources Card */}
+          <FeatureCard
+            icon={<HouseIcon size={48} className="text-turquoise mb-4" />}
+            title="Local Calculators"
+            description="Same tools as online calculators but better for your privacy."
+          />
         </div>
       </div>
     </section>
