@@ -23,11 +23,9 @@ const Hero = () => {
           </button>
         </div>
       </div>
-      <div className="relative">
-        <div className="rounded-lg p-4">
+      <div className="relative w-full overflow-hidden">
           <DataCenter3D />
         </div>
-      </div>
       {/* </div> */}
     </main>
   );
