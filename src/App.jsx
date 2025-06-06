@@ -10,7 +10,6 @@ import HypothesisTestCalculator from './components/calculators/HypothesisTestCal
 import ProbabilityCalculator from './components/calculators/ProbabilityCalculator';
 
 function App() {
-  const basename = process.env.NODE_ENV === 'production' ? '/statools' : '/';
   
   return (
     <Router basename={basename}>
