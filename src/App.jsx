@@ -3,7 +3,7 @@ import './App.css';
 import HomePage from './pages/HomePage';
 import LocalCalculatorsPage from './pages/LocalCalculatorsPage';
 import CalculatorLayout from './components/layout/CalculatorLayout';
-import StatisticsCalculator from './components/calculators/statisticsCalculator';
+import StatisticsCalculator from './components/calculators/StatisticsCalculator';
 import BinomialCalculator from './components/calculators/BinomialCalculator';
 import PoissonCalculator from './components/calculators/PoissonCalculator';
 import HypothesisTestCalculator from './components/calculators/HypothesisTestCalculator';
