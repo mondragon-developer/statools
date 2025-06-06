@@ -89,7 +89,7 @@ const CalculatorLinks = () => {
   ];
 
   return (
-    <div className="mt-4 overflow-hidden">
+    // <div className="overflow-hidden">
       <div className="max-h-72 overflow-y-auto pr-2 custom-scrollbar">
         <ul className="space-y-2">
           {calculators.map(calc => (
@@ -109,7 +109,7 @@ const CalculatorLinks = () => {
           ))}
         </ul>
       </div>
-    </div>
+    // </div>
   );
 };
 
