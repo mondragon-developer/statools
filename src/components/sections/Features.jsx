@@ -1,4 +1,3 @@
-// src/components/sections/Features.jsx
 import React from "react";
 import { BookOpen, Calculator, HouseIcon, Dices } from "lucide-react";
 import { useNavigate } from "react-router-dom";
