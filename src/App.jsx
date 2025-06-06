@@ -15,7 +15,7 @@ function App() {
   return (
     <Router basename={basename}>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/statools" element={<HomePage />} />
         <Route path="/calculators" element={<CalculatorLayout />}>
           <Route index element={<LocalCalculatorsPage />} />
           <Route path="statistics" element={<StatisticsCalculator />} />
