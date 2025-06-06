@@ -1,5 +1,5 @@
 import React from "react";
-import DataCenter3D from "../ui/DataCenter3D";
+import Spline from "@splinetool/react-spline";
 
 const Hero = () => {
   return (
@@ -23,10 +23,27 @@ const Hero = () => {
           </button>
         </div>
       </div>
-      <div className="relative w-full overflow-hidden">
-          <DataCenter3D />
+     
+        <div 
+      className="relative w-full" 
+      style={{ 
+        height: "600px",
+        overflow: "hidden",
+        // Add a subtle vignette effect to hide harsh edges
+        background: "radial-gradient(ellipse at center, transparent 70%, #E6E6E6 100%)"
+      }}
+    >
+        <div className="absolute"
+        style={{
+          height: "700px", // Taller than viewport
+          top: "-50px", // Shift up to show robot's head
+          marginLeft: "-42%",
+          width: "180%",
+          overflow: "hidden"
+        }}>
+          <Spline scene="https://prod.spline.design/71R0PmKp72sQaYqg/scene.splinecode" />
         </div>
-      {/* </div> */}
+   </div>
     </main>
   );
 };
