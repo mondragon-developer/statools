@@ -17,8 +17,6 @@ const Datacenter3D = () => {
         // This negative margin extends beyond the parent container
         marginLeft: "0%",
         marginRight: "10%",
-        marginTop: "-20%",
-        marginBottom: "-10%",
       }}
     >
       {isLoading && (
