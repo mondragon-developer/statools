@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "preview:open": "vite preview --open /statools/",
-    "test-production": "npm run build && echo '\n\n🚀 Preview server starting...\n\n⭐ IMPORTANT: Visit http://localhost:4173/statools/ ⭐\n\n' && vite preview"
+    "test-production": "npm run build && echo '\n\n Preview server starting...\n\nIMPORTANT: Visit http://localhost:4173/statools/ \n\n' && vite preview"
   },
   "dependencies": {
     "@react-three/drei": "^9.88.17",

@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/statools/assets/:path*",
+      "destination": "/assets/:path*"
+    },
+    {
+      "source": "/statools/:path*",
+      "destination": "/"
+    }
+  ]
+}
