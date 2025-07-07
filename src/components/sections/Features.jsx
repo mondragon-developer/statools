@@ -24,11 +24,6 @@ const Features = () => {
 
     },
     {
-      name: 'Normal Distribution',
-      path: '/calculators/normal',
-      description: 'Compute z-scores and probabilities'
-    },
-    {
       name: "Binomial Distribution",
       path: "/calculators/binomial",
       description: "Interactive probability calc"
@@ -37,6 +32,11 @@ const Features = () => {
       name: "Poisson Distribution", 
       path: "/calculators/poisson",
       description: "Event probability calculator"
+    },
+    {
+      name: 'Normal Distribution',
+      path: '/calculators/normal',
+      description: 'Compute z-scores and probabilities'
     },
     {
       name: "Hypothesis Testing",
