@@ -8,7 +8,7 @@ const CalculatorLayout = () => {
       {/* Simple Navigation Bar */}
       <nav className="bg-darkGrey text-white p-4 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/statools/" className="flex items-center space-x-2">
             <Home size={20} />
             <span>Back to Home</span>
           </Link>

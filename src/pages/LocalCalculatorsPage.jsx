@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { TrendingUp, BarChart3, Dices, PopsicleIcon, FileQuestionIcon } from 'lucide-react';
+import { Circle } from 'lucide-react';
 
 const LocalCalculatorsPage = () => {
   const calculators = [
@@ -17,6 +18,13 @@ const LocalCalculatorsPage = () => {
       description: 'Comprehensive probability tools with 3D dice simulator',
       icon: <Dices size={32} />,
       path: '/calculators/probability'
+    },
+    {
+      id: 'normal',
+      title: 'Normal Distribution',
+      description: 'Compute z-scores and probabilities for normal curves',
+      icon: <Circle size={32} />,
+      path: '/calculators/normal'
     },
     {
       id: 'binomial',
