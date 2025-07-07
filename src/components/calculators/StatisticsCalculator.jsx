@@ -166,6 +166,19 @@ const StatisticsCalculator = () => {
     const variance = numbers.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1);
     const stdDev = Math.sqrt(variance);
     
+    // Mode calculation (can be multimodal)
+    const freqMap = {};
+    numbers.forEach(num => {
+      freqMap[num] = (freqMap[num] || 0) + 1;
+    });
+    const maxFreq = Math.max(...Object.values(freqMap));
+    let modeValues = Object.keys(freqMap).filter(key => freqMap[key] === maxFreq);
+    if (modeValues.length === Object.keys(freqMap).length) {
+      modeValues = ["No mode"];
+    } else {
+      modeValues = modeValues.map(v => Number(v));
+    }
+
     // Quartiles
     const q1 = calculatePercentile(sorted, 0.25);
     const q3 = calculatePercentile(sorted, 0.75);
@@ -176,8 +189,8 @@ const StatisticsCalculator = () => {
     const outlierMax = q3 + 1.5 * iqr;
 
     return {
-      min, max, range, mean, median, stdDev, variance,
-      q1, q3, iqr, outlierMin, outlierMax
+      min, max, range, mean, median, mode: modeValues,
+      stdDev, variance, q1, q3, iqr, outlierMin, outlierMax
     };
   };
 
@@ -205,7 +218,15 @@ const StatisticsCalculator = () => {
   const formatResult = (stats) => {
     const formatted = {};
     Object.keys(stats).forEach(key => {
-      formatted[key] = stats[key].toFixed(4);
+      if (typeof stats[key] === 'number') {
+        formatted[key] = stats[key].toFixed(4);
+      } else if (Array.isArray(stats[key])) {
+        formatted[key] = stats[key].map(val =>
+          typeof val === 'number' ? val.toFixed(4) : val
+        ).join(', ');
+      } else {
+        formatted[key] = stats[key];
+      }
     });
     return formatted;
   };
@@ -799,6 +820,11 @@ const StatisticsCalculator = () => {
                       <InfoIcon info="Middle value when sorted" />
                     </p>
                     <p className="flex items-center">
+                      <span className="font-medium">Mode:</span>
+                      <span className="ml-auto font-mono">{result.mode}</span>
+                      <InfoIcon info="Most frequent value(s)" />
+                    </p>
+                    <p className="flex items-center">
                       <span className="font-medium">Std Dev:</span>
                       <span className="ml-auto font-mono">{result.stdDev}</span>
                       <InfoIcon info="Typical distance from mean" />
@@ -922,7 +948,7 @@ const StatisticsCalculator = () => {
                       {/* Summary Statistics */}
                       <div className="bg-gray-50 p-4 rounded">
                         <h4 className="font-semibold text-darkGrey mb-2">Summary Statistics:</h4>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
+                        <div className="grid grid-cols-2 md:grid-cols-6 gap-2 text-sm">
                           <div className="text-center">
                             <p className="text-gray-600">Min</p>
                             <p className="font-mono font-bold">{result.min}</p>
@@ -934,6 +960,10 @@ const StatisticsCalculator = () => {
                           <div className="text-center">
                             <p className="text-gray-600">Median</p>
                             <p className="font-mono font-bold">{result.median}</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-gray-600">Mode</p>
+                            <p className="font-mono font-bold">{result.mode}</p>
                           </div>
                           <div className="text-center">
                             <p className="text-gray-600">Q3</p>
