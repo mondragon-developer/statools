@@ -15,7 +15,7 @@ export default defineConfig({
   },
   define: {
     'global': 'globalThis',
-    'basename': JSON.stringify(''),
+    'basename': JSON.stringify('/statools'),
     'process.env': {}
   }
 })
