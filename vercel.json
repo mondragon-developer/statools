@@ -12,6 +12,14 @@
       "destination": "/assets/:path*"
     },
     {
+      "source": "/statools/favicon.ico",
+      "destination": "/favicon.ico"
+    },
+    {
+      "source": "/statools",
+      "destination": "/statools/index.html"
+    },
+    {
       "source": "/statools/:path*",
       "destination": "/statools/index.html"
     }
