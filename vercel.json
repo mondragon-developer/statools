@@ -1,12 +1,16 @@
 {
   "rewrites": [
     {
-      "source": "/statools/:file.:ext(js|css|png|jpg|svg|json)",
-      "destination": "/:file.:ext"
+      "source": "/statools/assets/:path*",
+      "destination": "/assets/:path*"
     },
     {
       "source": "/statools/:path*",
       "destination": "/"
+    },
+     {
+      "source": "/:path*",
+      "destination": "/statools/index.html"
     }
   ]
 }
