@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/statools/",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/statools/assets/:path*",
@@ -6,10 +13,6 @@
     },
     {
       "source": "/statools/:path*",
-      "destination": "/statools/index.html"
-    },
-     {
-      "source": "/:path*",
       "destination": "/statools/index.html"
     }
   ]
