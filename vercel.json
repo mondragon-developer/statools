@@ -1,13 +1,6 @@
 {
   "rewrites": [
-    {
-      "source": "/statools/(.*)",
-      "destination": "/$1"
-    },
-    {
-      "source": "/statools",
-      "destination": "/"
-    },
+ 
     {
       "source": "/(.*)",
       "destination": "/index.html"
