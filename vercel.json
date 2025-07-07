@@ -1,27 +1,16 @@
 {
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/statools/",
-      "permanent": false
-    }
-  ],
   "rewrites": [
     {
-      "source": "/statools/assets/:path*",
-      "destination": "/assets/:path*"
-    },
-    {
-      "source": "/statools/favicon.ico",
-      "destination": "/favicon.ico"
+      "source": "/statools/(.*)",
+      "destination": "/$1"
     },
     {
       "source": "/statools",
-      "destination": "/statools/index.html"
+      "destination": "/"
     },
     {
-      "source": "/statools/:path*",
-      "destination": "/statools/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
