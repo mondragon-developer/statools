@@ -6,7 +6,7 @@
     },
     {
       "source": "/statools/:path*",
-      "destination": "/"
+      "destination": "/statools/index.html"
     },
      {
       "source": "/:path*",
