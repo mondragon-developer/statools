@@ -21,7 +21,12 @@ const Features = () => {
       name: 'Probability Calculator',
       path: '/calculators/probability',
       description: 'Comprehensive probability tools with 3D dice simulator',
-     
+
+    },
+    {
+      name: 'Normal Distribution',
+      path: '/calculators/normal',
+      description: 'Compute z-scores and probabilities'
     },
     {
       name: "Binomial Distribution",

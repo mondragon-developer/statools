@@ -12,6 +12,7 @@ const NormalDistributionCalculator = () => {
   const [result, setResult] = useState(null);
   const [z1, setZ1] = useState(null);
   const [z2, setZ2] = useState(null);
+  const [error, setError] = useState('');
 
   const toZ = (x) => (x - mean) / sd;
 
@@ -20,7 +21,18 @@ const NormalDistributionCalculator = () => {
   const calculate = () => {
     const v1 = parseFloat(value1);
     const v2 = parseFloat(value2);
-    if (isNaN(v1)) return;
+
+    if (isNaN(mean) || isNaN(sd) || sd <= 0) {
+      setError('Enter a valid mean and standard deviation');
+      setResult(null);
+      return;
+    }
+
+    if (isNaN(v1)) {
+      setError('Enter a valid value');
+      setResult(null);
+      return;
+    }
     let zVal1 = inputType === 'z' ? v1 : toZ(v1);
     let prob;
     let zVal2;
@@ -30,11 +42,19 @@ const NormalDistributionCalculator = () => {
     } else if (calcType === 'right') {
       prob = 1 - cdf(zVal1);
     } else if (calcType === 'between') {
-      if (isNaN(v2)) return;
+      if (isNaN(v2)) {
+        setError('Enter a valid second value');
+        setResult(null);
+        return;
+      }
       zVal2 = inputType === 'z' ? v2 : toZ(v2);
       prob = cdf(Math.max(zVal1, zVal2)) - cdf(Math.min(zVal1, zVal2));
     } else if (calcType === 'around') {
-      if (isNaN(v2)) return;
+      if (isNaN(v2)) {
+        setError('Enter a valid margin');
+        setResult(null);
+        return;
+      }
       const margin = inputType === 'z' ? Math.abs(v2) : Math.abs(v2 / sd);
       prob = cdf(zVal1 + margin) - cdf(zVal1 - margin);
       zVal2 = margin;
@@ -43,6 +63,7 @@ const NormalDistributionCalculator = () => {
     setResult(prob);
     setZ1(zVal1);
     setZ2(zVal2);
+    setError('');
   };
 
   return (
@@ -136,6 +157,7 @@ const NormalDistributionCalculator = () => {
             >
               Calculate
             </button>
+            {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
           </div>
 
           <div className="bg-yellow/20 border-2 border-yellow p-4 rounded space-y-2">
