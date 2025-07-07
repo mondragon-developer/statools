@@ -8,6 +8,7 @@ import BinomialCalculator from './components/calculators/BinomialCalculator';
 import PoissonCalculator from './components/calculators/PoissonCalculator';
 import HypothesisTestCalculator from './components/calculators/HypothesisTestCalculator';
 import ProbabilityCalculator from './components/calculators/ProbabilityCalculator';
+import NormalDistributionCalculator from './components/calculators/NormalDistributionCalculator';
 
 function App() {
   
@@ -18,8 +19,9 @@ function App() {
         <Route path="/calculators" element={<CalculatorLayout />}>
           <Route index element={<LocalCalculatorsPage />} />
           <Route path="statistics" element={<StatisticsCalculator />} />
-          <Route path="probability" element={<ProbabilityCalculator />} />
-          <Route path="binomial" element={<BinomialCalculator />} />
+            <Route path="probability" element={<ProbabilityCalculator />} />
+            <Route path="normal" element={<NormalDistributionCalculator />} />
+            <Route path="binomial" element={<BinomialCalculator />} />
           <Route path="poisson" element={<PoissonCalculator />} />
           <Route path="hypothesis-test" element={<HypothesisTestCalculator />} />
         </Route>
