@@ -130,6 +130,8 @@ const NormalDistributionCalculator = () => {
   const [value2, setValue2] = useState(1);
   const [showPercentiles, setShowPercentiles] = useState(true);
   const [showStandardDeviations, setShowStandardDeviations] = useState(true);
+  const [inverseMode, setInverseMode] = useState(false);
+  const [inverseProbability, setInverseProbability] = useState(0.5);
 
   // Safe parsing function to prevent NaN crashes
   const safeParse = (value, defaultValue = 0) => {
@@ -143,6 +145,25 @@ const NormalDistributionCalculator = () => {
     const safeSd = Math.max(safeParse(sd, 1), 0.0001); // Prevent division by zero
     const safeValue1 = safeParse(value1, 0);
     const safeValue2 = safeParse(value2, 1);
+    const safeInverseProb = Math.max(0.0001, Math.min(0.9999, safeParse(inverseProbability, 0.5)));
+
+    // Inverse calculations
+    let inverseResults = null;
+    if (inverseMode) {
+      const leftValue = NormalMath.inv(safeInverseProb, safeMean, safeSd);
+      const rightValue = NormalMath.inv(1 - safeInverseProb, safeMean, safeSd);
+      const leftZ = NormalMath.toZScore(leftValue, safeMean, safeSd);
+      const rightZ = NormalMath.toZScore(rightValue, safeMean, safeSd);
+      
+      inverseResults = {
+        probability: safeInverseProb,
+        leftValue,
+        rightValue,
+        leftZ,
+        rightZ,
+        description: `Values where P(X ≤ value) = ${(safeInverseProb * 100).toFixed(1)}%`
+      };
+    }
 
     // Convert to X values if input is Z
     const x1 = inputType === 'z' ? NormalMath.toXValue(safeValue1, safeMean, safeSd) : safeValue1;
@@ -198,9 +219,10 @@ const NormalDistributionCalculator = () => {
       description,
       percentiles,
       mean: safeMean,
-      sd: safeSd
+      sd: safeSd,
+      inverseResults
     };
-  }, [mean, sd, inputType, calcType, value1, value2]);
+  }, [mean, sd, inputType, calcType, value1, value2, inverseMode, inverseProbability]);
 
   // Generate chart data
   const chartData = useMemo(() => {
@@ -222,23 +244,29 @@ const NormalDistributionCalculator = () => {
       xValues.push(x);
       yValues.push(y);
 
-      // Determine if this point should be filled based on calcType
+      // Determine if this point should be filled based on mode and calcType
       let shouldFill = false;
-      switch (calcType) {
-        case 'left':
-          shouldFill = x <= calculations.x1;
-          break;
-        case 'right':
-          shouldFill = x > calculations.x1;
-          break;
-        case 'between':
-          shouldFill = x >= Math.min(calculations.x1, calculations.x2) && 
-                      x <= Math.max(calculations.x1, calculations.x2);
-          break;
-        case 'outside':
-          shouldFill = x < Math.min(calculations.x1, calculations.x2) || 
-                      x > Math.max(calculations.x1, calculations.x2);
-          break;
+      
+      if (inverseMode && calculations.inverseResults) {
+        // In inverse mode, highlight the tails
+        shouldFill = x <= calculations.inverseResults.leftValue || x >= calculations.inverseResults.rightValue;
+      } else {
+        switch (calcType) {
+          case 'left':
+            shouldFill = x <= calculations.x1;
+            break;
+          case 'right':
+            shouldFill = x > calculations.x1;
+            break;
+          case 'between':
+            shouldFill = x >= Math.min(calculations.x1, calculations.x2) && 
+                        x <= Math.max(calculations.x1, calculations.x2);
+            break;
+          case 'outside':
+            shouldFill = x < Math.min(calculations.x1, calculations.x2) || 
+                        x > Math.max(calculations.x1, calculations.x2);
+            break;
+        }
       }
       fillData.push(shouldFill ? y : null);
     }
@@ -265,6 +293,39 @@ const NormalDistributionCalculator = () => {
         fill: true
       }
     ];
+
+    // Add vertical lines for inverse values
+    if (inverseMode && calculations.inverseResults) {
+      const leftLineData = new Array(xValues.length).fill(null);
+      const rightLineData = new Array(xValues.length).fill(null);
+      
+      const leftIndex = xValues.findIndex(x => x >= calculations.inverseResults.leftValue);
+      const rightIndex = xValues.findIndex(x => x >= calculations.inverseResults.rightValue);
+      
+      if (leftIndex !== -1) leftLineData[leftIndex] = yValues[leftIndex];
+      if (rightIndex !== -1) rightLineData[rightIndex] = yValues[rightIndex];
+      
+      datasets.push(
+        {
+          label: 'Left Value',
+          data: leftLineData,
+          borderColor: 'rgba(78, 205, 196, 1)',
+          borderWidth: 3,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          type: 'line'
+        },
+        {
+          label: 'Right Value',
+          data: rightLineData,
+          borderColor: 'rgba(255, 0, 0, 1)',
+          borderWidth: 3,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          type: 'line'
+        }
+      );
+    }
 
     // Add standard deviation markers if enabled
     if (showStandardDeviations) {
@@ -295,7 +356,7 @@ const NormalDistributionCalculator = () => {
       labels: xValues.map(x => x.toFixed(2)),
       datasets
     };
-  }, [calculations, calcType, showStandardDeviations]);
+  }, [calculations, calcType, showStandardDeviations, inverseMode]);
 
   // Chart options
   const chartOptions = useMemo(() => ({
@@ -426,65 +487,132 @@ const NormalDistributionCalculator = () => {
                 <InfoIcon info="Choose what probability you want to calculate" />
               </h3>
               
-              <div className="space-y-3">
-                {/* Input Type */}
-                <div>
-                  <label className="block text-darkGrey font-medium mb-2">Input Type</label>
-                  <select
-                    value={inputType}
-                    onChange={(e) => setInputType(e.target.value)}
-                    className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+              {/* Mode Toggle */}
+              <div className="mb-4 p-3 bg-white rounded-lg border-2 border-darkGrey/20">
+                <label className="block text-darkGrey font-medium mb-2">Calculation Mode</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setInverseMode(false)}
+                    className={`p-2 rounded font-medium transition-all ${
+                      !inverseMode 
+                        ? 'bg-turquoise text-white' 
+                        : 'bg-gray-100 text-darkGrey hover:bg-gray-200'
+                    }`}
                   >
-                    <option value="x">X values (actual values)</option>
-                    <option value="z">Z-scores (standardized)</option>
-                  </select>
-                </div>
-
-                {/* Calculation Type */}
-                <div>
-                  <label className="block text-darkGrey font-medium mb-2">Calculation Type</label>
-                  <select
-                    value={calcType}
-                    onChange={(e) => setCalcType(e.target.value)}
-                    className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                    Value → Probability
+                  </button>
+                  <button
+                    onClick={() => setInverseMode(true)}
+                    className={`p-2 rounded font-medium transition-all ${
+                      inverseMode 
+                        ? 'bg-turquoise text-white' 
+                        : 'bg-gray-100 text-darkGrey hover:bg-gray-200'
+                    }`}
                   >
-                    <option value="left">P(X ≤ value) - Left tail</option>
-                    <option value="right">P(X {'>'} value) - Right tail</option>
-                    <option value="between">P(a {'<'} X {'<'} b) - Between two values</option>
-                    <option value="outside">P(X {'<'} a or X {'>'} b) - Outside interval</option>
-                  </select>
+                    Probability → Value
+                  </button>
                 </div>
+              </div>
+              
+              {!inverseMode ? (
+                <div className="space-y-3">
+                  {/* Input Type */}
+                  <div>
+                    <label className="block text-darkGrey font-medium mb-2">Input Type</label>
+                    <select
+                      value={inputType}
+                      onChange={(e) => setInputType(e.target.value)}
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                    >
+                      <option value="x">X values (actual values)</option>
+                      <option value="z">Z-scores (standardized)</option>
+                    </select>
+                  </div>
 
-                {/* Value Inputs */}
-                <div>
-                  <label className="block text-darkGrey font-medium mb-2">
-                    {calcType === 'between' || calcType === 'outside' ? 'First Value' : 'Value'}
-                    {inputType === 'z' ? ' (Z)' : ' (X)'}
-                  </label>
-                  <input
-                    type="number"
-                    value={value1}
-                    onChange={(e) => setValue1(e.target.value)}
-                    className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
-                    placeholder="0"
-                  />
-                </div>
+                  {/* Calculation Type */}
+                  <div>
+                    <label className="block text-darkGrey font-medium mb-2">Calculation Type</label>
+                    <select
+                      value={calcType}
+                      onChange={(e) => setCalcType(e.target.value)}
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                    >
+                      <option value="left">P(X ≤ value) - Left tail</option>
+                      <option value="right">P(X {'>'} value) - Right tail</option>
+                      <option value="between">P(a {'<'} X {'<'} b) - Between two values</option>
+                      <option value="outside">P(X {'<'} a or X {'>'} b) - Outside interval</option>
+                    </select>
+                  </div>
 
-                {(calcType === 'between' || calcType === 'outside') && (
+                  {/* Value Inputs */}
                   <div>
                     <label className="block text-darkGrey font-medium mb-2">
-                      Second Value {inputType === 'z' ? '(Z)' : '(X)'}
+                      {calcType === 'between' || calcType === 'outside' ? 'First Value' : 'Value'}
+                      {inputType === 'z' ? ' (Z)' : ' (X)'}
                     </label>
                     <input
                       type="number"
-                      value={value2}
-                      onChange={(e) => setValue2(e.target.value)}
+                      value={value1}
+                      onChange={(e) => setValue1(e.target.value)}
                       className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
-                      placeholder="1"
+                      placeholder="0"
                     />
                   </div>
-                )}
-              </div>
+
+                  {(calcType === 'between' || calcType === 'outside') && (
+                    <div>
+                      <label className="block text-darkGrey font-medium mb-2">
+                        Second Value {inputType === 'z' ? '(Z)' : '(X)'}
+                      </label>
+                      <input
+                        type="number"
+                        value={value2}
+                        onChange={(e) => setValue2(e.target.value)}
+                        className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                        placeholder="1"
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {/* Inverse Probability Input */}
+                  <div>
+                    <label className="flex items-center text-darkGrey font-medium mb-2">
+                      Target Probability: {(safeParse(inverseProbability, 0.5) * 100).toFixed(1)}%
+                      <InfoIcon info="Find X values for this cumulative probability" />
+                    </label>
+                    <input
+                      type="range"
+                      min="0.001"
+                      max="0.999"
+                      step="0.001"
+                      value={inverseProbability}
+                      onChange={(e) => setInverseProbability(e.target.value)}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, #4ECDC4 0%, #4ECDC4 ${safeParse(inverseProbability, 0.5) * 100}%, #e0e0e0 ${safeParse(inverseProbability, 0.5) * 100}%, #e0e0e0 100%)`
+                      }}
+                    />
+                    <div className="mt-2">
+                      <input
+                        type="number"
+                        min="0.001"
+                        max="0.999"
+                        step="0.001"
+                        value={inverseProbability}
+                        onChange={(e) => setInverseProbability(e.target.value)}
+                        className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                        placeholder="0.5"
+                      />
+                    </div>
+                    <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-darkGrey">
+                      This will find the X value where {(safeParse(inverseProbability, 0.5) * 100).toFixed(1)}% of the data is below it, 
+                      and the X value where {(safeParse(inverseProbability, 0.5) * 100).toFixed(1)}% is above it.
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Results Display */}
@@ -493,35 +621,93 @@ const NormalDistributionCalculator = () => {
                 🎯 Calculation Results
               </h3>
               
-              {/* Main Result */}
-              <div className="bg-white p-3 rounded-lg mb-3">
-                <p className="text-sm text-darkGrey opacity-60 mb-1">
-                  {calculations.description}
-                </p>
-                <p className="text-3xl font-bold text-center text-darkGrey">
-                  {calculations.probability.toFixed(4)}
-                </p>
-                <p className="text-sm text-center text-darkGrey opacity-60 mt-1">
-                  {(calculations.probability * 100).toFixed(2)}% probability
-                </p>
-              </div>
-
-              {/* Z-scores */}
-              <div className="space-y-2 text-darkGrey">
-                <div className="flex justify-between items-center">
-                  <span className="flex items-center">
-                    Z-score{calcType === 'between' || calcType === 'outside' ? ' 1' : ''}
-                    <InfoIcon info="Number of standard deviations from mean" />
-                  </span>
-                  <span className="font-mono font-bold">{calculations.z1.toFixed(4)}</span>
-                </div>
-                {(calcType === 'between' || calcType === 'outside') && (
-                  <div className="flex justify-between items-center">
-                    <span>Z-score 2</span>
-                    <span className="font-mono font-bold">{calculations.z2.toFixed(4)}</span>
+              {!inverseMode ? (
+                <>
+                  {/* Main Result */}
+                  <div className="bg-white p-3 rounded-lg mb-3">
+                    <p className="text-sm text-darkGrey opacity-60 mb-1">
+                      {calculations.description}
+                    </p>
+                    <p className="text-3xl font-bold text-center text-darkGrey">
+                      {calculations.probability.toFixed(4)}
+                    </p>
+                    <p className="text-sm text-center text-darkGrey opacity-60 mt-1">
+                      {(calculations.probability * 100).toFixed(2)}% probability
+                    </p>
                   </div>
-                )}
-              </div>
+
+                  {/* Z-scores */}
+                  <div className="space-y-2 text-darkGrey">
+                    <div className="flex justify-between items-center">
+                      <span className="flex items-center">
+                        Z-score{calcType === 'between' || calcType === 'outside' ? ' 1' : ''}
+                        <InfoIcon info="Number of standard deviations from mean" />
+                      </span>
+                      <span className="font-mono font-bold">{calculations.z1.toFixed(4)}</span>
+                    </div>
+                    {(calcType === 'between' || calcType === 'outside') && (
+                      <div className="flex justify-between items-center">
+                        <span>Z-score 2</span>
+                        <span className="font-mono font-bold">{calculations.z2.toFixed(4)}</span>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : calculations.inverseResults && (
+                <>
+                  {/* Inverse Results */}
+                  <div className="bg-white p-3 rounded-lg mb-3">
+                    <p className="text-sm text-darkGrey opacity-60 mb-1">
+                      Finding X values for {(calculations.inverseResults.probability * 100).toFixed(1)}% probability
+                    </p>
+                    
+                    <div className="grid grid-cols-2 gap-3 mt-3">
+                      <div className="text-center p-2 bg-turquoise/10 rounded">
+                        <p className="text-xs text-darkGrey opacity-60">Left tail value</p>
+                        <p className="text-xl font-bold text-darkGrey">
+                          {calculations.inverseResults.leftValue.toFixed(3)}
+                        </p>
+                        <p className="text-xs text-darkGrey opacity-60 mt-1">
+                          {(calculations.inverseResults.probability * 100).toFixed(1)}% below
+                        </p>
+                      </div>
+                      
+                      <div className="text-center p-2 bg-yellow/30 rounded">
+                        <p className="text-xs text-darkGrey opacity-60">Right tail value</p>
+                        <p className="text-xl font-bold text-darkGrey">
+                          {calculations.inverseResults.rightValue.toFixed(3)}
+                        </p>
+                        <p className="text-xs text-darkGrey opacity-60 mt-1">
+                          {(calculations.inverseResults.probability * 100).toFixed(1)}% above
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Z-scores for inverse */}
+                  <div className="space-y-2 text-darkGrey">
+                    <div className="flex justify-between items-center">
+                      <span className="flex items-center">
+                        Left Z-score
+                        <InfoIcon info="Standard deviations below mean" />
+                      </span>
+                      <span className="font-mono font-bold">{calculations.inverseResults.leftZ.toFixed(4)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="flex items-center">
+                        Right Z-score
+                        <InfoIcon info="Standard deviations above mean" />
+                      </span>
+                      <span className="font-mono font-bold">{calculations.inverseResults.rightZ.toFixed(4)}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-3 p-2 bg-white rounded text-xs text-darkGrey">
+                    <strong>Interpretation:</strong> {(calculations.inverseResults.probability * 100).toFixed(1)}% of values fall below {calculations.inverseResults.leftValue.toFixed(3)}, 
+                    and {(calculations.inverseResults.probability * 100).toFixed(1)}% fall above {calculations.inverseResults.rightValue.toFixed(3)}.
+                  </div>
+                </>
+              )}
 
               {/* Display Options */}
               <div className="mt-3 pt-3 border-t border-yellow space-y-2">
@@ -566,7 +752,19 @@ const NormalDistributionCalculator = () => {
                   <li>• <span className="inline-block w-12 h-0.5 bg-darkGrey mr-1"></span> 
                     Bell curve (probability density)</li>
                   <li>• <span className="inline-block w-3 h-3 bg-yellow rounded mr-1"></span> 
-                    Selected probability area = {(calculations.probability * 100).toFixed(2)}%</li>
+                    {inverseMode 
+                      ? `Highlighted areas = ${(calculations.inverseResults?.probability * 100).toFixed(1)}% in each tail`
+                      : `Selected probability area = ${(calculations.probability * 100).toFixed(2)}%`
+                    }
+                  </li>
+                  {inverseMode && (
+                    <>
+                      <li>• <span className="inline-block w-12 h-0.5 border-b-2 border-dashed border-turquoise mr-1"></span> 
+                        Left value = {calculations.inverseResults?.leftValue.toFixed(3)}</li>
+                      <li>• <span className="inline-block w-12 h-0.5 border-b-2 border-dashed border-red-500 mr-1"></span> 
+                        Right value = {calculations.inverseResults?.rightValue.toFixed(3)}</li>
+                    </>
+                  )}
                   {showStandardDeviations && (
                     <li>• <span className="inline-block w-12 h-0.5 border-b border-dashed border-gray-500 mr-1"></span> 
                       Standard deviation markers</li>
@@ -578,8 +776,13 @@ const NormalDistributionCalculator = () => {
             {/* Percentiles Table */}
             {showPercentiles && (
               <div className="bg-white border-2 border-darkGrey/20 p-4 rounded-lg">
-                <h4 className="font-bold text-darkGrey mb-3">📊 Key Percentiles</h4>
-                <div className="grid grid-cols-3 gap-2 text-sm">
+                <h4 className="font-bold text-darkGrey mb-3 flex items-center">
+                  📊 Key Percentiles
+                  <InfoIcon info="Values below which a certain percentage of data falls" />
+                </h4>
+                
+                {/* Percentile Grid */}
+                <div className="grid grid-cols-3 gap-2 text-sm mb-4">
                   {Object.entries(calculations.percentiles).map(([key, value]) => {
                     const percentile = key.substring(1);
                     return (
@@ -589,6 +792,40 @@ const NormalDistributionCalculator = () => {
                       </div>
                     );
                   })}
+                </div>
+                
+                {/* Practical Explanations */}
+                <div className="bg-blue-50 p-3 rounded">
+                  <h5 className="font-bold text-darkGrey mb-2">💡 What These Mean:</h5>
+                  <ul className="space-y-2 text-xs text-darkGrey">
+                    <li>
+                      <strong>1st & 99th:</strong> Extreme values - only 1% of data is more extreme. 
+                      <em className="block text-gray-600">Example: Emergency thresholds, outlier detection</em>
+                    </li>
+                    <li>
+                      <strong>5th & 95th:</strong> Common confidence bounds - 90% of data falls between these.
+                      <em className="block text-gray-600">Example: Normal ranges in medical tests</em>
+                    </li>
+                    <li>
+                      <strong>25th & 75th:</strong> The "interquartile range" - middle 50% of your data.
+                      <em className="block text-gray-600">Example: Typical performance range, salary bands</em>
+                    </li>
+                    <li>
+                      <strong>50th (Median):</strong> The middle value - half above, half below.
+                      <em className="block text-gray-600">Example: Average person's score, typical result</em>
+                    </li>
+                    <li>
+                      <strong>10th & 90th:</strong> Often used for "acceptable range" - 80% falls between.
+                      <em className="block text-gray-600">Example: Product specifications, performance targets</em>
+                    </li>
+                  </ul>
+                  
+                  <div className="mt-3 p-2 bg-yellow/20 rounded">
+                    <p className="text-xs font-semibold text-darkGrey">
+                      🎯 Quick Reference: If you score at the {safeParse(inverseProbability, 0.5) > 0.5 ? Math.round(safeParse(inverseProbability, 0.5) * 100) : 50}th percentile, 
+                      you're better than {safeParse(inverseProbability, 0.5) > 0.5 ? Math.round(safeParse(inverseProbability, 0.5) * 100) : 50}% of the population!
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
