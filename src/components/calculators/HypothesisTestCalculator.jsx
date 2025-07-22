@@ -621,7 +621,7 @@ criticalMarkers.forEach((cv, index) => {
                     className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
                   >
                     <option value={TAIL_TYPES.TWO}>Two-Tailed (≠)</option>
-                    <option value={TAIL_TYPES.RIGHT}>Right-Tailed ({"<"})</option>
+                    <option value={TAIL_TYPES.RIGHT}>Right-Tailed ({">"})</option>
                     <option value={TAIL_TYPES.LEFT}>Left-Tailed ({"<"})</option>
                   </select>
                 </div>
