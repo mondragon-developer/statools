@@ -9,6 +9,8 @@ import PoissonCalculator from './components/calculators/PoissonCalculator';
 import HypothesisTestCalculator from './components/calculators/HypothesisTestCalculator';
 import ProbabilityCalculator from './components/calculators/ProbabilityCalculator';
 import NormalDistributionCalculator from './components/calculators/NormalDistributionCalculator';
+import CorrelationRegressionCalculator from './components/calculators/CorrelationRegressionCalculator';
+import FrequencyDistributionCalculator from './components/calculators/FrequencyDistributionCalculator';
 
 function App() {
   
@@ -24,6 +26,8 @@ function App() {
             <Route path="binomial" element={<BinomialCalculator />} />
           <Route path="poisson" element={<PoissonCalculator />} />
           <Route path="hypothesis-test" element={<HypothesisTestCalculator />} />
+          <Route path="correlation-regression" element={<CorrelationRegressionCalculator />} />
+          <Route path="frequency-distribution" element={<FrequencyDistributionCalculator />} />
         </Route>
       </Routes>
     </Router>

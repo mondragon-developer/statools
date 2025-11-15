@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { TrendingUp, BarChart3, Dices, PopsicleIcon, FileQuestionIcon } from 'lucide-react';
-import { Circle } from 'lucide-react';
+import { TrendingUp, BarChart3, Dices, PopsicleIcon, FileQuestionIcon, Circle, ScatterChart, Table2 } from 'lucide-react';
 
 const LocalCalculatorsPage = () => {
   const calculators = [
@@ -46,6 +45,20 @@ const LocalCalculatorsPage = () => {
       description: 'Perform z-tests and t-tests with p-values and confidence intervals',
       icon: <FileQuestionIcon size={32} />,
       path: '/calculators/hypothesis-test'
+    },
+    {
+      id: 'correlation-regression',
+      title: 'Correlation & Regression',
+      description: 'Calculate correlation, R², and linear regression equation with predictions',
+      icon: <ScatterChart size={32} />,
+      path: '/calculators/correlation-regression'
+    },
+    {
+      id: 'frequency-distribution',
+      title: 'Frequency Distribution',
+      description: 'Create frequency tables with histograms and polygons for continuous and discrete data',
+      icon: <Table2 size={32} />,
+      path: '/calculators/frequency-distribution'
     }
   ];
 

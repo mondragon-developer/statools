@@ -42,6 +42,16 @@ const Features = () => {
       name: "Hypothesis Testing",
       path: "/calculators/hypothesis-test",
       description: "Z-test, t-test, p-values"
+    },
+    {
+      name: "Correlation & Regression",
+      path: "/calculators/correlation-regression",
+      description: "Correlation, R², linear regression"
+    },
+    {
+      name: "Frequency Distribution",
+      path: "/calculators/frequency-distribution",
+      description: "Frequency tables, histograms, polygons"
     }
   ];
 
