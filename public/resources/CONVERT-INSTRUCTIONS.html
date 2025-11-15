@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>How to Create PDFs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 { color: #4ECDC4; }
+        h2 { color: #2A2A2A; border-bottom: 2px solid #4ECDC4; padding-bottom: 10px; }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .step {
+            background: #f9f9f9;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #4ECDC4;
+        }
+        .button {
+            display: inline-block;
+            background: #4ECDC4;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background: #3db3aa;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>📄 How to Create PDFs for MDragon Data Tools</h1>
+        <p><strong>The PDFs don't exist yet!</strong> You only have markdown (.md) files. Here's the easiest way to create them:</p>
+    </div>
+
+    <div class="card">
+        <h2>Method 1: Google Docs (EASIEST - 5 minutes)</h2>
+        <div class="step">
+            <strong>Step 1:</strong> Open any .md file in VS Code (e.g., <code>probability-fundamentals.md</code>)
+        </div>
+        <div class="step">
+            <strong>Step 2:</strong> Select All (Ctrl+A) and Copy (Ctrl+C)
+        </div>
+        <div class="step">
+            <strong>Step 3:</strong> Go to <a href="https://docs.google.com" target="_blank">Google Docs</a> and create a new document
+        </div>
+        <div class="step">
+            <strong>Step 4:</strong> Paste the content (Ctrl+V)
+        </div>
+        <div class="step">
+            <strong>Step 5:</strong> Click <strong>File → Download → PDF Document (.pdf)</strong>
+        </div>
+        <div class="step">
+            <strong>Step 6:</strong> Save the PDF with the correct name (e.g., <code>probability-fundamentals.pdf</code>)
+        </div>
+        <div class="step">
+            <strong>Step 7:</strong> Move the PDF to: <code>statools/public/resources/</code>
+        </div>
+        <p><strong>Repeat for all 16 markdown files!</strong></p>
+    </div>
+
+    <div class="card">
+        <h2>Method 2: Word → PDF (If you have Microsoft Word)</h2>
+        <div class="step">
+            <strong>Step 1:</strong> Open markdown file in VS Code
+        </div>
+        <div class="step">
+            <strong>Step 2:</strong> Copy all content
+        </div>
+        <div class="step">
+            <strong>Step 3:</strong> Paste into Microsoft Word
+        </div>
+        <div class="step">
+            <strong>Step 4:</strong> File → Save As → PDF
+        </div>
+        <div class="step">
+            <strong>Step 5:</strong> Save to <code>statools/public/resources/</code>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Files You Need to Convert (16 total)</h2>
+        <ol>
+            <li>probability-fundamentals.md → probability-fundamentals.pdf</li>
+            <li>binomial-distribution.md → binomial-distribution.pdf</li>
+            <li>poisson-distribution.md → poisson-distribution.pdf</li>
+            <li>normal-distribution.md → normal-distribution.pdf</li>
+            <li>t-distribution.md → t-distribution.pdf</li>
+            <li>central-limit-theorem.md → central-limit-theorem.pdf</li>
+            <li>hypothesis-testing-one-sample.md → hypothesis-testing-one-sample.pdf</li>
+            <li>hypothesis-testing-two-samples.md → hypothesis-testing-two-samples.pdf</li>
+            <li>confidence-intervals.md → confidence-intervals.pdf</li>
+            <li>linear-regression-basics.md → linear-regression-basics.pdf</li>
+            <li>regression-step-by-step.md → regression-step-by-step.pdf</li>
+            <li>interpreting-regression.md → interpreting-regression.pdf</li>
+            <li>statistics-calculator-guide.md → statistics-calculator-guide.pdf</li>
+            <li>probability-calculator-guide.md → probability-calculator-guide.pdf</li>
+            <li>distribution-calculators-guide.md → distribution-calculators-guide.pdf</li>
+            <li>statistical-tables.md → statistical-tables.pdf</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <h2>Quick Links</h2>
+        <a href="https://docs.google.com" target="_blank" class="button">Open Google Docs</a>
+        <a href="https://md2pdf.netlify.app/" target="_blank" class="button">Online MD to PDF Converter</a>
+    </div>
+
+    <div class="card">
+        <h2>After Converting</h2>
+        <p>Once you've created the PDFs:</p>
+        <ol>
+            <li>Make sure all PDFs are in <code>statools/public/resources/</code></li>
+            <li>Refresh your browser at <code>http://localhost:5173/statools/</code></li>
+            <li>Click any "PDF" button - it should download! ✅</li>
+        </ol>
+    </div>
+</body>
+</html>

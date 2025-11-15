@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>T DISTRIBUTION</title>
+    <style>
+        @media print {
+            body { margin: 0.5in; }
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+            .page-break { page-break-before: always; }
+            h1, h2, h3 { page-break-after: avoid; }
+            table { page-break-inside: avoid; }
+            pre { page-break-inside: avoid; }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #2A2A2A;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        /* Headers */
+        h1 {
+            color: #4ECDC4;
+            border-bottom: 4px solid #4ECDC4;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 26pt;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #2A2A2A;
+            border-bottom: 3px solid #4ECDC4;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 18px;
+            font-size: 20pt;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: #4ECDC4;
+            font-size: 15pt;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #2A2A2A;
+            font-size: 13pt;
+            font-weight: 600;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        /* Paragraphs */
+        p {
+            margin: 12px 0;
+            text-align: justify;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 35px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        /* Code and formulas */
+        code {
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 10pt;
+            color: #c7254e;
+            font-weight: 500;
+        }
+
+        pre {
+            background-color: #f8f8f8;
+            border: 2px solid #4ECDC4;
+            border-left: 6px solid #4ECDC4;
+            padding: 18px 20px;
+            overflow-x: auto;
+            border-radius: 6px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #2A2A2A;
+            font-size: 10.5pt;
+            line-height: 1.6;
+            display: block;
+            white-space: pre-wrap;
+            font-weight: normal;
+        }
+
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #4ECDC4 0%, #3db3aa 100%);
+        }
+
+        th {
+            background-color: #4ECDC4;
+            color: white;
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11pt;
+            border: none;
+        }
+
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            font-size: 10.5pt;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f0f9f9;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 5px solid #FFFF00;
+            background-color: #fffef0;
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Strong text */
+        strong {
+            color: #2A2A2A;
+            font-weight: 600;
+        }
+
+        /* Horizontal rules */
+        hr {
+            border: none;
+            border-top: 3px solid #E6E6E6;
+            margin: 30px 0;
+        }
+
+        /* Special formatting for examples */
+        .example-box {
+            background: #f9f9f9;
+            border: 2px solid #4ECDC4;
+            border-radius: 8px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+
+        .solution-box {
+            background: #f0f9f9;
+            border-left: 4px solid #4ECDC4;
+            padding: 15px 20px;
+            margin: 15px 0 15px 20px;
+        }
+
+        /* Answer highlighting */
+        .answer {
+            background-color: #fffacd;
+            border: 2px solid #FFFF00;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #E6E6E6;
+            text-align: center;
+            color: #888;
+            font-size: 9pt;
+        }
+
+        .footer a {
+            color: #4ECDC4;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Improve readability */
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Math-like formatting */
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<h1>T-Distribution Explained</h1>
+<p><strong>MDragon Data Tools - Study Guide</strong></p>
+<hr>
+<h2>Table of Contents</h2>
+<ol>
+<li>What is the T-Distribution?</li>
+<li>T-Distribution vs Normal Distribution</li>
+<li>Degrees of Freedom</li>
+<li>When to Use T-Distribution</li>
+<li>Step-by-Step Examples</li>
+<li>Using T-Tables</li>
+<li>Practice Problems</li>
+</ol>
+<hr>
+<h2>1. What is the T-Distribution?</h2>
+<p>The <strong>t-distribution</strong> (also called Student&#39;s t-distribution) is a probability distribution used when:</p>
+<ul>
+<li>Working with small sample sizes (n &lt; 30)</li>
+<li>Population standard deviation (σ) is unknown</li>
+<li>Estimating population parameters from sample data</li>
+</ul>
+<h3>Who Uses It?</h3>
+<ul>
+<li>Researchers with limited sample sizes</li>
+<li>Anyone creating confidence intervals</li>
+<li>Hypothesis testing with unknown σ</li>
+<li>Quality control with small batches</li>
+</ul>
+<hr>
+<h2>2. T-Distribution vs Normal Distribution</h2>
+<h3>Similarities</h3>
+<ul>
+<li>Both are symmetric and bell-shaped</li>
+<li>Both centered at 0</li>
+<li>Both used for inference about means</li>
+</ul>
+<h3>Key Differences</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Normal Distribution</th>
+<th>T-Distribution</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Shape</strong></td>
+<td>Fixed shape</td>
+<td>Varies with df</td>
+</tr>
+<tr>
+<td><strong>Tails</strong></td>
+<td>Thinner tails</td>
+<td>Heavier/fatter tails</td>
+</tr>
+<tr>
+<td><strong>When Used</strong></td>
+<td>σ known, large n</td>
+<td>σ unknown, small n</td>
+</tr>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>μ and σ</td>
+<td>Degrees of freedom (df)</td>
+</tr>
+<tr>
+<td><strong>As n grows</strong></td>
+<td>Stays same</td>
+<td>Approaches normal</td>
+</tr>
+</tbody></table>
+<h3>Visual Comparison</h3>
+<pre><code>    Normal (thin tails)
+    ___________________
+   /                   \
+  /                     \
+ /                       \
+|_________________________|
+
+    T-distribution (fat tails)
+    ___________________
+   /                   \
+  /                     \
+ /                       \
+|                         |  ← More probability in tails
+</code></pre>
+<hr>
+<h2>3. Degrees of Freedom (df)</h2>
+<h3>What is Degrees of Freedom?</h3>
+<p>Degrees of freedom represents the number of independent pieces of information available to estimate a parameter.</p>
+<h3>Formula</h3>
+<p>For a single sample:</p>
+<pre><code>df = n - 1
+
+where n = sample size
+</code></pre>
+<p>For two samples (pooled):</p>
+<pre><code>df = n₁ + n₂ - 2
+</code></pre>
+<h3>Why df Matters</h3>
+<ul>
+<li><strong>Smaller df</strong> → Heavier tails → More uncertainty</li>
+<li><strong>Larger df</strong> → Approaches normal distribution</li>
+<li><strong>df = 30+</strong> → Nearly identical to normal</li>
+</ul>
+<h3>Example df Values</h3>
+<table>
+<thead>
+<tr>
+<th>Sample Size (n)</th>
+<th>df</th>
+<th>Shape</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>5</td>
+<td>4</td>
+<td>Very heavy tails</td>
+</tr>
+<tr>
+<td>10</td>
+<td>9</td>
+<td>Heavy tails</td>
+</tr>
+<tr>
+<td>20</td>
+<td>19</td>
+<td>Moderate tails</td>
+</tr>
+<tr>
+<td>30</td>
+<td>29</td>
+<td>Nearly normal</td>
+</tr>
+<tr>
+<td>100</td>
+<td>99</td>
+<td>Essentially normal</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>4. When to Use T-Distribution</h2>
+<h3>Use T-Distribution When:</h3>
+<ol>
+<li><strong>Small sample size</strong> (n &lt; 30)</li>
+<li><strong>Population σ is unknown</strong> (use sample s instead)</li>
+<li><strong>Assuming normality</strong> (or approximately normal data)</li>
+</ol>
+<h3>Use Normal Distribution When:</h3>
+<ol>
+<li><strong>Large sample size</strong> (n ≥ 30) - Central Limit Theorem applies</li>
+<li><strong>Population σ is known</strong></li>
+<li><strong>Working with proportions</strong></li>
+</ol>
+<h3>Decision Flowchart</h3>
+<pre><code>Is σ known?
+│
+├─ Yes → Use Normal (Z)
+│
+└─ No → Is n ≥ 30?
+         │
+         ├─ Yes → Can use Normal (Z) or T (similar results)
+         │
+         └─ No → Use T-distribution
+</code></pre>
+<hr>
+<h2>5. Step-by-Step Examples</h2>
+<h3>Example 1: Finding a T-Score</h3>
+<p><strong>📝 Problem:</strong> A sample of n = 15 students has a mean test score of x̄ = 82 with s = 8. The population mean is hypothesized to be μ = 75. Calculate the t-score.</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify the values:</strong></p>
+<ul>
+<li>x̄ = 82 (sample mean)</li>
+<li>μ = 75 (hypothesized population mean)</li>
+<li>s = 8 (sample standard deviation)</li>
+<li>n = 15 (sample size)</li>
+</ul>
+</li>
+<li><p><strong>Calculate degrees of freedom:</strong></p>
+<pre><code>df = n - 1 = 15 - 1 = 14
+</code></pre>
+</li>
+<li><p><strong>Calculate t-score:</strong></p>
+<pre><code>t = (x̄ - μ) / (s / √n)
+  = (82 - 75) / (8 / √15)
+  = 7 / (8 / 3.873)
+  = 7 / 2.066
+  = 3.39
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> t = 3.39 with df = 14</p>
+<p><strong>Interpretation:</strong> The sample mean is 3.39 standard errors above the hypothesized population mean.</p>
+<hr>
+<h3>Example 2: Critical T-Value for Confidence Interval</h3>
+<p><strong>📝 Problem:</strong> Find the critical t-value for a 95% confidence interval with n = 20.</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Calculate degrees of freedom:</strong></p>
+<pre><code>df = n - 1 = 20 - 1 = 19
+</code></pre>
+</li>
+<li><p><strong>Determine significance level:</strong></p>
+<pre><code>Confidence level = 95% = 0.95
+α = 1 - 0.95 = 0.05
+α/2 = 0.025 (two-tailed)
+</code></pre>
+</li>
+<li><p><strong>Look up t-table:</strong></p>
+<ul>
+<li>df = 19</li>
+<li>α/2 = 0.025</li>
+<li><strong>t-critical = 2.093</strong></li>
+</ul>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> t* = ±2.093</p>
+<p><strong>Interpretation:</strong> For a 95% CI with 19 df, use t-values of ±2.093.</p>
+<hr>
+<h3>Example 3: Constructing a Confidence Interval</h3>
+<p><strong>📝 Problem:</strong> A sample of 12 measurements has x̄ = 50 and s = 6. Construct a 90% confidence interval for the population mean.</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify values:</strong></p>
+<ul>
+<li>x̄ = 50</li>
+<li>s = 6</li>
+<li>n = 12</li>
+<li>Confidence level = 90%</li>
+</ul>
+</li>
+<li><p><strong>Calculate df:</strong></p>
+<pre><code>df = 12 - 1 = 11
+</code></pre>
+</li>
+<li><p><strong>Find t-critical (90% CI, df = 11):</strong></p>
+<pre><code>α = 0.10, α/2 = 0.05
+t* = 1.796 (from t-table)
+</code></pre>
+</li>
+<li><p><strong>Calculate margin of error:</strong></p>
+<pre><code>ME = t* × (s / √n)
+   = 1.796 × (6 / √12)
+   = 1.796 × (6 / 3.464)
+   = 1.796 × 1.732
+   = 3.11
+</code></pre>
+</li>
+<li><p><strong>Construct interval:</strong></p>
+<pre><code>CI = x̄ ± ME
+   = 50 ± 3.11
+   = (46.89, 53.11)
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 90% CI: (46.89, 53.11)</p>
+<p><strong>Interpretation:</strong> We are 90% confident the true population mean is between 46.89 and 53.11.</p>
+<hr>
+<h3>Example 4: Comparing T vs Z</h3>
+<p><strong>📝 Problem:</strong> For a 95% confidence interval, compare the critical values for:<br>a) df = 5<br>b) df = 30<br>c) Z-distribution (infinite df)</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>For 95% CI, α/2 = 0.025</strong></p>
+</li>
+<li><p><strong>Look up values:</strong></p>
+<pre><code>df = 5:   t* = 2.571
+df = 30:  t* = 2.042
+Z:        z* = 1.96
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong></p>
+<ul>
+<li>Small sample (df=5): t* = 2.571 (much larger)</li>
+<li>Moderate sample (df=30): t* = 2.042 (close to Z)</li>
+<li>Large sample (Z): z* = 1.96</li>
+</ul>
+<p><strong>Interpretation:</strong> As sample size increases, t-values approach z-values. Smaller samples require larger multipliers for the same confidence level.</p>
+<hr>
+<h3>Example 5: One-Sample T-Test</h3>
+<p><strong>📝 Problem:</strong> A company claims their batteries last 100 hours on average. A sample of 8 batteries has x̄ = 95 hours and s = 10 hours. Test at α = 0.05 if the true mean is less than 100.</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Set up hypotheses:</strong></p>
+<pre><code>H₀: μ = 100 (claim)
+Hₐ: μ &lt; 100 (left-tailed test)
+</code></pre>
+</li>
+<li><p><strong>Calculate test statistic:</strong></p>
+<pre><code>df = 8 - 1 = 7
+t = (95 - 100) / (10 / √8)
+  = -5 / (10 / 2.828)
+  = -5 / 3.536
+  = -1.414
+</code></pre>
+</li>
+<li><p><strong>Find critical value:</strong></p>
+<pre><code>α = 0.05 (left-tailed), df = 7
+t-critical = -1.895
+</code></pre>
+</li>
+<li><p><strong>Make decision:</strong></p>
+<pre><code>t = -1.414 &gt; t-critical = -1.895
+Fail to reject H₀
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> Do not reject the null hypothesis</p>
+<p><strong>Interpretation:</strong> There is insufficient evidence at the 0.05 level to conclude the batteries last less than 100 hours.</p>
+<hr>
+<h3>Example 6: Determining Sample Size Effect</h3>
+<p><strong>📝 Problem:</strong> Compare the margin of error for a 95% CI with s = 10 for:<br>a) n = 10<br>b) n = 25</p>
+<p><strong>💡 Solution:</strong><br><strong>a) n = 10:</strong></p>
+<pre><code>df = 9, t* = 2.262
+ME = 2.262 × (10 / √10)
+   = 2.262 × 3.162
+   = 7.15
+</code></pre>
+<p><strong>b) n = 25:</strong></p>
+<pre><code>df = 24, t* = 2.064
+ME = 2.064 × (10 / √25)
+   = 2.064 × 2
+   = 4.13
+</code></pre>
+<p><strong>✅ Answer:</strong></p>
+<ul>
+<li>n = 10: ME = ±7.15</li>
+<li>n = 25: ME = ±4.13</li>
+</ul>
+<p><strong>Interpretation:</strong> Increasing sample size from 10 to 25 reduces margin of error by about 42%, giving a more precise estimate.</p>
+<hr>
+<h2>6. Using T-Tables</h2>
+<h3>How to Read a T-Table</h3>
+<ol>
+<li><strong>Find your df</strong> (rows)</li>
+<li><strong>Find your α or confidence level</strong> (columns)</li>
+<li><strong>Locate the intersection</strong> - that&#39;s your t-critical value</li>
+</ol>
+<h3>Common Confidence Levels and α Values</h3>
+<table>
+<thead>
+<tr>
+<th>Confidence Level</th>
+<th>α</th>
+<th>α/2 (two-tailed)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>90%</td>
+<td>0.10</td>
+<td>0.05</td>
+</tr>
+<tr>
+<td>95%</td>
+<td>0.05</td>
+<td>0.025</td>
+</tr>
+<tr>
+<td>98%</td>
+<td>0.02</td>
+<td>0.01</td>
+</tr>
+<tr>
+<td>99%</td>
+<td>0.01</td>
+<td>0.005</td>
+</tr>
+</tbody></table>
+<h3>Example T-Table Excerpt</h3>
+<pre><code>df   α=0.10  α=0.05  α=0.025  α=0.01
+5    1.476   2.015   2.571    3.365
+10   1.372   1.812   2.228    2.764
+15   1.341   1.753   2.131    2.602
+20   1.325   1.725   2.086    2.528
+30   1.310   1.697   2.042    2.457
+∞    1.282   1.645   1.960    2.326 (Z-values)
+</code></pre>
+<hr>
+<h2>7. Practice Problems</h2>
+<h3>Problem 1</h3>
+<p>Calculate the t-score for a sample where:</p>
+<ul>
+<li>x̄ = 65, μ = 60, s = 12, n = 18</li>
+</ul>
+<h3>Problem 2</h3>
+<p>Find the critical t-value for:<br>a) 95% CI, n = 25<br>b) 99% CI, n = 10</p>
+<h3>Problem 3</h3>
+<p>Construct a 95% confidence interval for μ given:</p>
+<ul>
+<li>x̄ = 120, s = 15, n = 16</li>
+</ul>
+<h3>Problem 4</h3>
+<p>A sample of 9 measurements has x̄ = 48 and s = 8. Test H₀: μ = 50 vs Hₐ: μ ≠ 50 at α = 0.05.</p>
+<h3>Problem 5</h3>
+<p>How does the margin of error change when going from:<br>a) n = 15 to n = 30 (with s = 5, 95% CI)?</p>
+<hr>
+<h2>Answers to Practice Problems</h2>
+<h3>Problem 1</h3>
+<pre><code>df = 18 - 1 = 17
+t = (65 - 60) / (12 / √18)
+  = 5 / 2.828
+  = 1.77
+</code></pre>
+<h3>Problem 2</h3>
+<p><strong>a) 95% CI, n = 25:</strong></p>
+<pre><code>df = 24, α/2 = 0.025
+t* = 2.064
+</code></pre>
+<p><strong>b) 99% CI, n = 10:</strong></p>
+<pre><code>df = 9, α/2 = 0.005
+t* = 3.250
+</code></pre>
+<h3>Problem 3</h3>
+<pre><code>df = 15, t* = 2.131
+ME = 2.131 × (15 / √16) = 2.131 × 3.75 = 7.99
+CI = 120 ± 7.99 = (112.01, 127.99)
+</code></pre>
+<h3>Problem 4</h3>
+<pre><code>df = 8, α = 0.05 (two-tailed)
+t = (48 - 50) / (8 / √9) = -2 / 2.667 = -0.75
+t-critical = ±2.306
+|t| &lt; t-critical, so fail to reject H₀
+</code></pre>
+<h3>Problem 5</h3>
+<p><strong>n = 15:</strong></p>
+<pre><code>df = 14, t* = 2.145
+ME = 2.145 × (5 / √15) = 2.77
+</code></pre>
+<p><strong>n = 30:</strong></p>
+<pre><code>df = 29, t* = 2.045
+ME = 2.045 × (5 / √30) = 1.87
+</code></pre>
+<p><strong>Reduction: (2.77 - 1.87) / 2.77 = 32.5% smaller</strong></p>
+<hr>
+<h2>Quick Reference</h2>
+<h3>T-Score Formula</h3>
+<pre><code>t = (x̄ - μ) / (s / √n)
+</code></pre>
+<h3>Degrees of Freedom</h3>
+<pre><code>df = n - 1 (single sample)
+</code></pre>
+<h3>Confidence Interval</h3>
+<pre><code>CI = x̄ ± t* × (s / √n)
+</code></pre>
+<h3>When to Use</h3>
+<ul>
+<li>n &lt; 30 AND σ unknown → Use T</li>
+<li>n ≥ 30 OR σ known → Can use Z</li>
+</ul>
+<hr>
+<p><em>Use our Normal Distribution Calculator at MDragon Data Tools - it handles both Z and T distributions!</em></p>
+
+<div class="footer">
+    <p><strong>MDragon Data Tools</strong> | Statistics Education Platform</p>
+    <p><a href="https://mondragon-developer.github.io/statools/" target="_blank">mondragon-developer.github.io/statools</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CONFIDENCE INTERVALS</title>
+    <style>
+        @media print {
+            body { margin: 0.5in; }
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+            .page-break { page-break-before: always; }
+            h1, h2, h3 { page-break-after: avoid; }
+            table { page-break-inside: avoid; }
+            pre { page-break-inside: avoid; }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #2A2A2A;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        /* Headers */
+        h1 {
+            color: #4ECDC4;
+            border-bottom: 4px solid #4ECDC4;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 26pt;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #2A2A2A;
+            border-bottom: 3px solid #4ECDC4;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 18px;
+            font-size: 20pt;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: #4ECDC4;
+            font-size: 15pt;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #2A2A2A;
+            font-size: 13pt;
+            font-weight: 600;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        /* Paragraphs */
+        p {
+            margin: 12px 0;
+            text-align: justify;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 35px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        /* Code and formulas */
+        code {
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 10pt;
+            color: #c7254e;
+            font-weight: 500;
+        }
+
+        pre {
+            background-color: #f8f8f8;
+            border: 2px solid #4ECDC4;
+            border-left: 6px solid #4ECDC4;
+            padding: 18px 20px;
+            overflow-x: auto;
+            border-radius: 6px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #2A2A2A;
+            font-size: 10.5pt;
+            line-height: 1.6;
+            display: block;
+            white-space: pre-wrap;
+            font-weight: normal;
+        }
+
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #4ECDC4 0%, #3db3aa 100%);
+        }
+
+        th {
+            background-color: #4ECDC4;
+            color: white;
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11pt;
+            border: none;
+        }
+
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            font-size: 10.5pt;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f0f9f9;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 5px solid #FFFF00;
+            background-color: #fffef0;
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Strong text */
+        strong {
+            color: #2A2A2A;
+            font-weight: 600;
+        }
+
+        /* Horizontal rules */
+        hr {
+            border: none;
+            border-top: 3px solid #E6E6E6;
+            margin: 30px 0;
+        }
+
+        /* Special formatting for examples */
+        .example-box {
+            background: #f9f9f9;
+            border: 2px solid #4ECDC4;
+            border-radius: 8px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+
+        .solution-box {
+            background: #f0f9f9;
+            border-left: 4px solid #4ECDC4;
+            padding: 15px 20px;
+            margin: 15px 0 15px 20px;
+        }
+
+        /* Answer highlighting */
+        .answer {
+            background-color: #fffacd;
+            border: 2px solid #FFFF00;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #E6E6E6;
+            text-align: center;
+            color: #888;
+            font-size: 9pt;
+        }
+
+        .footer a {
+            color: #4ECDC4;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Improve readability */
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Math-like formatting */
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<h1>Confidence Intervals Step-by-Step</h1>
+<p><strong>MDragon Data Tools - Study Guide</strong></p>
+<h2>What is a Confidence Interval?</h2>
+<p>A <strong>confidence interval</strong> provides a range of plausible values for a population parameter, with a specified level of confidence.</p>
+<h3>Interpretation</h3>
+<p>&quot;We are 95% confident that the true population mean is between 50 and 60.&quot;</p>
+<p><strong>Correct</strong>: The method captures the true parameter 95% of the time.<br><strong>Incorrect</strong>: &quot;95% probability the parameter is in this interval&quot; (it either is or isn&#39;t).</p>
+<h2>CI for Population Mean (σ known)</h2>
+<h3>Formula</h3>
+<pre><code>CI = x̄ ± z* × (σ / √n)
+
+where z* = critical value for desired confidence level
+</code></pre>
+<h3>Common Critical Values</h3>
+<table>
+<thead>
+<tr>
+<th>Confidence Level</th>
+<th>z*</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>90%</td>
+<td>1.645</td>
+</tr>
+<tr>
+<td>95%</td>
+<td>1.96</td>
+</tr>
+<tr>
+<td>98%</td>
+<td>2.33</td>
+</tr>
+<tr>
+<td>99%</td>
+<td>2.58</td>
+</tr>
+</tbody></table>
+<h3>Example 1</h3>
+<p><strong>📝 Problem:</strong> Sample of 50 has x̄=100, σ=15. Find 95% CI.</p>
+<p><strong>💡 Solution:</strong></p>
+<pre><code>CI = 100 ± 1.96 × (15/√50)
+   = 100 ± 1.96 × 2.12
+   = 100 ± 4.16
+   = (95.84, 104.16)
+</code></pre>
+<p><strong>✅ Answer:</strong> 95% CI: (95.84, 104.16)</p>
+<h2>CI for Population Mean (σ unknown)</h2>
+<h3>Formula</h3>
+<pre><code>CI = x̄ ± t* × (s / √n)
+
+where t* depends on df and confidence level
+</code></pre>
+<h3>Example 2</h3>
+<p><strong>📝 Problem:</strong> Sample of 15 has x̄=72, s=8. Find 90% CI.</p>
+<p><strong>💡 Solution:</strong></p>
+<pre><code>df = 14
+t* = 1.761 (from t-table)
+CI = 72 ± 1.761 × (8/√15)
+   = 72 ± 1.761 × 2.066
+   = 72 ± 3.64
+   = (68.36, 75.64)
+</code></pre>
+<p><strong>✅ Answer:</strong> 90% CI: (68.36, 75.64)</p>
+<h2>CI for Population Proportion</h2>
+<h3>Formula</h3>
+<pre><code>CI = p̂ ± z* × √[p̂(1-p̂)/n]
+
+where p̂ = x/n (sample proportion)
+</code></pre>
+<h3>Example 3</h3>
+<p><strong>📝 Problem:</strong> 120 out of 200 support a policy. Find 95% CI for true proportion.</p>
+<p><strong>💡 Solution:</strong></p>
+<pre><code>p̂ = 120/200 = 0.60
+CI = 0.60 ± 1.96 × √[0.60(0.40)/200]
+   = 0.60 ± 1.96 × 0.0346
+   = 0.60 ± 0.068
+   = (0.532, 0.668)
+</code></pre>
+<p><strong>✅ Answer:</strong> 95% CI: (53.2%, 66.8%)</p>
+<h2>Sample Size Determination</h2>
+<h3>For Mean</h3>
+<pre><code>n = (z*σ / ME)²
+
+where ME = desired margin of error
+</code></pre>
+<h3>Example 4</h3>
+<p><strong>📝 Problem:</strong> How many samples needed for 95% CI with ME=2, σ=10?</p>
+<p><strong>💡 Solution:</strong></p>
+<pre><code>n = (1.96 × 10 / 2)²
+  = (9.8)²
+  = 96.04
+  Round up: n = 97
+</code></pre>
+<h3>For Proportion</h3>
+<pre><code>n = p̂(1-p̂)(z*/ME)²
+
+Use p̂=0.5 if no estimate available (most conservative)
+</code></pre>
+<h2>Factors Affecting CI Width</h2>
+<ol>
+<li><strong>Sample Size (n)</strong>: Larger n → Narrower CI</li>
+<li><strong>Confidence Level</strong>: Higher confidence → Wider CI</li>
+<li><strong>Standard Deviation</strong>: Larger σ or s → Wider CI</li>
+</ol>
+<h3>Trade-offs</h3>
+<ul>
+<li>Want narrow CI? Increase sample size or decrease confidence</li>
+<li>Want high confidence? Accept wider CI or increase sample size</li>
+</ul>
+<hr>
+<p><em>Practice with our calculators to build intuition!</em></p>
+
+<div class="footer">
+    <p><strong>MDragon Data Tools</strong> | Statistics Education Platform</p>
+    <p><a href="https://mondragon-developer.github.io/statools/" target="_blank">mondragon-developer.github.io/statools</a></p>
+</div>
+</body>
+</html>

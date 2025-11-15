@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>STATISTICAL TABLES</title>
+    <style>
+        @media print {
+            body { margin: 0.5in; }
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+            .page-break { page-break-before: always; }
+            h1, h2, h3 { page-break-after: avoid; }
+            table { page-break-inside: avoid; }
+            pre { page-break-inside: avoid; }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #2A2A2A;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        /* Headers */
+        h1 {
+            color: #4ECDC4;
+            border-bottom: 4px solid #4ECDC4;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 26pt;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #2A2A2A;
+            border-bottom: 3px solid #4ECDC4;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 18px;
+            font-size: 20pt;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: #4ECDC4;
+            font-size: 15pt;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #2A2A2A;
+            font-size: 13pt;
+            font-weight: 600;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        /* Paragraphs */
+        p {
+            margin: 12px 0;
+            text-align: justify;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 35px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        /* Code and formulas */
+        code {
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 10pt;
+            color: #c7254e;
+            font-weight: 500;
+        }
+
+        pre {
+            background-color: #f8f8f8;
+            border: 2px solid #4ECDC4;
+            border-left: 6px solid #4ECDC4;
+            padding: 18px 20px;
+            overflow-x: auto;
+            border-radius: 6px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #2A2A2A;
+            font-size: 10.5pt;
+            line-height: 1.6;
+            display: block;
+            white-space: pre-wrap;
+            font-weight: normal;
+        }
+
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #4ECDC4 0%, #3db3aa 100%);
+        }
+
+        th {
+            background-color: #4ECDC4;
+            color: white;
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11pt;
+            border: none;
+        }
+
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            font-size: 10.5pt;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f0f9f9;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 5px solid #FFFF00;
+            background-color: #fffef0;
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Strong text */
+        strong {
+            color: #2A2A2A;
+            font-weight: 600;
+        }
+
+        /* Horizontal rules */
+        hr {
+            border: none;
+            border-top: 3px solid #E6E6E6;
+            margin: 30px 0;
+        }
+
+        /* Special formatting for examples */
+        .example-box {
+            background: #f9f9f9;
+            border: 2px solid #4ECDC4;
+            border-radius: 8px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+
+        .solution-box {
+            background: #f0f9f9;
+            border-left: 4px solid #4ECDC4;
+            padding: 15px 20px;
+            margin: 15px 0 15px 20px;
+        }
+
+        /* Answer highlighting */
+        .answer {
+            background-color: #fffacd;
+            border: 2px solid #FFFF00;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #E6E6E6;
+            text-align: center;
+            color: #888;
+            font-size: 9pt;
+        }
+
+        .footer a {
+            color: #4ECDC4;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Improve readability */
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Math-like formatting */
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<h1>Statistical Tables Cheat Sheet</h1>
+<p><strong>Quick Reference for Critical Values</strong></p>
+<h2>Z-Table (Standard Normal)</h2>
+<h3>Common Z-Values</h3>
+<table>
+<thead>
+<tr>
+<th>Confidence Level</th>
+<th>α</th>
+<th>α/2</th>
+<th>z*</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>90%</td>
+<td>0.10</td>
+<td>0.05</td>
+<td>1.645</td>
+</tr>
+<tr>
+<td>95%</td>
+<td>0.05</td>
+<td>0.025</td>
+<td>1.96</td>
+</tr>
+<tr>
+<td>98%</td>
+<td>0.02</td>
+<td>0.01</td>
+<td>2.33</td>
+</tr>
+<tr>
+<td>99%</td>
+<td>0.01</td>
+<td>0.005</td>
+<td>2.576</td>
+</tr>
+</tbody></table>
+<h3>Percentile Z-Scores</h3>
+<table>
+<thead>
+<tr>
+<th>Percentile</th>
+<th>Z</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>90th</td>
+<td>1.28</td>
+</tr>
+<tr>
+<td>95th</td>
+<td>1.645</td>
+</tr>
+<tr>
+<td>97.5th</td>
+<td>1.96</td>
+</tr>
+<tr>
+<td>99th</td>
+<td>2.33</td>
+</tr>
+</tbody></table>
+<h3>Area Under Curve</h3>
+<table>
+<thead>
+<tr>
+<th>Z</th>
+<th>Area Left</th>
+<th>Area Right</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1.0</td>
+<td>0.8413</td>
+<td>0.1587</td>
+</tr>
+<tr>
+<td>1.5</td>
+<td>0.9332</td>
+<td>0.0668</td>
+</tr>
+<tr>
+<td>2.0</td>
+<td>0.9772</td>
+<td>0.0228</td>
+</tr>
+<tr>
+<td>2.5</td>
+<td>0.9938</td>
+<td>0.0062</td>
+</tr>
+<tr>
+<td>3.0</td>
+<td>0.9987</td>
+<td>0.0013</td>
+</tr>
+</tbody></table>
+<h2>T-Table (Student&#39;s t)</h2>
+<h3>Critical t-Values (Two-Tailed)</h3>
+<table>
+<thead>
+<tr>
+<th>df</th>
+<th>90%</th>
+<th>95%</th>
+<th>98%</th>
+<th>99%</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>5</td>
+<td>2.015</td>
+<td>2.571</td>
+<td>3.365</td>
+<td>4.032</td>
+</tr>
+<tr>
+<td>10</td>
+<td>1.812</td>
+<td>2.228</td>
+<td>2.764</td>
+<td>3.169</td>
+</tr>
+<tr>
+<td>15</td>
+<td>1.753</td>
+<td>2.131</td>
+<td>2.602</td>
+<td>2.947</td>
+</tr>
+<tr>
+<td>20</td>
+<td>1.725</td>
+<td>2.086</td>
+<td>2.528</td>
+<td>2.845</td>
+</tr>
+<tr>
+<td>25</td>
+<td>1.708</td>
+<td>2.060</td>
+<td>2.485</td>
+<td>2.787</td>
+</tr>
+<tr>
+<td>30</td>
+<td>1.697</td>
+<td>2.042</td>
+<td>2.457</td>
+<td>2.750</td>
+</tr>
+<tr>
+<td>40</td>
+<td>1.684</td>
+<td>2.021</td>
+<td>2.423</td>
+<td>2.704</td>
+</tr>
+<tr>
+<td>60</td>
+<td>1.671</td>
+<td>2.000</td>
+<td>2.390</td>
+<td>2.660</td>
+</tr>
+<tr>
+<td>100</td>
+<td>1.660</td>
+<td>1.984</td>
+<td>2.364</td>
+<td>2.626</td>
+</tr>
+<tr>
+<td>∞</td>
+<td>1.645</td>
+<td>1.960</td>
+<td>2.326</td>
+<td>2.576</td>
+</tr>
+</tbody></table>
+<h3>One-Tailed t-Values</h3>
+<table>
+<thead>
+<tr>
+<th>df</th>
+<th>α=0.05</th>
+<th>α=0.025</th>
+<th>α=0.01</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>10</td>
+<td>1.812</td>
+<td>2.228</td>
+<td>2.764</td>
+</tr>
+<tr>
+<td>20</td>
+<td>1.725</td>
+<td>2.086</td>
+<td>2.528</td>
+</tr>
+<tr>
+<td>30</td>
+<td>1.697</td>
+<td>2.042</td>
+<td>2.457</td>
+</tr>
+</tbody></table>
+<h2>Chi-Square Table</h2>
+<h3>Critical χ² Values (α = 0.05)</h3>
+<table>
+<thead>
+<tr>
+<th>df</th>
+<th>χ²</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>3.841</td>
+</tr>
+<tr>
+<td>2</td>
+<td>5.991</td>
+</tr>
+<tr>
+<td>3</td>
+<td>7.815</td>
+</tr>
+<tr>
+<td>4</td>
+<td>9.488</td>
+</tr>
+<tr>
+<td>5</td>
+<td>11.071</td>
+</tr>
+<tr>
+<td>10</td>
+<td>18.307</td>
+</tr>
+<tr>
+<td>15</td>
+<td>24.996</td>
+</tr>
+<tr>
+<td>20</td>
+<td>31.410</td>
+</tr>
+</tbody></table>
+<h2>Quick Formulas</h2>
+<h3>Sample Size Calculations</h3>
+<pre><code>Mean: n = (z*σ/ME)²
+Proportion: n = p̂(1-p̂)(z*/ME)²
+</code></pre>
+<h3>Standard Error</h3>
+<pre><code>Mean: SE = σ/√n or s/√n
+Proportion: SE = √[p̂(1-p̂)/n]
+</code></pre>
+<h3>Confidence Intervals</h3>
+<pre><code>Mean (σ known): x̄ ± z*(σ/√n)
+Mean (σ unknown): x̄ ± t*(s/√n)
+Proportion: p̂ ± z*√[p̂(1-p̂)/n]
+</code></pre>
+<h3>Test Statistics</h3>
+<pre><code>Z-test: z = (x̄ - μ₀)/(σ/√n)
+T-test: t = (x̄ - μ₀)/(s/√n)
+</code></pre>
+<h2>Interpretation Guide</h2>
+<h3>P-Value Interpretation</h3>
+<table>
+<thead>
+<tr>
+<th>P-value</th>
+<th>Strength of Evidence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&lt; 0.01</td>
+<td>Very strong</td>
+</tr>
+<tr>
+<td>0.01-0.05</td>
+<td>Strong</td>
+</tr>
+<tr>
+<td>0.05-0.10</td>
+<td>Moderate</td>
+</tr>
+<tr>
+<td>&gt; 0.10</td>
+<td>Weak/None</td>
+</tr>
+</tbody></table>
+<h3>Effect Size (Cohen&#39;s d)</h3>
+<p>| |d| | Interpretation |<br>|-----|----------------|<br>| 0.2 | Small |<br>| 0.5 | Medium |<br>| 0.8 | Large |</p>
+<hr>
+<p><em>Keep this reference handy for homework and exams!</em></p>
+
+<div class="footer">
+    <p><strong>MDragon Data Tools</strong> | Statistics Education Platform</p>
+    <p><a href="https://mondragon-developer.github.io/statools/" target="_blank">mondragon-developer.github.io/statools</a></p>
+</div>
+</body>
+</html>

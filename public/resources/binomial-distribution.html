@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>BINOMIAL DISTRIBUTION</title>
+    <style>
+        @media print {
+            body { margin: 0.5in; }
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+            .page-break { page-break-before: always; }
+            h1, h2, h3 { page-break-after: avoid; }
+            table { page-break-inside: avoid; }
+            pre { page-break-inside: avoid; }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #2A2A2A;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        /* Headers */
+        h1 {
+            color: #4ECDC4;
+            border-bottom: 4px solid #4ECDC4;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 26pt;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #2A2A2A;
+            border-bottom: 3px solid #4ECDC4;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 18px;
+            font-size: 20pt;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: #4ECDC4;
+            font-size: 15pt;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #2A2A2A;
+            font-size: 13pt;
+            font-weight: 600;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        /* Paragraphs */
+        p {
+            margin: 12px 0;
+            text-align: justify;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 35px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        /* Code and formulas */
+        code {
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 10pt;
+            color: #c7254e;
+            font-weight: 500;
+        }
+
+        pre {
+            background-color: #f8f8f8;
+            border: 2px solid #4ECDC4;
+            border-left: 6px solid #4ECDC4;
+            padding: 18px 20px;
+            overflow-x: auto;
+            border-radius: 6px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #2A2A2A;
+            font-size: 10.5pt;
+            line-height: 1.6;
+            display: block;
+            white-space: pre-wrap;
+            font-weight: normal;
+        }
+
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #4ECDC4 0%, #3db3aa 100%);
+        }
+
+        th {
+            background-color: #4ECDC4;
+            color: white;
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11pt;
+            border: none;
+        }
+
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            font-size: 10.5pt;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f0f9f9;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 5px solid #FFFF00;
+            background-color: #fffef0;
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Strong text */
+        strong {
+            color: #2A2A2A;
+            font-weight: 600;
+        }
+
+        /* Horizontal rules */
+        hr {
+            border: none;
+            border-top: 3px solid #E6E6E6;
+            margin: 30px 0;
+        }
+
+        /* Special formatting for examples */
+        .example-box {
+            background: #f9f9f9;
+            border: 2px solid #4ECDC4;
+            border-radius: 8px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+
+        .solution-box {
+            background: #f0f9f9;
+            border-left: 4px solid #4ECDC4;
+            padding: 15px 20px;
+            margin: 15px 0 15px 20px;
+        }
+
+        /* Answer highlighting */
+        .answer {
+            background-color: #fffacd;
+            border: 2px solid #FFFF00;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #E6E6E6;
+            text-align: center;
+            color: #888;
+            font-size: 9pt;
+        }
+
+        .footer a {
+            color: #4ECDC4;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Improve readability */
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Math-like formatting */
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<h1>Binomial Distribution Guide</h1>
+<p><strong>MDragon Data Tools - Study Guide</strong></p>
+<hr>
+<h2>Table of Contents</h2>
+<ol>
+<li>What is a Binomial Distribution?</li>
+<li>Conditions for Binomial Distribution</li>
+<li>Formulas and Notation</li>
+<li>Step-by-Step Examples</li>
+<li>Using the Calculator</li>
+<li>Practice Problems</li>
+</ol>
+<hr>
+<h2>1. What is a Binomial Distribution?</h2>
+<p>A <strong>binomial distribution</strong> describes the number of successes in a fixed number of independent trials, where each trial has only two possible outcomes (success or failure) and the probability of success remains constant.</p>
+<h3>Real-World Examples</h3>
+<ul>
+<li>Number of heads in 10 coin flips</li>
+<li>Number of defective items in a batch of 50</li>
+<li>Number of students passing an exam out of 30</li>
+<li>Number of free throws made out of 20 attempts</li>
+</ul>
+<hr>
+<h2>2. Conditions for Binomial Distribution</h2>
+<p>For a binomial distribution to apply, <strong>all four conditions</strong> must be met:</p>
+<ol>
+<li><strong>Fixed number of trials (n)</strong>: The experiment is repeated a specific number of times</li>
+<li><strong>Two outcomes</strong>: Each trial has exactly two possible outcomes (success/failure)</li>
+<li><strong>Independent trials</strong>: The outcome of one trial doesn&#39;t affect another</li>
+<li><strong>Constant probability (p)</strong>: The probability of success is the same for each trial</li>
+</ol>
+<p><strong>Memory Tip: FTIC</strong></p>
+<ul>
+<li><strong>F</strong>ixed number of trials</li>
+<li><strong>T</strong>wo outcomes</li>
+<li><strong>I</strong>ndependent</li>
+<li><strong>C</strong>onstant probability</li>
+</ul>
+<hr>
+<h2>3. Formulas and Notation</h2>
+<h3>Notation</h3>
+<ul>
+<li><strong>n</strong> = number of trials</li>
+<li><strong>x</strong> = number of successes</li>
+<li><strong>p</strong> = probability of success on each trial</li>
+<li><strong>q</strong> = probability of failure = 1 - p</li>
+<li><strong>P(X = x)</strong> = probability of exactly x successes</li>
+</ul>
+<h3>Binomial Probability Formula</h3>
+<pre><code>P(X = x) = C(n,x) × p^x × q^(n-x)
+
+where C(n,x) = n! / (x! × (n-x)!)
+</code></pre>
+<h3>Mean (Expected Value)</h3>
+<pre><code>μ = n × p
+</code></pre>
+<h3>Standard Deviation</h3>
+<pre><code>σ = √(n × p × q)
+</code></pre>
+<h3>Variance</h3>
+<pre><code>σ² = n × p × q
+</code></pre>
+<hr>
+<h2>4. Step-by-Step Examples</h2>
+<h3>Example 1: Exact Probability</h3>
+<p><strong>📝 Problem:</strong> A fair coin is flipped 5 times. What is the probability of getting exactly 3 heads?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify the values:</strong></p>
+<ul>
+<li>n = 5 (number of flips)</li>
+<li>x = 3 (number of heads we want)</li>
+<li>p = 0.5 (probability of heads)</li>
+<li>q = 0.5 (probability of tails)</li>
+</ul>
+</li>
+<li><p><strong>Check conditions:</strong></p>
+<ul>
+<li>✓ Fixed trials: 5 flips</li>
+<li>✓ Two outcomes: heads or tails</li>
+<li>✓ Independent: each flip independent</li>
+<li>✓ Constant probability: p = 0.5 for all flips</li>
+</ul>
+</li>
+<li><p><strong>Calculate combination:</strong></p>
+<pre><code>C(5,3) = 5! / (3! × 2!)
+       = (5 × 4) / (2 × 1)
+       = 10
+</code></pre>
+</li>
+<li><p><strong>Apply binomial formula:</strong></p>
+<pre><code>P(X = 3) = C(5,3) × p^3 × q^2
+         = 10 × (0.5)^3 × (0.5)^2
+         = 10 × 0.125 × 0.25
+         = 10 × 0.03125
+         = 0.3125
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 0.3125 or 31.25%</p>
+<hr>
+<h3>Example 2: Cumulative Probability (At Most)</h3>
+<p><strong>📝 Problem:</strong> A basketball player has a 70% free throw success rate. If she takes 8 free throws, what is the probability she makes at most 5?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify the values:</strong></p>
+<ul>
+<li>n = 8</li>
+<li>p = 0.70</li>
+<li>q = 0.30</li>
+<li>We need P(X ≤ 5)</li>
+</ul>
+</li>
+<li><p><strong>Calculate:</strong></p>
+<pre><code>P(X ≤ 5) = P(0) + P(1) + P(2) + P(3) + P(4) + P(5)
+</code></pre>
+</li>
+<li><p><strong>Using calculator or table:</strong></p>
+<pre><code>P(X ≤ 5) = 0.4482
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 0.4482 or 44.82%</p>
+<p><em>Note: Use our Binomial Calculator for easier computation of cumulative probabilities</em></p>
+<hr>
+<h3>Example 3: Complement Rule Application</h3>
+<p><strong>📝 Problem:</strong> A multiple choice test has 10 questions with 4 choices each. If a student guesses randomly on all questions, what is the probability of getting more than 3 correct?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify the values:</strong></p>
+<ul>
+<li>n = 10 (questions)</li>
+<li>p = 0.25 (probability of guessing correctly)</li>
+<li>q = 0.75</li>
+<li>We need P(X &gt; 3)</li>
+</ul>
+</li>
+<li><p><strong>Use complement:</strong></p>
+<pre><code>P(X &gt; 3) = 1 - P(X ≤ 3)
+</code></pre>
+</li>
+<li><p><strong>Calculate P(X ≤ 3):</strong></p>
+<pre><code>P(X ≤ 3) = P(0) + P(1) + P(2) + P(3)
+</code></pre>
+</li>
+<li><p><strong>Individual calculations:</strong></p>
+<pre><code>P(0) = C(10,0) × 0.25^0 × 0.75^10 = 0.0563
+P(1) = C(10,1) × 0.25^1 × 0.75^9  = 0.1877
+P(2) = C(10,2) × 0.25^2 × 0.75^8  = 0.2816
+P(3) = C(10,3) × 0.25^3 × 0.75^7  = 0.2503
+
+P(X ≤ 3) = 0.7759
+</code></pre>
+</li>
+<li><p><strong>Apply complement:</strong></p>
+<pre><code>P(X &gt; 3) = 1 - 0.7759 = 0.2241
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 0.2241 or 22.41%</p>
+<hr>
+<h3>Example 4: Mean and Standard Deviation</h3>
+<p><strong>📝 Problem:</strong> A factory produces light bulbs, and 5% are defective. In a sample of 200 bulbs, what is the expected number of defective bulbs and the standard deviation?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify the values:</strong></p>
+<ul>
+<li>n = 200</li>
+<li>p = 0.05</li>
+<li>q = 0.95</li>
+</ul>
+</li>
+<li><p><strong>Calculate mean:</strong></p>
+<pre><code>μ = n × p
+  = 200 × 0.05
+  = 10
+</code></pre>
+</li>
+<li><p><strong>Calculate standard deviation:</strong></p>
+<pre><code>σ = √(n × p × q)
+  = √(200 × 0.05 × 0.95)
+  = √9.5
+  = 3.08
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong></p>
+<ul>
+<li>Expected defective bulbs: 10</li>
+<li>Standard deviation: 3.08 bulbs</li>
+</ul>
+<p><strong>Interpretation:</strong> In a sample of 200 bulbs, we expect about 10 defective bulbs, with a typical variation of about 3 bulbs.</p>
+<hr>
+<h3>Example 5: At Least Probability</h3>
+<p><strong>📝 Problem:</strong> The probability of rain on any given day is 0.3. What is the probability it rains on at least 2 of the next 7 days?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify the values:</strong></p>
+<ul>
+<li>n = 7</li>
+<li>p = 0.3</li>
+<li>q = 0.7</li>
+<li>We need P(X ≥ 2)</li>
+</ul>
+</li>
+<li><p><strong>Use complement:</strong></p>
+<pre><code>P(X ≥ 2) = 1 - P(X &lt; 2)
+         = 1 - [P(0) + P(1)]
+</code></pre>
+</li>
+<li><p><strong>Calculate P(0):</strong></p>
+<pre><code>P(0) = C(7,0) × 0.3^0 × 0.7^7
+     = 1 × 1 × 0.0824
+     = 0.0824
+</code></pre>
+</li>
+<li><p><strong>Calculate P(1):</strong></p>
+<pre><code>P(1) = C(7,1) × 0.3^1 × 0.7^6
+     = 7 × 0.3 × 0.1176
+     = 0.2471
+</code></pre>
+</li>
+<li><p><strong>Apply complement:</strong></p>
+<pre><code>P(X ≥ 2) = 1 - (0.0824 + 0.2471)
+         = 1 - 0.3295
+         = 0.6705
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 0.6705 or 67.05%</p>
+<hr>
+<h2>5. Using the MDragon Binomial Calculator</h2>
+<h3>Steps:</h3>
+<ol>
+<li><p>Navigate to <strong>Calculators → Binomial Distribution</strong></p>
+</li>
+<li><p>Enter the following parameters:</p>
+<ul>
+<li><strong>n</strong>: Number of trials</li>
+<li><strong>p</strong>: Probability of success (as a decimal)</li>
+<li><strong>x</strong>: Number of successes</li>
+</ul>
+</li>
+<li><p>Select calculation type:</p>
+<ul>
+<li><strong>Exactly (=)</strong>: P(X = x)</li>
+<li><strong>At most (≤)</strong>: P(X ≤ x)</li>
+<li><strong>At least (≥)</strong>: P(X ≥ x)</li>
+<li><strong>Less than (&lt;)</strong>: P(X &lt; x)</li>
+<li><strong>Greater than (&gt;)</strong>: P(X &gt; x)</li>
+</ul>
+</li>
+<li><p>Click <strong>Calculate</strong> to see:</p>
+<ul>
+<li>Probability result</li>
+<li>Mean and standard deviation</li>
+<li>Visual distribution graph</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>6. Practice Problems</h2>
+<h3>Problem 1</h3>
+<p>A survey shows 60% of people prefer chocolate ice cream. If 12 people are randomly selected, what is the probability that exactly 8 prefer chocolate?</p>
+<h3>Problem 2</h3>
+<p>A quality control inspector finds that 3% of items are defective. In a batch of 50 items, what is the probability of finding:<br>a) Exactly 2 defective items?<br>b) At most 1 defective item?</p>
+<h3>Problem 3</h3>
+<p>A student has a 75% chance of correctly answering each question on a true/false quiz with 15 questions. What is the expected number of correct answers and the standard deviation?</p>
+<h3>Problem 4</h3>
+<p>The probability a seed germinates is 0.85. If 20 seeds are planted, what is the probability at least 18 germinate?</p>
+<h3>Problem 5</h3>
+<p>A basketball player makes 80% of her free throws. In the next 10 free throw attempts, what is the probability she makes between 7 and 9 (inclusive)?</p>
+<hr>
+<h2>Answers to Practice Problems</h2>
+<h3>Problem 1</h3>
+<pre><code>n = 12, x = 8, p = 0.6
+P(X = 8) = C(12,8) × 0.6^8 × 0.4^4
+         = 495 × 0.0168 × 0.0256
+         = 0.2128 or 21.28%
+</code></pre>
+<h3>Problem 2</h3>
+<p>a) <strong>Exactly 2 defective:</strong></p>
+<pre><code>n = 50, x = 2, p = 0.03
+P(X = 2) = 0.2578 or 25.78%
+</code></pre>
+<p>b) <strong>At most 1 defective:</strong></p>
+<pre><code>P(X ≤ 1) = P(0) + P(1) = 0.5553 or 55.53%
+</code></pre>
+<h3>Problem 3</h3>
+<pre><code>n = 15, p = 0.75
+μ = 15 × 0.75 = 11.25 questions
+σ = √(15 × 0.75 × 0.25) = 1.68 questions
+</code></pre>
+<h3>Problem 4</h3>
+<pre><code>n = 20, p = 0.85
+P(X ≥ 18) = P(18) + P(19) + P(20) = 0.4049 or 40.49%
+</code></pre>
+<h3>Problem 5</h3>
+<pre><code>n = 10, p = 0.8
+P(7 ≤ X ≤ 9) = P(7) + P(8) + P(9) = 0.6778 or 67.78%
+</code></pre>
+<hr>
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Notation</th>
+<th>Formula</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Exactly</td>
+<td>P(X = x)</td>
+<td>C(n,x) × p^x × q^(n-x)</td>
+</tr>
+<tr>
+<td>At most</td>
+<td>P(X ≤ x)</td>
+<td>Sum from 0 to x</td>
+</tr>
+<tr>
+<td>At least</td>
+<td>P(X ≥ x)</td>
+<td>1 - P(X &lt; x)</td>
+</tr>
+<tr>
+<td>Mean</td>
+<td>μ</td>
+<td>n × p</td>
+</tr>
+<tr>
+<td>Std Dev</td>
+<td>σ</td>
+<td>√(n × p × q)</td>
+</tr>
+</tbody></table>
+<hr>
+<p><em>Use our Binomial Calculator at MDragon Data Tools for quick and accurate calculations!</em></p>
+
+<div class="footer">
+    <p><strong>MDragon Data Tools</strong> | Statistics Education Platform</p>
+    <p><a href="https://mondragon-developer.github.io/statools/" target="_blank">mondragon-developer.github.io/statools</a></p>
+</div>
+</body>
+</html>
