@@ -1,6 +1,6 @@
 import { LineChart, BarChart, PieChart, Calculator, BookOpen, FileText, TrendingUp, Table } from 'lucide-react';
-import Spline from '@splinetool/react-spline';
 import ResourceCard from '../ui/ResourceCard';
+import SnakeGame from '../games/SnakeGame';
 
 const Tools = () => {
   // Define the resource categories with downloadable PDFs
@@ -118,31 +118,10 @@ const Tools = () => {
   return (
     <section className="bg-platinum py-16" id="resources">
       <div className="container mx-auto px-4">
-        {/* 3D Spline Scene Container - Now respecting container width constraints */}
-        <div className="w-full mb-15">
-          <div 
-            className="w-full h-65 bg-gradient-to-br from-turquoise/10 to-yellow/10 rounded-lg overflow-hidden"
-            style={{
-              // Adding a subtle background in case the 3D scene has loading time
-              // Using brand colors
-              background: 'linear-gradient(135deg, rgba(78, 205, 196, 0.1) 0%, rgba(255, 255, 0, 0.1) 100%)'
-            }}
-          >
-            {/* Spline 3D Scene */}
-            <Spline 
-              scene="https://prod.spline.design/L7DMmgXOSotFm3Vl/scene.splinecode"
-              style={{ 
-                width: '100%', 
-                height: '100%',
-                borderRadius: '8px'
-              }}
-              onLoad={() => console.log('3D scene loaded successfully')}
-              onError={(error) => console.error('3D scene failed to load:', error)}
-            />
-          </div>
+        {/* Snake Game Container */}
+        <div className="w-full mb-12 flex justify-center">
+          <SnakeGame />
         </div>
-
-
 
         <h2 className="text-4xl font-bold text-center text-darkGrey mb-12">
           Content and Resources
