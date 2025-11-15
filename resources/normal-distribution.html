@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NORMAL DISTRIBUTION</title>
+    <style>
+        @media print {
+            body { margin: 0.5in; }
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+            .page-break { page-break-before: always; }
+            h1, h2, h3 { page-break-after: avoid; }
+            table { page-break-inside: avoid; }
+            pre { page-break-inside: avoid; }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #2A2A2A;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        /* Headers */
+        h1 {
+            color: #4ECDC4;
+            border-bottom: 4px solid #4ECDC4;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 26pt;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #2A2A2A;
+            border-bottom: 3px solid #4ECDC4;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 18px;
+            font-size: 20pt;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: #4ECDC4;
+            font-size: 15pt;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #2A2A2A;
+            font-size: 13pt;
+            font-weight: 600;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        /* Paragraphs */
+        p {
+            margin: 12px 0;
+            text-align: justify;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 35px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        /* Code and formulas */
+        code {
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 10pt;
+            color: #c7254e;
+            font-weight: 500;
+        }
+
+        pre {
+            background-color: #f8f8f8;
+            border: 2px solid #4ECDC4;
+            border-left: 6px solid #4ECDC4;
+            padding: 18px 20px;
+            overflow-x: auto;
+            border-radius: 6px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #2A2A2A;
+            font-size: 10.5pt;
+            line-height: 1.6;
+            display: block;
+            white-space: pre-wrap;
+            font-weight: normal;
+        }
+
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #4ECDC4 0%, #3db3aa 100%);
+        }
+
+        th {
+            background-color: #4ECDC4;
+            color: white;
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11pt;
+            border: none;
+        }
+
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            font-size: 10.5pt;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f0f9f9;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 5px solid #FFFF00;
+            background-color: #fffef0;
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Strong text */
+        strong {
+            color: #2A2A2A;
+            font-weight: 600;
+        }
+
+        /* Horizontal rules */
+        hr {
+            border: none;
+            border-top: 3px solid #E6E6E6;
+            margin: 30px 0;
+        }
+
+        /* Special formatting for examples */
+        .example-box {
+            background: #f9f9f9;
+            border: 2px solid #4ECDC4;
+            border-radius: 8px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+
+        .solution-box {
+            background: #f0f9f9;
+            border-left: 4px solid #4ECDC4;
+            padding: 15px 20px;
+            margin: 15px 0 15px 20px;
+        }
+
+        /* Answer highlighting */
+        .answer {
+            background-color: #fffacd;
+            border: 2px solid #FFFF00;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #E6E6E6;
+            text-align: center;
+            color: #888;
+            font-size: 9pt;
+        }
+
+        .footer a {
+            color: #4ECDC4;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Improve readability */
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Math-like formatting */
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<h1>Normal Distribution &amp; Z-Scores</h1>
+<p><strong>MDragon Data Tools - Study Guide</strong></p>
+<hr>
+<h2>Table of Contents</h2>
+<ol>
+<li>What is a Normal Distribution?</li>
+<li>Properties and Characteristics</li>
+<li>The Standard Normal Distribution</li>
+<li>Z-Scores Explained</li>
+<li>Step-by-Step Examples</li>
+<li>Using the Calculator</li>
+<li>Practice Problems</li>
+</ol>
+<hr>
+<h2>1. What is a Normal Distribution?</h2>
+<p>The <strong>normal distribution</strong> (also called Gaussian distribution or bell curve) is a continuous probability distribution that is:</p>
+<ul>
+<li>Symmetric and bell-shaped</li>
+<li>Completely defined by two parameters: mean (μ) and standard deviation (σ)</li>
+<li>The most important distribution in statistics</li>
+</ul>
+<h3>Real-World Examples</h3>
+<ul>
+<li>Heights of adults</li>
+<li>Test scores (IQ, SAT, etc.)</li>
+<li>Measurement errors</li>
+<li>Blood pressure readings</li>
+<li>Manufacturing tolerances</li>
+</ul>
+<hr>
+<h2>2. Properties and Characteristics</h2>
+<h3>Key Properties</h3>
+<ol>
+<li><strong>Symmetric</strong> about the mean</li>
+<li><strong>Bell-shaped</strong> curve</li>
+<li><strong>Mean = Median = Mode</strong> (all at the center)</li>
+<li><strong>Total area under curve = 1</strong> (represents 100% probability)</li>
+<li><strong>Continuous</strong> (can take any value)</li>
+</ol>
+<h3>The Empirical Rule (68-95-99.7 Rule)</h3>
+<p>For any normal distribution:</p>
+<ul>
+<li><strong>68%</strong> of data falls within <strong>1 standard deviation</strong> of the mean (μ ± 1σ)</li>
+<li><strong>95%</strong> of data falls within <strong>2 standard deviations</strong> of the mean (μ ± 2σ)</li>
+<li><strong>99.7%</strong> of data falls within <strong>3 standard deviations</strong> of the mean (μ ± 3σ)</li>
+</ul>
+<pre><code>      |← 68% →|
+   |←── 95% ──→|
+|←──── 99.7% ────→|
+μ-3σ  μ-2σ  μ-1σ  μ  μ+1σ  μ+2σ  μ+3σ
+</code></pre>
+<hr>
+<h2>3. The Standard Normal Distribution</h2>
+<p>The <strong>standard normal distribution</strong> is a special case where:</p>
+<ul>
+<li>Mean (μ) = 0</li>
+<li>Standard deviation (σ) = 1</li>
+<li>Denoted as <strong>Z ~ N(0, 1)</strong></li>
+</ul>
+<h3>Why It&#39;s Useful</h3>
+<p>Any normal distribution can be converted to the standard normal distribution using z-scores, allowing us to use standard tables.</p>
+<hr>
+<h2>4. Z-Scores Explained</h2>
+<h3>What is a Z-Score?</h3>
+<p>A <strong>z-score</strong> tells you how many standard deviations a value is from the mean.</p>
+<h3>Z-Score Formula</h3>
+<pre><code>z = (x - μ) / σ
+
+where:
+x = raw score
+μ = population mean
+σ = population standard deviation
+</code></pre>
+<h3>Interpreting Z-Scores</h3>
+<ul>
+<li><strong>z = 0</strong>: Value equals the mean</li>
+<li><strong>z = 1</strong>: Value is 1 standard deviation above the mean</li>
+<li><strong>z = -1</strong>: Value is 1 standard deviation below the mean</li>
+<li><strong>z = 2.5</strong>: Value is 2.5 standard deviations above the mean</li>
+</ul>
+<h3>Z-Score Sign</h3>
+<ul>
+<li><strong>Positive z</strong>: Value is above the mean</li>
+<li><strong>Negative z</strong>: Value is below the mean</li>
+</ul>
+<hr>
+<h2>5. Step-by-Step Examples</h2>
+<h3>Example 1: Calculating a Z-Score</h3>
+<p><strong>📝 Problem:</strong> SAT scores are normally distributed with μ = 1000 and σ = 200. What is the z-score for a student who scored 1300?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify the values:</strong></p>
+<ul>
+<li>x = 1300 (student&#39;s score)</li>
+<li>μ = 1000 (mean)</li>
+<li>σ = 200 (standard deviation)</li>
+</ul>
+</li>
+<li><p><strong>Apply z-score formula:</strong></p>
+<pre><code>z = (x - μ) / σ
+  = (1300 - 1000) / 200
+  = 300 / 200
+  = 1.5
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> z = 1.5</p>
+<p><strong>Interpretation:</strong> The student&#39;s score is 1.5 standard deviations above the mean.</p>
+<hr>
+<h3>Example 2: Finding Probability Using Z-Score</h3>
+<p><strong>📝 Problem:</strong> Using the SAT example above, what percentage of students score below 1300?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>From Example 1, we know z = 1.5</strong></p>
+</li>
+<li><p><strong>Look up z = 1.5 in standard normal table:</strong></p>
+<pre><code>P(Z &lt; 1.5) = 0.9332
+</code></pre>
+</li>
+<li><p><strong>Convert to percentage:</strong></p>
+<pre><code>0.9332 × 100% = 93.32%
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 93.32% of students score below 1300</p>
+<p><strong>Interpretation:</strong> A score of 1300 is better than about 93% of test-takers.</p>
+<hr>
+<h3>Example 3: Finding Probability Between Two Values</h3>
+<p><strong>📝 Problem:</strong> Heights of adult men are normally distributed with μ = 70 inches and σ = 3 inches. What percentage of men are between 67 and 73 inches tall?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Calculate z-score for x = 67:</strong></p>
+<pre><code>z₁ = (67 - 70) / 3 = -1
+</code></pre>
+</li>
+<li><p><strong>Calculate z-score for x = 73:</strong></p>
+<pre><code>z₂ = (73 - 70) / 3 = 1
+</code></pre>
+</li>
+<li><p><strong>Find probabilities:</strong></p>
+<pre><code>P(Z &lt; -1) = 0.1587
+P(Z &lt; 1) = 0.8413
+</code></pre>
+</li>
+<li><p><strong>Calculate difference:</strong></p>
+<pre><code>P(-1 &lt; Z &lt; 1) = P(Z &lt; 1) - P(Z &lt; -1)
+               = 0.8413 - 0.1587
+               = 0.6826
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 68.26% of men are between 67 and 73 inches tall</p>
+<p><strong>Note:</strong> This confirms the empirical rule (68% within 1 standard deviation)!</p>
+<hr>
+<h3>Example 4: Finding a Raw Score from a Percentage</h3>
+<p><strong>📝 Problem:</strong> On a normally distributed test with μ = 75 and σ = 10, what score represents the 90th percentile?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Find z-score for 90th percentile:</strong></p>
+<ul>
+<li>Look up 0.90 in z-table (or use calculator)</li>
+<li>z ≈ 1.28</li>
+</ul>
+</li>
+<li><p><strong>Rearrange z-score formula to solve for x:</strong></p>
+<pre><code>z = (x - μ) / σ
+x = μ + (z × σ)
+x = 75 + (1.28 × 10)
+x = 75 + 12.8
+x = 87.8
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 87.8 points</p>
+<p><strong>Interpretation:</strong> To score in the top 10%, you need to score at least 88 points.</p>
+<hr>
+<h3>Example 5: Using the Empirical Rule</h3>
+<p><strong>📝 Problem:</strong> IQ scores are normally distributed with μ = 100 and σ = 15. Between what two values do the middle 95% of IQ scores fall?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Apply empirical rule:</strong></p>
+<ul>
+<li>95% of data falls within μ ± 2σ</li>
+</ul>
+</li>
+<li><p><strong>Calculate boundaries:</strong></p>
+<pre><code>Lower bound = μ - 2σ = 100 - 2(15) = 100 - 30 = 70
+Upper bound = μ + 2σ = 100 + 2(15) = 100 + 30 = 130
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> Between 70 and 130</p>
+<p><strong>Interpretation:</strong> 95% of people have IQ scores between 70 and 130.</p>
+<hr>
+<h3>Example 6: Finding Probability in the Upper Tail</h3>
+<p><strong>📝 Problem:</strong> Reaction times are normally distributed with μ = 200 ms and σ = 25 ms. What is the probability of a reaction time greater than 250 ms?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Calculate z-score:</strong></p>
+<pre><code>z = (250 - 200) / 25 = 2
+</code></pre>
+</li>
+<li><p><strong>Find P(Z &lt; 2):</strong></p>
+<pre><code>P(Z &lt; 2) = 0.9772
+</code></pre>
+</li>
+<li><p><strong>Use complement rule:</strong></p>
+<pre><code>P(Z &gt; 2) = 1 - P(Z &lt; 2)
+         = 1 - 0.9772
+         = 0.0228
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 0.0228 or 2.28%</p>
+<p><strong>Interpretation:</strong> About 2.3% of reaction times exceed 250 ms.</p>
+<hr>
+<h3>Example 7: Unusual Values</h3>
+<p><strong>📝 Problem:</strong> Exam scores have μ = 65 and σ = 12. A student scores 92. Is this score unusually high?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Calculate z-score:</strong></p>
+<pre><code>z = (92 - 65) / 12
+  = 27 / 12
+  = 2.25
+</code></pre>
+</li>
+<li><p><strong>Determine if unusual:</strong></p>
+<ul>
+<li><strong>Rule of thumb</strong>: |z| &gt; 2 is considered unusual</li>
+<li>Since z = 2.25 &gt; 2, this is unusual</li>
+</ul>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> Yes, this score is unusually high</p>
+<p><strong>Interpretation:</strong> The score is more than 2 standard deviations above average, occurring in less than 5% of cases.</p>
+<hr>
+<h2>6. Using the MDragon Normal Distribution Calculator</h2>
+<h3>Steps:</h3>
+<ol>
+<li><p>Navigate to <strong>Calculators → Normal Distribution</strong></p>
+</li>
+<li><p>Enter the parameters:</p>
+<ul>
+<li><strong>μ (mean)</strong>: Average value</li>
+<li><strong>σ (standard deviation)</strong>: Spread of data</li>
+<li><strong>x</strong>: Value of interest</li>
+</ul>
+</li>
+<li><p>The calculator will show:</p>
+<ul>
+<li>Z-score</li>
+<li>P(X &lt; x): Probability below x</li>
+<li>P(X &gt; x): Probability above x</li>
+<li>Visual representation</li>
+</ul>
+</li>
+</ol>
+<h3>Tips:</h3>
+<ul>
+<li>For &quot;between&quot; problems: Calculate P(X &lt; upper) - P(X &lt; lower)</li>
+<li>For percentiles: Use inverse calculator feature</li>
+<li>Verify empirical rule with μ ± 1σ, μ ± 2σ, μ ± 3σ</li>
+</ul>
+<hr>
+<h2>7. Practice Problems</h2>
+<h3>Problem 1</h3>
+<p>Weights of apples are normally distributed with μ = 150g and σ = 20g.<br>a) What is the z-score for an apple weighing 180g?<br>b) What percentage of apples weigh less than 180g?</p>
+<h3>Problem 2</h3>
+<p>The average commute time is 35 minutes with σ = 8 minutes. What percentage of commutes are between 27 and 43 minutes?</p>
+<h3>Problem 3</h3>
+<p>Test scores have μ = 80 and σ = 5. What score represents the 75th percentile?</p>
+<h3>Problem 4</h3>
+<p>Battery life is normally distributed with μ = 500 hours and σ = 40 hours. What is the probability a battery lasts more than 600 hours?</p>
+<h3>Problem 5</h3>
+<p>Using the empirical rule, if μ = 50 and σ = 4, between what two values do:<br>a) The middle 68% of values fall?<br>b) The middle 99.7% of values fall?</p>
+<hr>
+<h2>Answers to Practice Problems</h2>
+<h3>Problem 1</h3>
+<p><strong>a) Z-score:</strong></p>
+<pre><code>z = (180 - 150) / 20 = 1.5
+</code></pre>
+<p><strong>b) Percentage below 180g:</strong></p>
+<pre><code>P(Z &lt; 1.5) = 0.9332 or 93.32%
+</code></pre>
+<h3>Problem 2</h3>
+<pre><code>z₁ = (27 - 35) / 8 = -1
+z₂ = (43 - 35) / 8 = 1
+P(-1 &lt; Z &lt; 1) = 0.8413 - 0.1587 = 0.6826 or 68.26%
+</code></pre>
+<h3>Problem 3</h3>
+<pre><code>z for 75th percentile ≈ 0.67
+x = 80 + (0.67 × 5) = 80 + 3.35 = 83.35
+Score needed: 83.35 or about 83-84 points
+</code></pre>
+<h3>Problem 4</h3>
+<pre><code>z = (600 - 500) / 40 = 2.5
+P(Z &gt; 2.5) = 1 - 0.9938 = 0.0062 or 0.62%
+</code></pre>
+<h3>Problem 5</h3>
+<p><strong>a) Middle 68% (μ ± 1σ):</strong></p>
+<pre><code>Lower: 50 - 4 = 46
+Upper: 50 + 4 = 54
+Between 46 and 54
+</code></pre>
+<p><strong>b) Middle 99.7% (μ ± 3σ):</strong></p>
+<pre><code>Lower: 50 - 12 = 38
+Upper: 50 + 12 = 62
+Between 38 and 62
+</code></pre>
+<hr>
+<h2>Quick Reference</h2>
+<h3>Z-Score Formula</h3>
+<pre><code>z = (x - μ) / σ
+</code></pre>
+<h3>Finding Raw Score from Z</h3>
+<pre><code>x = μ + (z × σ)
+</code></pre>
+<h3>Empirical Rule</h3>
+<ul>
+<li>68% within μ ± 1σ</li>
+<li>95% within μ ± 2σ</li>
+<li>99.7% within μ ± 3σ</li>
+</ul>
+<h3>Common Z-Values</h3>
+<table>
+<thead>
+<tr>
+<th>Percentile</th>
+<th>Z-Score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>90th</td>
+<td>1.28</td>
+</tr>
+<tr>
+<td>95th</td>
+<td>1.645</td>
+</tr>
+<tr>
+<td>97.5th</td>
+<td>1.96</td>
+</tr>
+<tr>
+<td>99th</td>
+<td>2.33</td>
+</tr>
+</tbody></table>
+<hr>
+<p><em>Use our Normal Distribution Calculator at MDragon Data Tools for instant calculations!</em></p>
+
+<div class="footer">
+    <p><strong>MDragon Data Tools</strong> | Statistics Education Platform</p>
+    <p><a href="https://mondragon-developer.github.io/statools/" target="_blank">mondragon-developer.github.io/statools</a></p>
+</div>
+</body>
+</html>

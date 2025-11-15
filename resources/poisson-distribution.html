@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>POISSON DISTRIBUTION</title>
+    <style>
+        @media print {
+            body { margin: 0.5in; }
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+            .page-break { page-break-before: always; }
+            h1, h2, h3 { page-break-after: avoid; }
+            table { page-break-inside: avoid; }
+            pre { page-break-inside: avoid; }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #2A2A2A;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        /* Headers */
+        h1 {
+            color: #4ECDC4;
+            border-bottom: 4px solid #4ECDC4;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 26pt;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #2A2A2A;
+            border-bottom: 3px solid #4ECDC4;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 18px;
+            font-size: 20pt;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: #4ECDC4;
+            font-size: 15pt;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #2A2A2A;
+            font-size: 13pt;
+            font-weight: 600;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        /* Paragraphs */
+        p {
+            margin: 12px 0;
+            text-align: justify;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 35px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        /* Code and formulas */
+        code {
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 10pt;
+            color: #c7254e;
+            font-weight: 500;
+        }
+
+        pre {
+            background-color: #f8f8f8;
+            border: 2px solid #4ECDC4;
+            border-left: 6px solid #4ECDC4;
+            padding: 18px 20px;
+            overflow-x: auto;
+            border-radius: 6px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #2A2A2A;
+            font-size: 10.5pt;
+            line-height: 1.6;
+            display: block;
+            white-space: pre-wrap;
+            font-weight: normal;
+        }
+
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #4ECDC4 0%, #3db3aa 100%);
+        }
+
+        th {
+            background-color: #4ECDC4;
+            color: white;
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11pt;
+            border: none;
+        }
+
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            font-size: 10.5pt;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f0f9f9;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 5px solid #FFFF00;
+            background-color: #fffef0;
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Strong text */
+        strong {
+            color: #2A2A2A;
+            font-weight: 600;
+        }
+
+        /* Horizontal rules */
+        hr {
+            border: none;
+            border-top: 3px solid #E6E6E6;
+            margin: 30px 0;
+        }
+
+        /* Special formatting for examples */
+        .example-box {
+            background: #f9f9f9;
+            border: 2px solid #4ECDC4;
+            border-radius: 8px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+
+        .solution-box {
+            background: #f0f9f9;
+            border-left: 4px solid #4ECDC4;
+            padding: 15px 20px;
+            margin: 15px 0 15px 20px;
+        }
+
+        /* Answer highlighting */
+        .answer {
+            background-color: #fffacd;
+            border: 2px solid #FFFF00;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #E6E6E6;
+            text-align: center;
+            color: #888;
+            font-size: 9pt;
+        }
+
+        .footer a {
+            color: #4ECDC4;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Improve readability */
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Math-like formatting */
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<h1>Poisson Distribution Examples</h1>
+<p><strong>MDragon Data Tools - Study Guide</strong></p>
+<hr>
+<h2>Table of Contents</h2>
+<ol>
+<li>What is a Poisson Distribution?</li>
+<li>When to Use Poisson Distribution</li>
+<li>Formulas and Notation</li>
+<li>Step-by-Step Examples</li>
+<li>Using the Calculator</li>
+<li>Practice Problems</li>
+</ol>
+<hr>
+<h2>1. What is a Poisson Distribution?</h2>
+<p>The <strong>Poisson distribution</strong> models the number of times an event occurs in a fixed interval of time or space, given that events occur:</p>
+<ul>
+<li>Independently</li>
+<li>At a constant average rate</li>
+<li>One at a time</li>
+</ul>
+<h3>Real-World Examples</h3>
+<ul>
+<li>Number of customer arrivals per hour</li>
+<li>Number of emails received per day</li>
+<li>Number of defects per square meter of fabric</li>
+<li>Number of accidents at an intersection per month</li>
+<li>Number of calls to a call center per minute</li>
+</ul>
+<hr>
+<h2>2. When to Use Poisson Distribution</h2>
+<p>Use Poisson when:</p>
+<ol>
+<li><strong>Counting occurrences</strong> of an event in an interval</li>
+<li><strong>Events are independent</strong> (one doesn&#39;t affect another)</li>
+<li><strong>Average rate (λ) is known</strong> and constant</li>
+<li><strong>Events cannot occur simultaneously</strong> (very unlikely to occur at exactly the same instant)</li>
+</ol>
+<h3>Poisson vs Binomial</h3>
+<table>
+<thead>
+<tr>
+<th>Poisson</th>
+<th>Binomial</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Number of trials unknown/very large</td>
+<td>Fixed number of trials</td>
+</tr>
+<tr>
+<td>Probability of success very small</td>
+<td>Probability can be any value</td>
+</tr>
+<tr>
+<td>Events over time/space</td>
+<td>Fixed trials</td>
+</tr>
+<tr>
+<td>Example: Calls per hour</td>
+<td>Example: Coin flips</td>
+</tr>
+</tbody></table>
+<p><strong>Rule of Thumb:</strong> Use Poisson when n ≥ 20 and p ≤ 0.05</p>
+<hr>
+<h2>3. Formulas and Notation</h2>
+<h3>Notation</h3>
+<ul>
+<li><strong>λ</strong> (lambda) = average number of occurrences in the interval</li>
+<li><strong>x</strong> = actual number of occurrences</li>
+<li><strong>e</strong> = Euler&#39;s number ≈ 2.71828</li>
+<li><strong>P(X = x)</strong> = probability of exactly x occurrences</li>
+</ul>
+<h3>Poisson Probability Formula</h3>
+<pre><code>P(X = x) = (λ^x × e^(-λ)) / x!
+</code></pre>
+<h3>Mean</h3>
+<pre><code>μ = λ
+</code></pre>
+<h3>Standard Deviation</h3>
+<pre><code>σ = √λ
+</code></pre>
+<h3>Variance</h3>
+<pre><code>σ² = λ
+</code></pre>
+<p><strong>Key Insight:</strong> For Poisson distribution, the mean equals the variance!</p>
+<hr>
+<h2>4. Step-by-Step Examples</h2>
+<h3>Example 1: Exact Probability</h3>
+<p><strong>📝 Problem:</strong> A call center receives an average of 3 calls per minute. What is the probability of receiving exactly 5 calls in the next minute?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify the values:</strong></p>
+<ul>
+<li>λ = 3 (average calls per minute)</li>
+<li>x = 5 (calls we want)</li>
+<li>e ≈ 2.71828</li>
+</ul>
+</li>
+<li><p><strong>Apply Poisson formula:</strong></p>
+<pre><code>P(X = 5) = (3^5 × e^(-3)) / 5!
+         = (243 × 0.0498) / 120
+         = 12.10 / 120
+         = 0.1008
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 0.1008 or 10.08%</p>
+<hr>
+<h3>Example 2: At Most</h3>
+<p><strong>📝 Problem:</strong> A hospital emergency room sees an average of 2 patients per hour. What is the probability of seeing at most 1 patient in the next hour?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify the values:</strong></p>
+<ul>
+<li>λ = 2</li>
+<li>We need P(X ≤ 1) = P(0) + P(1)</li>
+</ul>
+</li>
+<li><p><strong>Calculate P(X = 0):</strong></p>
+<pre><code>P(0) = (2^0 × e^(-2)) / 0!
+     = (1 × 0.1353) / 1
+     = 0.1353
+</code></pre>
+</li>
+<li><p><strong>Calculate P(X = 1):</strong></p>
+<pre><code>P(1) = (2^1 × e^(-2)) / 1!
+     = (2 × 0.1353) / 1
+     = 0.2707
+</code></pre>
+</li>
+<li><p><strong>Sum the probabilities:</strong></p>
+<pre><code>P(X ≤ 1) = 0.1353 + 0.2707 = 0.4060
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 0.4060 or 40.60%</p>
+<hr>
+<h3>Example 3: At Least (Using Complement)</h3>
+<p><strong>📝 Problem:</strong> A website receives an average of 5 visitors per minute. What is the probability of receiving at least 3 visitors in the next minute?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify the values:</strong></p>
+<ul>
+<li>λ = 5</li>
+<li>We need P(X ≥ 3)</li>
+</ul>
+</li>
+<li><p><strong>Use complement rule:</strong></p>
+<pre><code>P(X ≥ 3) = 1 - P(X &lt; 3)
+         = 1 - [P(0) + P(1) + P(2)]
+</code></pre>
+</li>
+<li><p><strong>Calculate individual probabilities:</strong></p>
+<pre><code>P(0) = (5^0 × e^(-5)) / 0! = 0.0067
+P(1) = (5^1 × e^(-5)) / 1! = 0.0337
+P(2) = (5^2 × e^(-5)) / 2! = 0.0842
+
+P(X &lt; 3) = 0.0067 + 0.0337 + 0.0842 = 0.1246
+</code></pre>
+</li>
+<li><p><strong>Apply complement:</strong></p>
+<pre><code>P(X ≥ 3) = 1 - 0.1246 = 0.8754
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 0.8754 or 87.54%</p>
+<hr>
+<h3>Example 4: Adjusting the Interval</h3>
+<p><strong>📝 Problem:</strong> A bookstore sells an average of 10 books per hour. What is the probability of selling exactly 3 books in 15 minutes?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Adjust λ for the new interval:</strong></p>
+<ul>
+<li>Original: 10 books per 60 minutes</li>
+<li>Need: books per 15 minutes</li>
+</ul>
+<pre><code>λ_new = 10 × (15/60)
+      = 10 × 0.25
+      = 2.5 books per 15 minutes
+</code></pre>
+</li>
+<li><p><strong>Calculate probability:</strong></p>
+<pre><code>P(X = 3) = (2.5^3 × e^(-2.5)) / 3!
+         = (15.625 × 0.0821) / 6
+         = 1.283 / 6
+         = 0.2138
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 0.2138 or 21.38%</p>
+<p><strong>Key Lesson:</strong> Always adjust λ to match your time interval!</p>
+<hr>
+<h3>Example 5: Range of Values</h3>
+<p><strong>📝 Problem:</strong> A restaurant receives an average of 8 delivery orders per hour. What is the probability of receiving between 6 and 9 orders (inclusive) in the next hour?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify the values:</strong></p>
+<ul>
+<li>λ = 8</li>
+<li>We need P(6 ≤ X ≤ 9) = P(6) + P(7) + P(8) + P(9)</li>
+</ul>
+</li>
+<li><p><strong>Calculate each probability:</strong></p>
+<pre><code>P(6) = (8^6 × e^(-8)) / 6! = 0.1221
+P(7) = (8^7 × e^(-8)) / 7! = 0.1396
+P(8) = (8^8 × e^(-8)) / 8! = 0.1396
+P(9) = (8^9 × e^(-8)) / 9! = 0.1241
+</code></pre>
+</li>
+<li><p><strong>Sum the probabilities:</strong></p>
+<pre><code>P(6 ≤ X ≤ 9) = 0.1221 + 0.1396 + 0.1396 + 0.1241
+              = 0.5254
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 0.5254 or 52.54%</p>
+<hr>
+<h3>Example 6: Mean and Standard Deviation</h3>
+<p><strong>📝 Problem:</strong> A highway has an average of 1.5 accidents per month. What is the standard deviation of accidents per month?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify λ:</strong></p>
+<ul>
+<li>λ = 1.5</li>
+</ul>
+</li>
+<li><p><strong>Calculate standard deviation:</strong></p>
+<pre><code>σ = √λ
+  = √1.5
+  = 1.225
+</code></pre>
+</li>
+<li><p><strong>Calculate mean:</strong></p>
+<pre><code>μ = λ = 1.5
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong></p>
+<ul>
+<li>Mean: 1.5 accidents per month</li>
+<li>Standard deviation: 1.225 accidents</li>
+</ul>
+<p><strong>Interpretation:</strong> The typical variation from the average is about 1.2 accidents.</p>
+<hr>
+<h3>Example 7: Zero Occurrences</h3>
+<p><strong>📝 Problem:</strong> A rare bird is spotted an average of 0.5 times per week in a nature preserve. What is the probability of NOT seeing the bird in a given week?</p>
+<p><strong>💡 Solution:</strong></p>
+<ol>
+<li><p><strong>Identify the values:</strong></p>
+<ul>
+<li>λ = 0.5</li>
+<li>We need P(X = 0)</li>
+</ul>
+</li>
+<li><p><strong>Calculate:</strong></p>
+<pre><code>P(0) = (0.5^0 × e^(-0.5)) / 0!
+     = (1 × 0.6065) / 1
+     = 0.6065
+</code></pre>
+</li>
+</ol>
+<p><strong>✅ Answer:</strong> 0.6065 or 60.65%</p>
+<p><strong>Interpretation:</strong> There&#39;s about a 61% chance of not seeing the rare bird in any given week.</p>
+<hr>
+<h2>5. Using the MDragon Poisson Calculator</h2>
+<h3>Steps:</h3>
+<ol>
+<li><p>Navigate to <strong>Calculators → Poisson Distribution</strong></p>
+</li>
+<li><p>Enter the parameters:</p>
+<ul>
+<li><strong>λ (lambda)</strong>: Average rate of occurrence</li>
+<li><strong>x</strong>: Number of events</li>
+</ul>
+</li>
+<li><p>Select calculation type:</p>
+<ul>
+<li><strong>Exactly (=)</strong>: P(X = x)</li>
+<li><strong>At most (≤)</strong>: P(X ≤ x)</li>
+<li><strong>At least (≥)</strong>: P(X ≥ x)</li>
+<li><strong>Less than (&lt;)</strong>: P(X &lt; x)</li>
+<li><strong>Greater than (&gt;)</strong>: P(X &gt; x)</li>
+</ul>
+</li>
+<li><p>Click <strong>Calculate</strong> to see:</p>
+<ul>
+<li>Probability result</li>
+<li>Mean and standard deviation</li>
+<li>Visual distribution graph</li>
+</ul>
+</li>
+</ol>
+<h3>Tips:</h3>
+<ul>
+<li>Adjust λ to match your time interval</li>
+<li>For &quot;between&quot; problems, use cumulative probabilities</li>
+<li>Check that conditions for Poisson are met</li>
+</ul>
+<hr>
+<h2>6. Practice Problems</h2>
+<h3>Problem 1</h3>
+<p>A store receives an average of 4 customers per hour. What is the probability of receiving exactly 6 customers in the next hour?</p>
+<h3>Problem 2</h3>
+<p>A typist makes an average of 2 errors per page. What is the probability of:<br>a) Exactly 0 errors on a page?<br>b) At most 3 errors on a page?</p>
+<h3>Problem 3</h3>
+<p>A factory produces items at a rate where defects occur at an average of 0.8 per day. What is the probability of at least 2 defects tomorrow?</p>
+<h3>Problem 4</h3>
+<p>Phone calls arrive at a rate of 12 per hour. What is the probability of receiving exactly 3 calls in a 10-minute period?</p>
+<h3>Problem 5</h3>
+<p>A radioactive source emits particles at an average rate of 50 per minute. What is the mean and standard deviation of particle emissions per minute?</p>
+<hr>
+<h2>Answers to Practice Problems</h2>
+<h3>Problem 1</h3>
+<pre><code>λ = 4, x = 6
+P(X = 6) = (4^6 × e^(-4)) / 6!
+         = 0.1042 or 10.42%
+</code></pre>
+<h3>Problem 2</h3>
+<p><strong>a) Exactly 0 errors:</strong></p>
+<pre><code>λ = 2, x = 0
+P(X = 0) = (2^0 × e^(-2)) / 0!
+         = 0.1353 or 13.53%
+</code></pre>
+<p><strong>b) At most 3 errors:</strong></p>
+<pre><code>P(X ≤ 3) = P(0) + P(1) + P(2) + P(3)
+         = 0.1353 + 0.2707 + 0.2707 + 0.1804
+         = 0.8571 or 85.71%
+</code></pre>
+<h3>Problem 3</h3>
+<pre><code>λ = 0.8, need P(X ≥ 2)
+P(X ≥ 2) = 1 - [P(0) + P(1)]
+         = 1 - [0.4493 + 0.3595]
+         = 1 - 0.8088
+         = 0.1912 or 19.12%
+</code></pre>
+<h3>Problem 4</h3>
+<pre><code>First adjust λ: 12 calls per 60 min = 2 calls per 10 min
+λ = 2, x = 3
+P(X = 3) = (2^3 × e^(-2)) / 3!
+         = 0.1804 or 18.04%
+</code></pre>
+<h3>Problem 5</h3>
+<pre><code>λ = 50
+μ = 50 particles per minute
+σ = √50 = 7.07 particles per minute
+</code></pre>
+<hr>
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Formula</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>P(X = x)</td>
+<td>(λ^x × e^(-λ)) / x!</td>
+</tr>
+<tr>
+<td>Mean (μ)</td>
+<td>λ</td>
+</tr>
+<tr>
+<td>Std Dev (σ)</td>
+<td>√λ</td>
+</tr>
+<tr>
+<td>Variance (σ²)</td>
+<td>λ</td>
+</tr>
+</tbody></table>
+<h3>Common λ Adjustments</h3>
+<ul>
+<li>Per hour → Per minute: divide by 60</li>
+<li>Per day → Per hour: divide by 24</li>
+<li>Per year → Per month: divide by 12</li>
+</ul>
+<hr>
+<p><em>Use our Poisson Calculator at MDragon Data Tools for quick calculations!</em></p>
+
+<div class="footer">
+    <p><strong>MDragon Data Tools</strong> | Statistics Education Platform</p>
+    <p><a href="https://mondragon-developer.github.io/statools/" target="_blank">mondragon-developer.github.io/statools</a></p>
+</div>
+</body>
+</html>

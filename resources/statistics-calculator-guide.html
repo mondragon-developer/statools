@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>STATISTICS CALCULATOR GUIDE</title>
+    <style>
+        @media print {
+            body { margin: 0.5in; }
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+            .page-break { page-break-before: always; }
+            h1, h2, h3 { page-break-after: avoid; }
+            table { page-break-inside: avoid; }
+            pre { page-break-inside: avoid; }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #2A2A2A;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        /* Headers */
+        h1 {
+            color: #4ECDC4;
+            border-bottom: 4px solid #4ECDC4;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 26pt;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #2A2A2A;
+            border-bottom: 3px solid #4ECDC4;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 18px;
+            font-size: 20pt;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: #4ECDC4;
+            font-size: 15pt;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #2A2A2A;
+            font-size: 13pt;
+            font-weight: 600;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        /* Paragraphs */
+        p {
+            margin: 12px 0;
+            text-align: justify;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 35px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        /* Code and formulas */
+        code {
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 10pt;
+            color: #c7254e;
+            font-weight: 500;
+        }
+
+        pre {
+            background-color: #f8f8f8;
+            border: 2px solid #4ECDC4;
+            border-left: 6px solid #4ECDC4;
+            padding: 18px 20px;
+            overflow-x: auto;
+            border-radius: 6px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #2A2A2A;
+            font-size: 10.5pt;
+            line-height: 1.6;
+            display: block;
+            white-space: pre-wrap;
+            font-weight: normal;
+        }
+
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #4ECDC4 0%, #3db3aa 100%);
+        }
+
+        th {
+            background-color: #4ECDC4;
+            color: white;
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11pt;
+            border: none;
+        }
+
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            font-size: 10.5pt;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f0f9f9;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 5px solid #FFFF00;
+            background-color: #fffef0;
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Strong text */
+        strong {
+            color: #2A2A2A;
+            font-weight: 600;
+        }
+
+        /* Horizontal rules */
+        hr {
+            border: none;
+            border-top: 3px solid #E6E6E6;
+            margin: 30px 0;
+        }
+
+        /* Special formatting for examples */
+        .example-box {
+            background: #f9f9f9;
+            border: 2px solid #4ECDC4;
+            border-radius: 8px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+
+        .solution-box {
+            background: #f0f9f9;
+            border-left: 4px solid #4ECDC4;
+            padding: 15px 20px;
+            margin: 15px 0 15px 20px;
+        }
+
+        /* Answer highlighting */
+        .answer {
+            background-color: #fffacd;
+            border: 2px solid #FFFF00;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #E6E6E6;
+            text-align: center;
+            color: #888;
+            font-size: 9pt;
+        }
+
+        .footer a {
+            color: #4ECDC4;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Improve readability */
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Math-like formatting */
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<h1>Statistics Calculator Guide</h1>
+<p><strong>How to Use the MDragon Statistics Calculator</strong></p>
+<h2>Overview</h2>
+<p>The Statistics Calculator provides comprehensive descriptive statistics and visualizations for your data.</p>
+<h2>Step-by-Step Instructions</h2>
+<h3>Step 1: Access the Calculator</h3>
+<p>Navigate to: <strong>Calculators → Statistics</strong></p>
+<h3>Step 2: Enter Your Data</h3>
+<p><strong>Option A - Manual Entry:</strong></p>
+<ol>
+<li>Type numbers separated by commas or spaces</li>
+<li>Example: <code>12, 15, 18, 20, 22, 25</code></li>
+</ol>
+<p><strong>Option B - Paste Data:</strong></p>
+<ol>
+<li>Copy data from spreadsheet</li>
+<li>Paste into input field</li>
+<li>Calculator automatically detects format</li>
+</ol>
+<h3>Step 3: Calculate Results</h3>
+<p>Click <strong>&quot;Calculate&quot;</strong> button to see:</p>
+<h4>Measures of Central Tendency</h4>
+<ul>
+<li><strong>Mean (x̄)</strong>: Average value</li>
+<li><strong>Median</strong>: Middle value when sorted</li>
+<li><strong>Mode</strong>: Most frequent value</li>
+</ul>
+<h4>Measures of Spread</h4>
+<ul>
+<li><strong>Range</strong>: Max - Min</li>
+<li><strong>Variance (s²)</strong>: Average squared deviation</li>
+<li><strong>Standard Deviation (s)</strong>: Square root of variance</li>
+<li><strong>IQR</strong>: Q3 - Q1 (middle 50%)</li>
+</ul>
+<h4>Quartiles</h4>
+<ul>
+<li><strong>Q1</strong>: 25th percentile</li>
+<li><strong>Q2</strong>: Median (50th percentile)</li>
+<li><strong>Q3</strong>: 75th percentile</li>
+</ul>
+<h2>Example Usage</h2>
+<p><strong>Data:</strong> Test scores: 65, 70, 75, 80, 85, 90, 95</p>
+<p><strong>Results:</strong></p>
+<ul>
+<li>Mean: 80</li>
+<li>Median: 80</li>
+<li>Std Dev: 10.8</li>
+<li>Range: 30</li>
+</ul>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li>Average score is 80</li>
+<li>Half scored above/below 80</li>
+<li>Typical deviation from mean is ~11 points</li>
+</ul>
+<h2>Tips</h2>
+<p>✓ Remove outliers if appropriate<br>✓ Use at least 5-10 data points<br>✓ Check for data entry errors<br>✓ Compare mean vs median for skewness</p>
+<hr>
+
+<div class="footer">
+    <p><strong>MDragon Data Tools</strong> | Statistics Education Platform</p>
+    <p><a href="https://mondragon-developer.github.io/statools/" target="_blank">mondragon-developer.github.io/statools</a></p>
+</div>
+</body>
+</html>

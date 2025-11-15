@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>PROBABILITY CALCULATOR GUIDE</title>
+    <style>
+        @media print {
+            body { margin: 0.5in; }
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+            .page-break { page-break-before: always; }
+            h1, h2, h3 { page-break-after: avoid; }
+            table { page-break-inside: avoid; }
+            pre { page-break-inside: avoid; }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #2A2A2A;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        /* Headers */
+        h1 {
+            color: #4ECDC4;
+            border-bottom: 4px solid #4ECDC4;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 26pt;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #2A2A2A;
+            border-bottom: 3px solid #4ECDC4;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 18px;
+            font-size: 20pt;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: #4ECDC4;
+            font-size: 15pt;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #2A2A2A;
+            font-size: 13pt;
+            font-weight: 600;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        /* Paragraphs */
+        p {
+            margin: 12px 0;
+            text-align: justify;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 35px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        /* Code and formulas */
+        code {
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 10pt;
+            color: #c7254e;
+            font-weight: 500;
+        }
+
+        pre {
+            background-color: #f8f8f8;
+            border: 2px solid #4ECDC4;
+            border-left: 6px solid #4ECDC4;
+            padding: 18px 20px;
+            overflow-x: auto;
+            border-radius: 6px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #2A2A2A;
+            font-size: 10.5pt;
+            line-height: 1.6;
+            display: block;
+            white-space: pre-wrap;
+            font-weight: normal;
+        }
+
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #4ECDC4 0%, #3db3aa 100%);
+        }
+
+        th {
+            background-color: #4ECDC4;
+            color: white;
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11pt;
+            border: none;
+        }
+
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            font-size: 10.5pt;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f0f9f9;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 5px solid #FFFF00;
+            background-color: #fffef0;
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Strong text */
+        strong {
+            color: #2A2A2A;
+            font-weight: 600;
+        }
+
+        /* Horizontal rules */
+        hr {
+            border: none;
+            border-top: 3px solid #E6E6E6;
+            margin: 30px 0;
+        }
+
+        /* Special formatting for examples */
+        .example-box {
+            background: #f9f9f9;
+            border: 2px solid #4ECDC4;
+            border-radius: 8px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+
+        .solution-box {
+            background: #f0f9f9;
+            border-left: 4px solid #4ECDC4;
+            padding: 15px 20px;
+            margin: 15px 0 15px 20px;
+        }
+
+        /* Answer highlighting */
+        .answer {
+            background-color: #fffacd;
+            border: 2px solid #FFFF00;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #E6E6E6;
+            text-align: center;
+            color: #888;
+            font-size: 9pt;
+        }
+
+        .footer a {
+            color: #4ECDC4;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Improve readability */
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Math-like formatting */
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<h1>Probability Calculator Guide</h1>
+<p><strong>How to Use the MDragon Probability Calculator</strong></p>
+<h2>Features</h2>
+<p>The Probability Calculator includes:</p>
+<ol>
+<li>Basic probability rules</li>
+<li>Combinatorics (permutations &amp; combinations)</li>
+<li>Expected value</li>
+<li>Dice probability simulator</li>
+</ol>
+<h2>Module 1: Basic Probability</h2>
+<h3>Addition Rule</h3>
+<p><strong>When to use:</strong> Finding P(A OR B)</p>
+<p><strong>Inputs:</strong></p>
+<ul>
+<li>P(A): Probability of event A</li>
+<li>P(B): Probability of event B</li>
+<li>P(A and B): Joint probability (if applicable)</li>
+</ul>
+<p><strong>Output:</strong> P(A or B)</p>
+<p><strong>Example:</strong><br>P(King) = 4/52, P(Heart) = 13/52, P(King∩Heart) = 1/52<br>Result: P(King or Heart) = 16/52</p>
+<h3>Multiplication Rule</h3>
+<p><strong>When to use:</strong> Finding P(A AND B)</p>
+<p><strong>Types:</strong></p>
+<ul>
+<li>Independent: P(A) × P(B)</li>
+<li>Dependent: P(A) × P(B|A)</li>
+</ul>
+<h2>Module 2: Combinatorics</h2>
+<h3>Permutations (nPr)</h3>
+<p><strong>When to use:</strong> Order matters<br><strong>Formula:</strong> n!/(n-r)!</p>
+<p><strong>Example:</strong> 3-digit codes from 9 numbers<br>Input: n=9, r=3<br>Result: 504 codes</p>
+<h3>Combinations (nCr)</h3>
+<p><strong>When to use:</strong> Order doesn&#39;t matter<br><strong>Formula:</strong> n!/(r!×(n-r)!)</p>
+<p><strong>Example:</strong> Choose 3 people from 10<br>Input: n=10, r=3<br>Result: 120 committees</p>
+<h2>Module 3: Expected Value</h2>
+<p><strong>When to use:</strong> Finding average outcome<br><strong>Formula:</strong> E(X) = Σ[x × P(x)]</p>
+<p><strong>Example:</strong> Game where you win $10 (p=0.3) or $0 (p=0.7)<br>E(X) = 10(0.3) + 0(0.7) = $3</p>
+<h2>Module 4: Dice Simulator</h2>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Roll 1-6 dice</li>
+<li>Calculate probability of sums</li>
+<li>Visualize distribution</li>
+</ul>
+<p><strong>Example:</strong> Probability of rolling 7 with 2 dice<br>Result: 6/36 = 16.67%</p>
+<hr>
+
+<div class="footer">
+    <p><strong>MDragon Data Tools</strong> | Statistics Education Platform</p>
+    <p><a href="https://mondragon-developer.github.io/statools/" target="_blank">mondragon-developer.github.io/statools</a></p>
+</div>
+</body>
+</html>
