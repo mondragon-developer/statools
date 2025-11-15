@@ -13,6 +13,11 @@ const Features = () => {
 
   const localCalculators = [
     {
+      name: "Frequency Distribution",
+      path: "/calculators/frequency-distribution",
+      description: "Frequency tables, histograms, polygons"
+    },
+    {
       name: "Basic Statistics",
       path: "/calculators/statistics",
       description: "Mean, median, variance, SD"
@@ -29,7 +34,7 @@ const Features = () => {
       description: "Interactive probability calc"
     },
     {
-      name: "Poisson Distribution", 
+      name: "Poisson Distribution",
       path: "/calculators/poisson",
       description: "Event probability calculator"
     },
@@ -47,11 +52,6 @@ const Features = () => {
       name: "Correlation & Regression",
       path: "/calculators/correlation-regression",
       description: "Correlation, R², linear regression"
-    },
-    {
-      name: "Frequency Distribution",
-      path: "/calculators/frequency-distribution",
-      description: "Frequency tables, histograms, polygons"
     }
   ];
 
