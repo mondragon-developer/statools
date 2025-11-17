@@ -25,7 +25,7 @@ const SnakeGame = () => {
 
   const directionRef = useRef(INITIAL_DIRECTION);
 
-  const MONDRAGON_TEXT = 'mondragon';
+  const MONDRAGON_TEXT = 'I-LOVE-STATISTICS';
 
   // Generate random food position with math symbol
   const generateFood = useCallback(() => {

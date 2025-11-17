@@ -1,6 +1,20 @@
 import { LineChart, BarChart, PieChart, Calculator, BookOpen, FileText, TrendingUp, Table } from 'lucide-react';
 import ResourceCard from '../ui/ResourceCard';
 import SnakeGame from '../games/SnakeGame';
+import centralTendencyQuestions from '../../data/quizzes/centralTendency';
+import measuresOfDeviationQuestions from '../../data/quizzes/measuresOfDeviation';
+import probabilityFundamentalsQuestions from '../../data/quizzes/probabilityFundamentals';
+import binomialDistributionQuestions from '../../data/quizzes/binomialDistribution';
+import poissonDistributionQuestions from '../../data/quizzes/poissonDistribution';
+import normalDistributionQuestions from '../../data/quizzes/normalDistribution';
+import tDistributionQuestions from '../../data/quizzes/tDistribution';
+import centralLimitTheoremQuestions from '../../data/quizzes/centralLimitTheorem';
+import hypothesisTestingOneSampleQuestions from '../../data/quizzes/hypothesisTestingOneSample';
+import hypothesisTestingTwoSamplesQuestions from '../../data/quizzes/hypothesisTestingTwoSamples';
+import confidenceIntervalsQuestions from '../../data/quizzes/confidenceIntervals';
+import linearRegressionBasicsQuestions from '../../data/quizzes/linearRegressionBasics';
+import regressionAnalysisQuestions from '../../data/quizzes/regressionAnalysis';
+import interpretingRegressionQuestions from '../../data/quizzes/interpretingRegression';
 
 const Tools = () => {
   // Define the resource categories with downloadable PDFs
@@ -11,29 +25,46 @@ const Tools = () => {
       description: "Master probability concepts and key statistical distributions with step-by-step examples.",
       resources: [
         {
+          name: "Measures of Central Tendency",
+          path: "/statools/resources/measures-of-central-tendency.pdf",
+          fileName: "Measures_of_Central_Tendency.pdf",
+          quiz: centralTendencyQuestions
+        },
+        {
+          name: "Measures of Deviation",
+          path: "/statools/resources/measures-of-deviation.pdf",
+          fileName: "Measures_of_Deviation.pdf",
+          quiz: measuresOfDeviationQuestions
+        },
+        {
           name: "Probability Fundamentals",
           path: "/statools/resources/probability-fundamentals.pdf",
-          fileName: "Probability_Fundamentals.pdf"
+          fileName: "Probability_Fundamentals.pdf",
+          quiz: probabilityFundamentalsQuestions
         },
         {
           name: "Binomial Distribution Guide",
           path: "/statools/resources/binomial-distribution.pdf",
-          fileName: "Binomial_Distribution_Guide.pdf"
+          fileName: "Binomial_Distribution_Guide.pdf",
+          quiz: binomialDistributionQuestions
         },
         {
           name: "Poisson Distribution Examples",
           path: "/statools/resources/poisson-distribution.pdf",
-          fileName: "Poisson_Distribution_Examples.pdf"
+          fileName: "Poisson_Distribution_Examples.pdf",
+          quiz: poissonDistributionQuestions
         },
         {
           name: "Normal Distribution & Z-Scores",
           path: "/statools/resources/normal-distribution.pdf",
-          fileName: "Normal_Distribution_Guide.pdf"
+          fileName: "Normal_Distribution_Guide.pdf",
+          quiz: normalDistributionQuestions
         },
         {
           name: "T-Distribution Explained",
           path: "/statools/resources/t-distribution.pdf",
-          fileName: "T_Distribution_Guide.pdf"
+          fileName: "T_Distribution_Guide.pdf",
+          quiz: tDistributionQuestions
         }
       ]
     },
@@ -45,22 +76,26 @@ const Tools = () => {
         {
           name: "Central Limit Theorem",
           path: "/statools/resources/central-limit-theorem.pdf",
-          fileName: "Central_Limit_Theorem.pdf"
+          fileName: "Central_Limit_Theorem.pdf",
+          quiz: centralLimitTheoremQuestions
         },
         {
           name: "Hypothesis Testing: One Sample",
           path: "/statools/resources/hypothesis-testing-one-sample.pdf",
-          fileName: "Hypothesis_Testing_One_Sample.pdf"
+          fileName: "Hypothesis_Testing_One_Sample.pdf",
+          quiz: hypothesisTestingOneSampleQuestions
         },
         {
           name: "Hypothesis Testing: Two Samples",
           path: "/statools/resources/hypothesis-testing-two-samples.pdf",
-          fileName: "Hypothesis_Testing_Two_Samples.pdf"
+          fileName: "Hypothesis_Testing_Two_Samples.pdf",
+          quiz: hypothesisTestingTwoSamplesQuestions
         },
         {
           name: "Confidence Intervals Step-by-Step",
           path: "/statools/resources/confidence-intervals.pdf",
-          fileName: "Confidence_Intervals_Guide.pdf"
+          fileName: "Confidence_Intervals_Guide.pdf",
+          quiz: confidenceIntervalsQuestions
         }
       ]
     },
@@ -72,17 +107,20 @@ const Tools = () => {
         {
           name: "Linear Regression Basics",
           path: "/statools/resources/linear-regression-basics.pdf",
-          fileName: "Linear_Regression_Basics.pdf"
+          fileName: "Linear_Regression_Basics.pdf",
+          quiz: linearRegressionBasicsQuestions
         },
         {
           name: "Regression Analysis Step-by-Step",
           path: "/statools/resources/regression-step-by-step.pdf",
-          fileName: "Regression_Analysis_Step_by_Step.pdf"
+          fileName: "Regression_Analysis_Step_by_Step.pdf",
+          quiz: regressionAnalysisQuestions
         },
         {
           name: "Interpreting Regression Results",
           path: "/statools/resources/interpreting-regression.pdf",
-          fileName: "Interpreting_Regression_Results.pdf"
+          fileName: "Interpreting_Regression_Results.pdf",
+          quiz: interpretingRegressionQuestions
         }
       ]
     },
