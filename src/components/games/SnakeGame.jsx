@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import { Play, Pause, RotateCcw, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 
 const GRID_WIDTH = 80;
 const GRID_HEIGHT = 30;
@@ -9,6 +9,37 @@ const INITIAL_DIRECTION = { x: 1, y: 0 };
 const INITIAL_GAME_SPEED = 150;
 
 const MATH_SYMBOLS = ['π', 'Σ', '∫', '∞', '√', 'α', 'β', 'γ', 'δ', 'θ', 'λ', 'μ', 'σ', '∂', '∇', '≈', '≠', '≤', '≥', '±', '×', '÷', '∈', '∉', '⊂', '⊃', '∪', '∩'];
+
+const SYMBOL_NAMES = {
+  'π': 'Pi',
+  'Σ': 'Summation',
+  '∫': 'Integral',
+  '∞': 'Infinity',
+  '√': 'Square Root',
+  'α': 'Alpha',
+  'β': 'Beta',
+  'γ': 'Gamma',
+  'δ': 'Delta',
+  'θ': 'Theta',
+  'λ': 'Lambda',
+  'μ': 'Mu (Mean)',
+  'σ': 'Sigma (Std Dev)',
+  '∂': 'Partial Derivative',
+  '∇': 'Nabla (Del)',
+  '≈': 'Approximately',
+  '≠': 'Not Equal',
+  '≤': 'Less or Equal',
+  '≥': 'Greater or Equal',
+  '±': 'Plus-Minus',
+  '×': 'Multiplication',
+  '÷': 'Division',
+  '∈': 'Element Of',
+  '∉': 'Not Element Of',
+  '⊂': 'Subset Of',
+  '⊃': 'Superset Of',
+  '∪': 'Union',
+  '∩': 'Intersection'
+};
 
 const SnakeGame = () => {
   const canvasRef = useRef(null);
@@ -22,10 +53,21 @@ const SnakeGame = () => {
   const [mondragronProgress, setMondragronProgress] = useState('');
   const [gameSpeed, setGameSpeed] = useState(INITIAL_GAME_SPEED);
   const [mondragonsCompleted, setMondragonsCompleted] = useState(0);
+  const [feedback, setFeedback] = useState(null);
 
   const directionRef = useRef(INITIAL_DIRECTION);
 
   const MONDRAGON_TEXT = 'I-LOVE-STATISTICS';
+
+  // Clear feedback after animation
+  useEffect(() => {
+    if (feedback) {
+      const timer = setTimeout(() => {
+        setFeedback(null);
+      }, 4000); // Match animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [feedback]);
 
   // Generate random food position with math symbol
   const generateFood = useCallback(() => {
@@ -85,6 +127,23 @@ const SnakeGame = () => {
     }
   }, [mondragonsCompleted]);
 
+  // Handle direction change
+  const changeDirection = useCallback((newDir) => {
+    const currentDir = directionRef.current;
+    
+    // Check if new direction is opposite to current direction
+    // Cannot reverse: e.g. if moving x=1 (right), cannot move x=-1 (left)
+    if (
+      (newDir.x !== 0 && currentDir.x !== 0) || 
+      (newDir.y !== 0 && currentDir.y !== 0)
+    ) {
+      return;
+    }
+
+    directionRef.current = newDir;
+    setDirection(newDir);
+  }, []);
+
   // Move snake
   const moveSnake = useCallback(() => {
     if (gameOver || isPaused) return;
@@ -119,6 +178,13 @@ const SnakeGame = () => {
       // Check food collision
       if (newHead.x === food.x && newHead.y === food.y) {
         setScore(prev => prev + 10);
+        
+        // Trigger feedback
+        setFeedback({
+          text: `${food.symbol} ${SYMBOL_NAMES[food.symbol] || ''}`,
+          id: Date.now()
+        });
+
         setFood(generateFood());
         updateMondragronText(newSnake.length);
         return newSnake;
@@ -135,41 +201,28 @@ const SnakeGame = () => {
     if (!isPlaying || isPaused) return;
 
     const key = e.key;
-    const currentDir = directionRef.current;
 
     switch (key) {
       case 'ArrowUp':
-        if (currentDir.y === 0) {
-          directionRef.current = { x: 0, y: -1 };
-          setDirection({ x: 0, y: -1 });
-        }
+        changeDirection({ x: 0, y: -1 });
         e.preventDefault();
         break;
       case 'ArrowDown':
-        if (currentDir.y === 0) {
-          directionRef.current = { x: 0, y: 1 };
-          setDirection({ x: 0, y: 1 });
-        }
+        changeDirection({ x: 0, y: 1 });
         e.preventDefault();
         break;
       case 'ArrowLeft':
-        if (currentDir.x === 0) {
-          directionRef.current = { x: -1, y: 0 };
-          setDirection({ x: -1, y: 0 });
-        }
+        changeDirection({ x: -1, y: 0 });
         e.preventDefault();
         break;
       case 'ArrowRight':
-        if (currentDir.x === 0) {
-          directionRef.current = { x: 1, y: 0 };
-          setDirection({ x: 1, y: 0 });
-        }
+        changeDirection({ x: 1, y: 0 });
         e.preventDefault();
         break;
       default:
         break;
     }
-  }, [isPlaying, isPaused]);
+  }, [isPlaying, isPaused, changeDirection]);
 
   // Game loop
   useEffect(() => {
@@ -303,18 +356,43 @@ const SnakeGame = () => {
 
   return (
     <div className="flex flex-col items-center justify-center bg-white p-4 rounded-lg">
-      <div className="mb-4 text-center">
-        <h3 className="text-xl font-bold text-darkGrey mb-2">Math Snake Game</h3>
-        <p className="text-sm text-darkGrey opacity-70">Eat math symbols to grow!</p>
+      <style>{`
+        @keyframes floatUp {
+          0% { transform: translateY(0); opacity: 1; }
+          10% { transform: translateY(-25px); opacity: 1; }
+          90% { transform: translateY(-25px); opacity: 1; }
+          100% { transform: translateY(-35px); opacity: 0; }
+        }
+        .animate-float-up {
+          animation: floatUp 4s ease-out forwards;
+        }
+      `}</style>
+
+      <div className="mb-4 text-center relative w-full h-16 flex flex-col items-center justify-center">
+        <div className={`transition-opacity duration-200 ${feedback ? 'opacity-10' : 'opacity-100'}`}>
+          <h3 className="text-xl font-bold text-darkGrey mb-2">Math Snake Game</h3>
+          <p className="text-sm text-darkGrey opacity-70">Eat math symbols to grow!</p>
+        </div>
+        
+        {feedback && (
+          <div 
+            key={feedback.id}
+            className="absolute z-10 animate-float-up"
+          >
+            <span className="text-2xl font-bold text-turquoise bg-white px-3 py-1 rounded shadow-sm border border-turquoise">
+              {feedback.text}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Game Canvas */}
-      <div className="relative mb-4">
+      <div className="relative mb-4 w-full max-w-[1200px] flex justify-center">
         <canvas
           ref={canvasRef}
           width={GRID_WIDTH * CELL_SIZE}
           height={GRID_HEIGHT * CELL_SIZE}
-          className="border-4 border-turquoise rounded-lg bg-white"
+          className="border-4 border-turquoise rounded-lg bg-white w-full h-auto max-w-full block"
         />
 
         {/* Game Over Overlay */}
@@ -358,7 +436,7 @@ const SnakeGame = () => {
       </div>
 
       {/* Score and Progress */}
-      <div className="mb-4 text-center w-full">
+      <div className="mb-4 text-center w-full max-w-md">
         <div className="flex justify-between items-center mb-2">
           <div className="text-darkGrey">
             <span className="font-bold">Score:</span> <span className="text-turquoise text-xl font-bold">{score}</span>
@@ -371,9 +449,44 @@ const SnakeGame = () => {
         {mondragronProgress && (
           <div className="bg-yellow bg-opacity-20 border-2 border-yellow rounded-lg p-2">
             <p className="text-sm text-darkGrey font-bold">Snake Text:</p>
-            <p className="text-lg font-bold text-turquoise font-mono">{mondragronProgress}</p>
+            <p className="text-lg font-bold text-turquoise font-mono break-all">{mondragronProgress}</p>
           </div>
         )}
+      </div>
+
+      {/* Touch Controls - Visible on all devices but intended for touch */}
+      <div className="grid grid-cols-3 gap-2 mb-4 max-w-[200px]">
+        <div></div>
+        <button 
+          className="bg-darkGrey text-white p-4 rounded-lg active:bg-turquoise transition-colors flex items-center justify-center shadow-md"
+          onPointerDown={(e) => { e.preventDefault(); changeDirection({ x: 0, y: -1 }); }}
+          aria-label="Up"
+        >
+          <ArrowUp size={24} />
+        </button>
+        <div></div>
+        
+        <button 
+          className="bg-darkGrey text-white p-4 rounded-lg active:bg-turquoise transition-colors flex items-center justify-center shadow-md"
+          onPointerDown={(e) => { e.preventDefault(); changeDirection({ x: -1, y: 0 }); }}
+          aria-label="Left"
+        >
+          <ArrowLeft size={24} />
+        </button>
+        <button 
+          className="bg-darkGrey text-white p-4 rounded-lg active:bg-turquoise transition-colors flex items-center justify-center shadow-md"
+          onPointerDown={(e) => { e.preventDefault(); changeDirection({ x: 0, y: 1 }); }}
+          aria-label="Down"
+        >
+          <ArrowDown size={24} />
+        </button>
+        <button 
+          className="bg-darkGrey text-white p-4 rounded-lg active:bg-turquoise transition-colors flex items-center justify-center shadow-md"
+          onPointerDown={(e) => { e.preventDefault(); changeDirection({ x: 1, y: 0 }); }}
+          aria-label="Right"
+        >
+          <ArrowRight size={24} />
+        </button>
       </div>
 
       {/* Controls */}
@@ -401,10 +514,11 @@ const SnakeGame = () => {
       {/* Instructions */}
       <div className="text-center text-sm text-darkGrey opacity-70 max-w-xs">
         <p className="font-bold mb-1">How to Play:</p>
-        <p>Eat math symbols and use the arrows to move!</p>
+        <p>Eat math symbols and use the arrows or on-screen buttons to move!</p>
       </div>
     </div>
   );
 };
+
 
 export default SnakeGame;
