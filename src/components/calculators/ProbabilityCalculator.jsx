@@ -269,10 +269,10 @@ const Dice3D = ({ value, isRolling, size = 60 }) => {
     }
     const rotations = {
       1: 'rotateX(0deg) rotateY(0deg)',
-      2: 'rotateY(-90deg)',
+      2: 'rotateY(90deg)',
       3: 'rotateX(-90deg)',
       4: 'rotateX(90deg)',
-      5: 'rotateY(90deg)',
+      5: 'rotateY(-90deg)',
       6: 'rotateY(180deg)'
     };
     return rotations[value];
@@ -281,7 +281,7 @@ const Dice3D = ({ value, isRolling, size = 60 }) => {
   return (
     <div className="inline-block" style={{ perspective: '200px' }}>
       <div
-        className="relative transition-transform duration-1000 ease-out"
+        className="relative transition-transform duration-500 ease-out"
         style={{
           width: `${size}px`,
           height: `${size}px`,
@@ -1022,12 +1022,12 @@ const DiceSimulatorModule = () => {
       const newValues = Array(diceCount).fill(0).map(() => Math.floor(Math.random() * 6) + 1);
       setDiceValues(newValues);
       setIsRolling(false);
-      setRollHistory(prev => [...prev.slice(-19), {
+      setRollHistory(prev => [...prev.slice(-99), {
         values: newValues,
         sum: newValues.reduce((a, b) => a + b, 0),
         timestamp: Date.now()
       }]);
-    }, 1000);
+    }, 500);
   }, [diceCount]);
 
   // Update dice values when count changes
