@@ -11,11 +11,14 @@
  * @version 1.0.0
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { jStat } from 'jstat';
 import InfoIcon from './InfoIcon';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
+import useFocusTrap from '../../hooks/useFocusTrap';
+import { announcePolite } from '../../utils/announce';
 
 // Register required Chart.js components
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend, Filler);
@@ -48,7 +51,7 @@ const CHART_COLORS = {
     line: 'rgba(78, 205, 196, 0.8)',
     fill: 'rgba(78, 205, 196, 0.2)'
   },
-  testStatistic: 'rgba(255, 215, 0, 1)',
+  testStatistic: 'rgba(180, 83, 9, 1)',
   criticalValue: 'rgba(138, 43, 226, 1)'
 };
 
@@ -71,10 +74,43 @@ const DEFAULT_VALUES = {
 };
 
 /**
+ * Story-based example scenarios with their expected conclusions,
+ * so students can predict the outcome before pressing Calculate
+ */
+const PRESET_SCENARIOS = [
+  {
+    name: 'Is This Coin Fair?',
+    testType: TEST_TYPES.PROPORTION,
+    tailType: TAIL_TYPES.TWO,
+    inputs: { sampleProportion: 0.58, hypothesizedProportion: 0.5, sampleSize: 100, significanceLevel: 0.05 },
+    description: 'You flip a coin 100 times and get 58 heads. Is the coin biased?',
+    expectedOutcome: 'Fail to reject — z ≈ 1.60, p ≈ 0.11. Even 58/100 heads is within what a fair coin can do by chance. Watch how the test statistic lands inside the teal region.'
+  },
+  {
+    name: 'Battery Life Claim',
+    testType: TEST_TYPES.MEAN,
+    tailType: TAIL_TYPES.LEFT,
+    inputs: { sampleMean: 9.6, hypothesizedMean: 10, sampleSize: 40, stdDev: 1.2, significanceLevel: 0.05, stdDevType: 'unknown' },
+    description: 'A maker claims 10-hour battery life. Your 40-unit sample averages 9.6 h (s = 1.2). Do batteries fall short?',
+    expectedOutcome: 'Reject — t ≈ −2.11, p ≈ 0.02. A left-tailed test puts all the rejection area on the low side, and the sample mean is far enough below 10 to land in it.'
+  },
+  {
+    name: 'Election Polling Edge',
+    testType: TEST_TYPES.PROPORTION,
+    tailType: TAIL_TYPES.RIGHT,
+    inputs: { sampleProportion: 0.54, hypothesizedProportion: 0.5, sampleSize: 600, significanceLevel: 0.05 },
+    description: 'A poll of 600 voters shows 54% support. Is support really above 50%?',
+    expectedOutcome: 'Reject, just barely — z ≈ 1.96 against a critical value of 1.645, p ≈ 0.025. Note how the large sample (n = 600) makes a small 4-point edge detectable.'
+  }
+];
+
+/**
  * Main HypothesisTestCalculator component
  * Handles hypothesis testing calculations and visualizations
  */
 const HypothesisTestCalculator = () => {
+  useDocumentTitle('Hypothesis Testing Calculator');
+
   // State management
   const [testType, setTestType] = useState(TEST_TYPES.PROPORTION);
   const [tailType, setTailType] = useState(TAIL_TYPES.TWO);
@@ -83,6 +119,28 @@ const HypothesisTestCalculator = () => {
   const [result, setResult] = useState({});
   const [chartData, setChartData] = useState(null);
   const [showErrorExplanation, setShowErrorExplanation] = useState(false);
+  const [error, setError] = useState("");
+  const [showChartModal, setShowChartModal] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const chartRef = useRef(null);
+
+  const chartModalTrapRef = useFocusTrap(showChartModal);
+
+  const handleChartModalKeyDown = useCallback((e) => {
+    if (e.key === 'Escape') setShowChartModal(false);
+  }, []);
+
+  /**
+   * Load a story scenario: sets test type, tail, and all inputs at once
+   */
+  const applyPreset = (preset) => {
+    setTestType(preset.testType);
+    setTailType(preset.tailType);
+    setInputs(preset.inputs);
+    setResult({});
+    setChartData(null);
+    announcePolite('Loaded scenario: ' + preset.name + '. Press Calculate Test to run it.');
+  };
 
   /**
    * Handle input field changes
@@ -183,8 +241,21 @@ const HypothesisTestCalculator = () => {
     const alpha = parseFloat(significanceLevel);
 
     // Validate inputs
+    setError("");
     if (isNaN(p_hat) || isNaN(p_0) || isNaN(n) || isNaN(alpha)) {
-      alert("Please fill in all fields with valid numbers");
+      setError("Please fill in all fields with valid numbers (e.g., proportion 0.5, sample size 100, significance 0.05).");
+      return;
+    }
+    if (p_hat < 0 || p_hat > 1 || p_0 <= 0 || p_0 >= 1) {
+      setError("Proportions must be between 0 and 1 (and p₀ strictly between them). For 65%, enter 0.65.");
+      return;
+    }
+    if (n < 1) {
+      setError("Sample size must be at least 1.");
+      return;
+    }
+    if (alpha <= 0 || alpha >= 1) {
+      setError("Significance level must be between 0 and 1 (commonly 0.05).");
       return;
     }
 
@@ -218,10 +289,36 @@ const HypothesisTestCalculator = () => {
       pValue: pValue.toFixed(4),
       confidenceInterval,
       reject,
-      distribution: DISTRIBUTION_TYPES.Z
+      distribution: DISTRIBUTION_TYPES.Z,
+      pValueNum: pValue,
+      h0Value: p_0,
+      alphaNum: alpha,
+      calcTestType: TEST_TYPES.PROPORTION,
+      calcTailType: tailType,
+      steps: {
+        seFormula: `SE = √(p₀(1−p₀)/n) = √(${p_0.toFixed(2)} × ${(1 - p_0).toFixed(2)} / ${n})`,
+        seValue: standardError,
+        statFormula: `z = (p̂ − p₀) / SE = (${p_hat} − ${p_0}) / ${standardError.toFixed(4)}`,
+        statName: 'z'
+      },
+      assumptions: [
+        {
+          label: `Expected successes np₀ = ${(n * p_0).toFixed(1)} ≥ 10`,
+          pass: n * p_0 >= 10
+        },
+        {
+          label: `Expected failures n(1−p₀) = ${(n * (1 - p_0)).toFixed(1)} ≥ 10`,
+          pass: n * (1 - p_0) >= 10
+        },
+        {
+          label: 'Random, independent sample (you must judge this from how the data was collected)',
+          pass: null
+        }
+      ]
     });
 
     createVisualization(z, criticalValue, DISTRIBUTION_TYPES.Z);
+    announcePolite(`Proportion test complete. Test statistic: ${z.toFixed(4)}, p-value: ${pValue.toFixed(4)}. ${reject ? 'Reject' : 'Fail to reject'} the null hypothesis.`);
   };
 
   /**
@@ -239,8 +336,21 @@ const HypothesisTestCalculator = () => {
     const alpha = parseFloat(significanceLevel);
 
     // Validate inputs
+    setError("");
     if (isNaN(x_bar) || isNaN(mu_0) || isNaN(n) || isNaN(s) || isNaN(alpha)) {
-      alert("Please fill in all fields with valid numbers");
+      setError("Please fill in all fields with valid numbers (e.g., mean 50, std dev 10, sample size 30, significance 0.05).");
+      return;
+    }
+    if (s <= 0) {
+      setError("Standard deviation must be greater than 0.");
+      return;
+    }
+    if (n < 2) {
+      setError("Sample size must be at least 2.");
+      return;
+    }
+    if (alpha <= 0 || alpha >= 1) {
+      setError("Significance level must be between 0 and 1 (commonly 0.05).");
       return;
     }
 
@@ -279,10 +389,40 @@ const HypothesisTestCalculator = () => {
       confidenceInterval,
       reject,
       distribution,
-      df: distribution === DISTRIBUTION_TYPES.T ? df : null
+      df: distribution === DISTRIBUTION_TYPES.T ? df : null,
+      pValueNum: pValue,
+      h0Value: mu_0,
+      alphaNum: alpha,
+      calcTestType: TEST_TYPES.MEAN,
+      calcTailType: tailType,
+      steps: {
+        seFormula: `SE = ${stdDevType === 'known' ? 'σ' : 's'}/√n = ${s} / √${n}`,
+        seValue: standardError,
+        statFormula: `${distribution === DISTRIBUTION_TYPES.Z ? 'z' : 't'} = (x̄ − μ₀) / SE = (${x_bar} − ${mu_0}) / ${standardError.toFixed(4)}`,
+        statName: distribution === DISTRIBUTION_TYPES.Z ? 'z' : 't'
+      },
+      assumptions: [
+        {
+          label: n >= 30
+            ? `Sample size n = ${n} ≥ 30, so the Central Limit Theorem covers non-normal populations`
+            : `Sample size n = ${n} < 30 — the population should be roughly normal for this test to be reliable`,
+          pass: n >= 30 ? true : null
+        },
+        {
+          label: stdDevType === 'known'
+            ? 'Population σ is truly known (rare in practice — if it came from the sample, use t instead)'
+            : `Using the t-distribution with ${df} degrees of freedom to account for estimating s from the sample`,
+          pass: stdDevType === 'known' ? null : true
+        },
+        {
+          label: 'Random, independent sample (you must judge this from how the data was collected)',
+          pass: null
+        }
+      ]
     });
 
     createVisualization(testStat, criticalValue, distribution, df);
+    announcePolite(`Mean test complete. Test statistic: ${testStat.toFixed(4)}, p-value: ${pValue.toFixed(4)}. ${reject ? 'Reject' : 'Fail to reject'} the null hypothesis.`);
   };
 
   /**
@@ -374,54 +514,28 @@ const HypothesisTestCalculator = () => {
       criticalMarkers.push(criticalValue);
     }
 
-    // criticalMarkers.forEach((cv, index) => {
-    //   datasets.push({
-    //     label: index === 0 ? 'Critical Value(s)' : '',
-    //     data: xValues.map(x => Math.abs(x - cv) < 0.02 ? 0.5 : null),
-    //     borderColor: CHART_COLORS.criticalValue,
-    //     backgroundColor: CHART_COLORS.criticalValue,
-    //     borderWidth: 3,
-    //     pointRadius: 0,
-    //     borderDash: [5, 5],
-    //     order: 0
-    //   });
-    // });
-
-    // // Add test statistic marker
-    // datasets.push({
-    //   label: 'Test Statistic',
-    //   data: [{x: testStatistic, y: 0}],
-    //   borderColor: CHART_COLORS.testStatistic,
-    //   backgroundColor: CHART_COLORS.testStatistic,
-    //   pointRadius: 10,
-    //   pointStyle: 'triangle',
-    //   pointBorderWidth: 3,
-    //   showLine: false,
-    //   order: -1
-    // });
-
     // Add vertical lines for critical values
-criticalMarkers.forEach((cv, index) => {
-  // Find the closest x-value index
-  const cvIndex = xValues.findIndex(x => Math.abs(x - cv) < step/2);
-  if (cvIndex !== -1) {
-    // Create vertical line data
-    const verticalLine = new Array(xValues.length).fill(null);
-    verticalLine[cvIndex] = yValues[cvIndex];
-    
-    datasets.push({
-      label: index === 0 ? 'Critical Value(s)' : '',
-      data: verticalLine,
-      borderColor: CHART_COLORS.criticalValue,
-      backgroundColor: CHART_COLORS.criticalValue,
-      borderWidth: 3,
-      pointRadius: 0,
-      type: 'bar',
-      barThickness: 2,
-      order: 0
+    criticalMarkers.forEach((cv, index) => {
+      // Find the closest x-value index
+      const cvIndex = xValues.findIndex(x => Math.abs(x - cv) < step/2);
+      if (cvIndex !== -1) {
+        // Create vertical line data
+        const verticalLine = new Array(xValues.length).fill(null);
+        verticalLine[cvIndex] = yValues[cvIndex];
+
+        datasets.push({
+          label: index === 0 ? 'Critical Value(s)' : '',
+          data: verticalLine,
+          borderColor: CHART_COLORS.criticalValue,
+          backgroundColor: CHART_COLORS.criticalValue,
+          borderWidth: 3,
+          pointRadius: 0,
+          type: 'bar',
+          barThickness: 2,
+          order: 0
+        });
+      }
     });
-  }
-});
 
   // Add test statistic marker on x-axis
   const testStatIndex = xValues.findIndex(x => Math.abs(x - testStatistic) < step/2);
@@ -530,6 +644,77 @@ criticalMarkers.forEach((cv, index) => {
     }
   };
 
+  // Symbols for the live hypotheses display
+  const paramSymbol = testType === TEST_TYPES.PROPORTION ? 'p' : 'μ';
+  const h0InputValue = testType === TEST_TYPES.PROPORTION ? inputs.hypothesizedProportion : inputs.hypothesizedMean;
+  const tailSymbol = tailType === TAIL_TYPES.TWO ? '≠' : tailType === TAIL_TYPES.RIGHT ? '>' : '<';
+
+  /**
+   * Word the strength of evidence based on the p-value
+   */
+  const evidenceStrength = (pVal) =>
+    pVal < 0.01 ? 'very strong' : pVal < 0.05 ? 'strong' : pVal < 0.10 ? 'moderate' : 'weak or no';
+
+  /**
+   * Plain-English conclusion sentence for the completed test
+   */
+  const conclusionText = () => {
+    const param = result.calcTestType === TEST_TYPES.PROPORTION ? 'proportion' : 'mean';
+    const direction = result.calcTailType === TAIL_TYPES.TWO ? 'different from'
+      : result.calcTailType === TAIL_TYPES.RIGHT ? 'greater than' : 'less than';
+    return result.reject
+      ? `At the ${(result.alphaNum * 100).toFixed(0)}% significance level, the sample provides sufficient evidence that the true ${param} is ${direction} ${result.h0Value}.`
+      : `At the ${(result.alphaNum * 100).toFixed(0)}% significance level, the sample does NOT provide sufficient evidence that the true ${param} is ${direction} ${result.h0Value}.`;
+  };
+
+  /**
+   * Copy the full test summary as tab-separated text
+   */
+  const copyResultsToClipboard = async () => {
+    const rows = [
+      ['Hypothesis Test', result.calcTestType === TEST_TYPES.PROPORTION ? 'One-sample proportion (z)' : `One-sample mean (${result.distribution})`],
+      ['H₀', `${paramSymbol} = ${result.h0Value}`],
+      ['H₁', `${paramSymbol} ${tailSymbol} ${result.h0Value}`],
+      ['Test statistic', result.testStatistic],
+      ['Critical value', result.criticalValue],
+      ['P-value', result.pValue],
+      ...(result.df ? [['Degrees of freedom', String(result.df)]] : []),
+      ...(result.confidenceInterval ? [[`${((1 - result.alphaNum) * 100).toFixed(0)}% CI`, `[${result.confidenceInterval[0]}, ${result.confidenceInterval[1]}]`]] : []),
+      ['Decision', result.reject ? 'Reject H₀' : 'Fail to reject H₀'],
+      ['Conclusion', conclusionText()]
+    ];
+    const text = rows.map(row => row.join('\t')).join('\n');
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      announcePolite('Results copied to clipboard.');
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      announcePolite('Could not access the clipboard.');
+    }
+  };
+
+  /**
+   * Download the test visualization as a PNG on a white background
+   */
+  const downloadChartPNG = () => {
+    const chart = chartRef.current;
+    if (!chart) return;
+    const source = chart.canvas;
+    const canvas = document.createElement('canvas');
+    canvas.width = source.width;
+    canvas.height = source.height;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(source, 0, 0);
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = `hypothesis-test-${result.calcTestType || testType}.png`;
+    link.click();
+    announcePolite('Chart image downloaded.');
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
@@ -602,11 +787,12 @@ criticalMarkers.forEach((cv, index) => {
               
               <div className="space-y-3">
                 <div>
-                  <label className="block text-darkGrey font-medium mb-2">Test Type</label>
-                  <select 
-                    value={testType} 
+                  <label htmlFor="hyp-test-type" className="block text-darkGrey font-medium mb-2">Test Type</label>
+                  <select
+                    id="hyp-test-type"
+                    value={testType}
                     onChange={handleTestTypeChange}
-                    className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                    className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                   >
                     <option value={TEST_TYPES.PROPORTION}>Proportion Test (Z-test)</option>
                     <option value={TEST_TYPES.MEAN}>Mean Test (Z or t-test)</option>
@@ -614,16 +800,31 @@ criticalMarkers.forEach((cv, index) => {
                 </div>
                 
                 <div>
-                  <label className="block text-darkGrey font-medium mb-2">Tail Type</label>
-                  <select 
-                    value={tailType} 
+                  <label htmlFor="hyp-tail-type" className="block text-darkGrey font-medium mb-2">Tail Type</label>
+                  <select
+                    id="hyp-tail-type"
+                    value={tailType}
                     onChange={(e) => setTailType(e.target.value)}
-                    className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                    className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                   >
                     <option value={TAIL_TYPES.TWO}>Two-Tailed (≠)</option>
                     <option value={TAIL_TYPES.RIGHT}>Right-Tailed ({">"})</option>
                     <option value={TAIL_TYPES.LEFT}>Left-Tailed ({"<"})</option>
                   </select>
+                </div>
+
+                {/* Live hypotheses preview, updating as inputs change */}
+                <div className="p-3 bg-white rounded-lg border-2 border-darkTeal/30">
+                  <p className="text-sm font-semibold text-darkGrey mb-1">Your Hypotheses:</p>
+                  <p className="font-mono text-darkGrey">H₀: {paramSymbol} = {h0InputValue || '?'}</p>
+                  <p className="font-mono text-darkGrey">H₁: {paramSymbol} {tailSymbol} {h0InputValue || '?'}</p>
+                  <p className="text-xs text-darkGrey/70 mt-1">
+                    {tailType === TAIL_TYPES.TWO
+                      ? 'Two-tailed: you suspect a difference in either direction, so α is split between both tails.'
+                      : tailType === TAIL_TYPES.RIGHT
+                        ? 'Right-tailed: you suspect the true value is HIGHER, so all of α sits in the right tail.'
+                        : 'Left-tailed: you suspect the true value is LOWER, so all of α sits in the left tail.'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -635,130 +836,140 @@ criticalMarkers.forEach((cv, index) => {
               {testType === TEST_TYPES.PROPORTION ? (
                 <div className="space-y-3">
                   <div>
-                    <label className="flex items-center text-darkGrey font-medium mb-1">
+                    <label htmlFor="hyp-sample-proportion" className="flex items-center text-darkGrey font-medium mb-1">
                       Sample Proportion (p̂)
                       <InfoIcon info="The observed proportion in your sample" />
                     </label>
                     <input
+                      id="hyp-sample-proportion"
                       type="number"
                       step="0.0001"
                       name="sampleProportion"
                       value={inputs.sampleProportion || ""}
                       onChange={handleChange}
                       placeholder="e.g., 0.65"
-                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
+                      aria-invalid={!!error}
+                      aria-describedby="hyp-error"
                     />
                   </div>
                   
                   <div>
-                    <label className="flex items-center text-darkGrey font-medium mb-1">
+                    <label htmlFor="hyp-hypothesized-proportion" className="flex items-center text-darkGrey font-medium mb-1">
                       Hypothesized Proportion (p₀)
                       <InfoIcon info="The proportion stated in the null hypothesis" />
                     </label>
                     <input
+                      id="hyp-hypothesized-proportion"
                       type="number"
                       step="0.0001"
                       name="hypothesizedProportion"
                       value={inputs.hypothesizedProportion || ""}
                       onChange={handleChange}
                       placeholder="e.g., 0.50"
-                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                     />
                   </div>
                   
                   <div>
-                    <label className="flex items-center text-darkGrey font-medium mb-1">
+                    <label htmlFor="hyp-prop-sample-size" className="flex items-center text-darkGrey font-medium mb-1">
                       Sample Size (n)
                       <InfoIcon info="The number of observations in your sample" />
                     </label>
                     <input
+                      id="hyp-prop-sample-size"
                       type="number"
                       name="sampleSize"
                       value={inputs.sampleSize || ""}
                       onChange={handleChange}
                       placeholder="e.g., 100"
-                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                     />
                   </div>
                   
                   <div>
-                    <label className="flex items-center text-darkGrey font-medium mb-1">
+                    <label htmlFor="hyp-prop-significance" className="flex items-center text-darkGrey font-medium mb-1">
                       Significance Level (α)
                       <InfoIcon info="The probability of Type I error (typically 0.05)" />
                     </label>
                     <input
+                      id="hyp-prop-significance"
                       type="number"
                       step="0.01"
                       name="significanceLevel"
                       value={inputs.significanceLevel || ""}
                       onChange={handleChange}
                       placeholder="e.g., 0.05"
-                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                     />
                   </div>
                 </div>
               ) : (
                 <div className="space-y-3">
                   <div>
-                    <label className="flex items-center text-darkGrey font-medium mb-1">
+                    <label htmlFor="hyp-sample-mean" className="flex items-center text-darkGrey font-medium mb-1">
                       Sample Mean (x̄)
                       <InfoIcon info="The average of your sample data" />
                     </label>
                     <input
+                      id="hyp-sample-mean"
                       type="number"
                       step="0.0001"
                       name="sampleMean"
                       value={inputs.sampleMean || ""}
                       onChange={handleChange}
                       placeholder="e.g., 25.5"
-                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                     />
                   </div>
                   
                   <div>
-                    <label className="flex items-center text-darkGrey font-medium mb-1">
+                    <label htmlFor="hyp-hypothesized-mean" className="flex items-center text-darkGrey font-medium mb-1">
                       Hypothesized Mean (μ₀)
                       <InfoIcon info="The mean stated in the null hypothesis" />
                     </label>
                     <input
+                      id="hyp-hypothesized-mean"
                       type="number"
                       step="0.0001"
                       name="hypothesizedMean"
                       value={inputs.hypothesizedMean || ""}
                       onChange={handleChange}
                       placeholder="e.g., 24.0"
-                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                     />
                   </div>
                   
                   <div>
-                    <label className="flex items-center text-darkGrey font-medium mb-1">
+                    <label htmlFor="hyp-mean-sample-size" className="flex items-center text-darkGrey font-medium mb-1">
                       Sample Size (n)
                       <InfoIcon info="The number of observations in your sample" />
                     </label>
                     <input
+                      id="hyp-mean-sample-size"
                       type="number"
                       name="sampleSize"
                       value={inputs.sampleSize || ""}
                       onChange={handleChange}
                       placeholder="e.g., 30"
-                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                     />
                   </div>
                   
                   <div>
-                    <label className="flex items-center text-darkGrey font-medium mb-1">
+                    <label htmlFor="hyp-std-dev" className="flex items-center text-darkGrey font-medium mb-1">
                       Standard Deviation (σ or s)
                       <InfoIcon info="Population (σ) or sample (s) standard deviation" />
                     </label>
                     <input
+                      id="hyp-std-dev"
                       type="number"
                       step="0.0001"
                       name="stdDev"
                       value={inputs.stdDev || ""}
                       onChange={handleChange}
                       placeholder="e.g., 3.5"
-                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                     />
                   </div>
                   
@@ -791,18 +1002,19 @@ criticalMarkers.forEach((cv, index) => {
                   </div>
                   
                   <div>
-                    <label className="flex items-center text-darkGrey font-medium mb-1">
+                    <label htmlFor="hyp-mean-significance" className="flex items-center text-darkGrey font-medium mb-1">
                       Significance Level (α)
                       <InfoIcon info="The probability of Type I error (typically 0.05)" />
                     </label>
                     <input
+                      id="hyp-mean-significance"
                       type="number"
                       step="0.01"
                       name="significanceLevel"
                       value={inputs.significanceLevel || ""}
                       onChange={handleChange}
                       placeholder="e.g., 0.05"
-                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                     />
                   </div>
                 </div>
@@ -830,12 +1042,13 @@ criticalMarkers.forEach((cv, index) => {
                 </label>
               </div>
               
-              <button 
+              <button
                 onClick={calculate}
-                className="mt-4 w-full bg-yellow border-2 border-darkGrey text-darkGrey px-4 py-3 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all"
+                className="mt-4 w-full bg-accent border-2 border-darkGrey text-darkGrey px-4 py-3 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all"
               >
                 Calculate Test
               </button>
+              <p id="hyp-error" className="text-red-500 text-sm mt-2" role="status">{error || ''}</p>
             </div>
           </div>
 
@@ -849,12 +1062,12 @@ criticalMarkers.forEach((cv, index) => {
                     Hypothesis Test Visualization
                   </h3>
                   <div className="h-64">
-                    {chartData && <Line data={chartData} options={chartOptions} />}
+                    {chartData && <div role="img" className="h-full" aria-label="Hypothesis test distribution curve showing rejection and acceptance regions"><Line ref={chartRef} data={chartData} options={chartOptions} /></div>}
                   </div>
                   <div className="mt-2 text-xs text-darkGrey">
                     <div className="flex items-center space-x-4">
                       <span className="flex items-center">
-                        <span className="inline-block w-3 h-3 bg-yellow-400 mr-1"></span>
+                        <span className="inline-block w-3 h-3 mr-1" style={{backgroundColor: CHART_COLORS.testStatistic}}></span>
                         Test Statistic: {result.testStatistic}
                       </span>
                       <span className="flex items-center">
@@ -863,9 +1076,29 @@ criticalMarkers.forEach((cv, index) => {
                       </span>
                     </div>
                     <p className="mt-1">
-                      <span className="text-red-500">Red area:</span> Rejection region | 
-                      <span className="text-turquoise ml-2">Turquoise area:</span> Acceptance region
+                      <span className="text-red-500">Red area:</span> Rejection region |
+                      <span className="text-darkTeal ml-2">Teal area:</span> Acceptance region
                     </p>
+                  </div>
+                  <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                    <button
+                      onClick={() => setShowChartModal(true)}
+                      className="flex-1 bg-darkTeal text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-darkTeal/80 transition-colors"
+                    >
+                      🔍 View Larger Chart
+                    </button>
+                    <button
+                      onClick={copyResultsToClipboard}
+                      className="flex-1 bg-darkTeal text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-darkTeal/80 transition-colors"
+                    >
+                      {copied ? '✓ Copied!' : '📋 Copy Results'}
+                    </button>
+                    <button
+                      onClick={downloadChartPNG}
+                      className="flex-1 bg-darkTeal text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-darkTeal/80 transition-colors"
+                    >
+                      🖼️ Download PNG
+                    </button>
                   </div>
                 </div>
 
@@ -877,20 +1110,26 @@ criticalMarkers.forEach((cv, index) => {
                   <p className="text-lg font-semibold text-darkGrey">
                     {result.reject ? '✓ Reject the null hypothesis' : '✗ Fail to reject the null hypothesis'}
                   </p>
+                  <p className="text-sm text-darkGrey mt-2">
+                    <strong>In plain words:</strong> {conclusionText()}
+                  </p>
                   <p className="text-sm text-darkGrey opacity-80 mt-1">
-                    {result.reject 
-                      ? `The evidence is statistically significant at α = ${inputs.significanceLevel}`
-                      : `The evidence is not statistically significant at α = ${inputs.significanceLevel}`}
+                    The p-value of {result.pValue} indicates <strong>{evidenceStrength(result.pValueNum)}</strong> evidence against H₀.
                   </p>
                   {result.reject && (
                     <p className="text-sm text-darkGrey mt-2 italic">
                       Note: Rejecting H₀ doesn't prove H₁ is true - it means the data is unlikely under H₀
                     </p>
                   )}
+                  {!result.reject && (
+                    <p className="text-sm text-darkGrey mt-2 italic">
+                      Note: Failing to reject H₀ is not proof that H₀ is true - the sample may simply be too small to detect a real difference
+                    </p>
+                  )}
                 </div>
 
                 {/* Test Results */}
-                <div className="bg-yellow/20 border-2 border-yellow p-4 rounded-lg">
+                <div className="bg-accent/20 border-2 border-accent p-4 rounded-lg">
                   <h3 className="text-xl font-bold text-darkGrey mb-3">Test Results</h3>
                   <div className="space-y-2 text-darkGrey">
                     <div className="flex justify-between items-center">
@@ -925,7 +1164,7 @@ criticalMarkers.forEach((cv, index) => {
                   </div>
                   
                   {/* P-value interpretation guide */}
-                  <div className="mt-3 pt-3 border-t border-yellow/50">
+                  <div className="mt-3 pt-3 border-t border-accent/50">
                     <p className="text-sm font-medium text-darkGrey mb-1">P-Value Interpretation:</p>
                     <div className="text-xs text-darkGrey space-y-1">
                       <p>• If p-value {"<"} α: Reject H₀ (significant result)</p>
@@ -936,6 +1175,48 @@ criticalMarkers.forEach((cv, index) => {
                     </div>
                   </div>
                 </div>
+
+                {/* The math, step by step */}
+                {result.steps && (
+                  <div className="bg-white border-2 border-darkGrey/20 p-4 rounded-lg text-sm text-darkGrey">
+                    <h3 className="text-lg font-bold text-darkGrey mb-2">🧮 The Math, Step by Step</h3>
+                    <ol className="list-decimal list-inside space-y-2">
+                      <li>
+                        <strong>Standard error</strong> — how much sample results naturally wobble:
+                        <p className="font-mono ml-5">{result.steps.seFormula} = {result.steps.seValue.toFixed(4)}</p>
+                      </li>
+                      <li>
+                        <strong>Test statistic</strong> — how many standard errors the sample sits from H₀:
+                        <p className="font-mono ml-5">{result.steps.statFormula} = {result.testStatistic}</p>
+                      </li>
+                      <li>
+                        <strong>Compare</strong> — {result.steps.statName} = {result.testStatistic} vs critical value {result.criticalValue}
+                        {result.df ? ` (t-distribution, df = ${result.df})` : ' (standard normal)'}:
+                        the test statistic {result.reject ? 'falls in the rejection region → reject H₀' : 'stays outside the rejection region → fail to reject H₀'}.
+                      </li>
+                    </ol>
+                  </div>
+                )}
+
+                {/* Assumption checks */}
+                {result.assumptions && (
+                  <div className="bg-white border-2 border-darkGrey/20 p-4 rounded-lg text-sm text-darkGrey">
+                    <h3 className="text-lg font-bold text-darkGrey mb-2">✅ Conditions Check</h3>
+                    <ul className="space-y-1">
+                      {result.assumptions.map((assumption, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span aria-hidden="true">{assumption.pass === true ? '✓' : assumption.pass === false ? '⚠️' : 'ℹ️'}</span>
+                          <span className={assumption.pass === false ? 'text-red-700 font-medium' : ''}>{assumption.label}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    {result.assumptions.some(a => a.pass === false) && (
+                      <p className="mt-2 text-red-700 text-xs font-medium">
+                        One or more conditions fail — the test's p-value may not be trustworthy. Consider a larger sample or an exact test.
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 {/* Error Type Explanation */}
                 {showErrorExplanation && (
@@ -982,6 +1263,96 @@ criticalMarkers.forEach((cv, index) => {
             )}
           </div>
         </div>
+
+        {/* Story-based example scenarios */}
+        <div className="mt-6 bg-white border-2 border-darkGrey/20 p-4 rounded-lg">
+          <h3 className="text-lg font-bold text-darkGrey mb-2">Try a Real Scenario</h3>
+          <p className="text-xs text-darkGrey/70 mb-2">
+            Each scenario predicts its outcome — load one, press Calculate Test, and check the prediction against the decision and the chart.
+          </p>
+          <div className="grid md:grid-cols-3 gap-2">
+            {PRESET_SCENARIOS.map((preset, index) => (
+              <button
+                key={index}
+                onClick={() => applyPreset(preset)}
+                className="p-3 text-left bg-platinum hover:bg-darkTeal/20 rounded transition-colors text-sm text-darkGrey"
+                aria-label={`Load ${preset.name} scenario`}
+              >
+                <div className="font-medium">{preset.name}</div>
+                <div className="text-xs text-darkGrey/70 mt-1">{preset.description}</div>
+                <div className="text-xs text-darkTeal mt-1 italic">What to expect: {preset.expectedOutcome}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Enlarged chart modal */}
+        {showChartModal && chartData && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onKeyDown={handleChartModalKeyDown}>
+            <div ref={chartModalTrapRef} role="dialog" aria-modal="true" aria-labelledby="hyp-chart-modal-title" className="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-5xl max-h-screen overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 id="hyp-chart-modal-title" className="text-2xl font-bold text-darkGrey">
+                  Hypothesis Test — {result.distribution === DISTRIBUTION_TYPES.T ? `t-distribution (df = ${result.df})` : 'Standard Normal (z)'}
+                </h3>
+                <button
+                  onClick={() => setShowChartModal(false)}
+                  className="text-darkGrey hover:text-red-500 text-2xl font-bold"
+                  aria-label="Close enlarged chart"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* How to read this chart */}
+              <div className="mb-4 p-4 bg-blue-50 rounded">
+                <h4 className="font-semibold text-darkGrey mb-2">
+                  📊 How to Read This Chart:
+                </h4>
+                <div className="grid md:grid-cols-2 gap-3 text-sm text-darkGrey">
+                  <div>
+                    <p>• <span className="font-semibold">The Curve:</span> Where test statistics would land if H₀ were true — most results cluster near 0</p>
+                    <p>• <span className="font-semibold text-red-500">Red Region:</span> The rejection region — its total area is exactly α = {result.alphaNum}</p>
+                    <p>• <span className="font-semibold text-darkTeal">Teal Region:</span> Results consistent with H₀</p>
+                  </div>
+                  <div>
+                    <p>• <span className="font-semibold" style={{color: CHART_COLORS.testStatistic}}>Amber Triangle:</span> YOUR test statistic ({result.testStatistic}) — the whole decision is just asking which region it landed in</p>
+                    <p>• <span className="font-semibold" style={{color: CHART_COLORS.criticalValue}}>Purple Line(s):</span> Critical value(s) ({result.criticalValue}) — the boundary between the regions</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Enlarged chart */}
+              <div className="h-96 mb-4">
+                <div role="img" className="h-full" aria-label="Enlarged hypothesis test distribution curve">
+                  <Line data={chartData} options={chartOptions} />
+                </div>
+              </div>
+
+              {/* Key numbers strip */}
+              <div className="bg-gray-50 p-4 rounded">
+                <h4 className="font-semibold text-darkGrey mb-2">Key Numbers:</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                  <div className="text-center">
+                    <p className="text-gray-600">Test Statistic</p>
+                    <p className="font-mono font-bold">{result.testStatistic}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-gray-600">Critical Value</p>
+                    <p className="font-mono font-bold">{result.criticalValue}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-gray-600">P-Value</p>
+                    <p className="font-mono font-bold">{result.pValue}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-gray-600">Decision</p>
+                    <p className="font-bold">{result.reject ? 'Reject H₀' : 'Fail to reject H₀'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

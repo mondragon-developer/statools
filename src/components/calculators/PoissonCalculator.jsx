@@ -1,31 +1,16 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useId } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { jStat } from 'jstat';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
+import { announcePolite } from '../../utils/announce';
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
 
 /**
- * POISSON DISTRIBUTION CALCULATOR: YOUR PROBABILITY PREDICTION ENGINE
- * 
- * Architecture Overview:
- * This calculator is like a weather forecasting station for rare events. Just as meteorologists
- * predict the likelihood of storms, the Poisson distribution predicts the probability of 
- * events happening in fixed intervals of time or space.
- * 
- * Real-World Applications:
- * 1. Call Centers - Predicting incoming calls per hour
- * 2. Quality Control - Defects per production batch
- * 3. Traffic Analysis - Accidents per month
- * 4. Customer Service - Arrivals per minute
- * 5. IT Systems - Server crashes per day
- * 
- * The Poisson Recipe:
- * - One key ingredient: λ (lambda) - the average rate
- * - Mix with time or space intervals
- * - Bake with the magical e^(-λ) formula
- * - Result: Probability of exactly k events!
+ * Poisson distribution calculator — computes P(X=k), cumulative probabilities,
+ * and visualizes the distribution for a given lambda.
  */
 
 // ========================================
@@ -98,19 +83,25 @@ const PoissonMath = {
  */
 const InfoIcon = ({ info }) => {
   const [isVisible, setIsVisible] = useState(false);
-  
+  const tooltipId = useId();
+
   return (
-    <div className="relative inline-block ml-2">
-      <span
-        className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-turquoise rounded-full cursor-help transition-all hover:scale-110"
+    <div className="relative inline-block ml-2" onKeyDown={(e) => { if (e.key === 'Escape') setIsVisible(false); }}>
+      <button
+        type="button"
+        className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-darkTeal rounded-full cursor-help transition-all hover:scale-110"
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
+        onClick={() => setIsVisible(v => !v)}
+        aria-expanded={isVisible}
+        aria-describedby={isVisible ? tooltipId : undefined}
+        aria-label="More info"
       >
         ?
-      </span>
-      
+      </button>
+
       {isVisible && (
-        <div className="absolute z-50 w-64 p-3 text-sm text-white bg-darkGrey rounded-lg shadow-xl -top-2 left-8">
+        <div id={tooltipId} role="tooltip" className="absolute z-50 w-64 p-3 text-sm text-white bg-darkGrey rounded-lg shadow-xl -top-2 left-8">
           <div className="absolute w-0 h-0 border-t-[6px] border-b-[6px] border-r-[6px] border-transparent border-r-darkGrey -left-[6px] top-2" />
           {info}
         </div>
@@ -211,8 +202,8 @@ const ChartManager = {
         (probabilityType === 'atLeast' && k >= x);
 
       if (shouldHighlight) {
-        color = 'rgba(255, 255, 0, 0.8)'; // Bright yellow
-        border = 'rgba(255, 255, 0, 1)';
+        color = 'rgba(217, 119, 6, 0.8)'; // Amber
+        border = 'rgba(180, 83, 9, 1)';
       }
 
       backgroundColors.push(color);
@@ -316,6 +307,7 @@ const ChartManager = {
  * Your statistical weather station for predicting rare events
  */
 const PoissonCalculator = () => {
+  useDocumentTitle('Poisson Distribution Calculator');
   // State management - the calculator's memory
   const [lambda, setLambda] = useState(5);        // Average rate (λ)
   const [x, setX] = useState(5);                   // Target value
@@ -364,6 +356,7 @@ const PoissonCalculator = () => {
   const selectExample = useCallback((example) => {
     setLambda(example.lambda);
     setX(Math.floor(example.lambda)); // Set x to expected value
+    announcePolite('Loaded example: ' + example.name);
   }, []);
 
   // Educational formulas for display
@@ -400,11 +393,12 @@ const PoissonCalculator = () => {
               <div className="space-y-4">
                 {/* Lambda Slider */}
                 <div>
-                  <label className="flex items-center text-darkGrey font-medium mb-2">
+                  <label htmlFor="poisson-lambda" className="flex items-center text-darkGrey font-medium mb-2">
                     Rate parameter (λ): {lambda.toFixed(1)}
                     <InfoIcon info="The average number of events per time interval. Like the average calls per hour at a call center." />
                   </label>
                   <input
+                    id="poisson-lambda"
                     type="range"
                     min="0.1"
                     max="30"
@@ -413,8 +407,9 @@ const PoissonCalculator = () => {
                     onChange={(e) => setLambda(parseFloat(e.target.value))}
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     style={{
-                      background: `linear-gradient(to right, #4ECDC4 0%, #4ECDC4 ${(lambda - 0.1) / 29.9 * 100}%, #e0e0e0 ${(lambda - 0.1) / 29.9 * 100}%, #e0e0e0 100%)`
+                      background: `linear-gradient(to right, #0F766E 0%, #0F766E ${(lambda - 0.1) / 29.9 * 100}%, #e0e0e0 ${(lambda - 0.1) / 29.9 * 100}%, #e0e0e0 100%)`
                     }}
+                    aria-valuetext={lambda + " events per interval"}
                   />
                   <div className="mt-1 text-xs text-darkGrey opacity-60">
                     Range: 0.1 to 30 events per interval
@@ -423,11 +418,12 @@ const PoissonCalculator = () => {
 
                 {/* X Value Slider */}
                 <div>
-                  <label className="flex items-center text-darkGrey font-medium mb-2">
+                  <label htmlFor="poisson-target-value" className="flex items-center text-darkGrey font-medium mb-2">
                     Target value (x): {x}
                     <InfoIcon info="The specific number of events you're calculating the probability for. Like 'exactly 5 calls' or 'at most 3 defects'." />
                   </label>
                   <input
+                    id="poisson-target-value"
                     type="range"
                     min="0"
                     max={maxX}
@@ -435,8 +431,9 @@ const PoissonCalculator = () => {
                     onChange={(e) => setX(parseInt(e.target.value))}
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     style={{
-                      background: `linear-gradient(to right, #FFFF00 0%, #FFFF00 ${x / maxX * 100}%, #e0e0e0 ${x / maxX * 100}%, #e0e0e0 100%)`
+                      background: `linear-gradient(to right, #D97706 0%, #D97706 ${x / maxX * 100}%, #e0e0e0 ${x / maxX * 100}%, #e0e0e0 100%)`
                     }}
+                    aria-valuetext={x + " events"}
                   />
                   <div className="mt-1 text-xs text-darkGrey opacity-60">
                     Range: 0 to {maxX} events
@@ -511,7 +508,7 @@ const PoissonCalculator = () => {
             </div>
 
             {/* Results Display */}
-            <div className="bg-yellow/20 border-2 border-yellow p-4 rounded-lg">
+            <div className="bg-accent/20 border-2 border-accent p-4 rounded-lg">
               <h3 className="text-xl font-bold text-darkGrey mb-3 flex items-center">
                 🎯 Calculation Results
               </h3>
@@ -557,20 +554,20 @@ const PoissonCalculator = () => {
           <div className="bg-platinum p-4 rounded-lg">
             <h3 className="text-xl font-bold text-darkGrey mb-4 flex items-center">
               📈 Distribution Visualization
-              <InfoIcon info="Visual representation of the Poisson distribution. Yellow bars show your selected probability range." />
+              <InfoIcon info="Visual representation of the Poisson distribution. Amber bars show your selected probability range." />
             </h3>
             <div className="h-96 bg-white p-2 rounded">
-              {chartData && <Bar data={chartData} options={chartOptions} />}
+              {chartData && <div role="img" aria-label="Poisson distribution bar chart showing probability for each number of events"><Bar data={chartData} options={chartOptions} /></div>}
             </div>
             
             {/* Interpretation Guide */}
             <div className="mt-4 p-3 bg-white rounded-lg text-sm">
               <h4 className="font-bold text-darkGrey mb-2">📖 How to Read This Chart:</h4>
               <ul className="space-y-1 text-darkGrey opacity-80">
-                <li>• <span className="inline-block w-3 h-3 bg-turquoise rounded mr-1"></span> 
+                <li>• <span className="inline-block w-3 h-3 bg-turquoise rounded mr-1"></span>
                   Turquoise bars show individual probabilities</li>
-                <li>• <span className="inline-block w-3 h-3 bg-yellow rounded mr-1"></span> 
-                  Yellow bars highlight your selected range</li>
+                <li>• <span className="inline-block w-3 h-3 bg-accent rounded mr-1"></span>
+                  Amber bars highlight your selected range</li>
                 {showNormalApprox && lambda > 10 && (
                   <li>• <span className="inline-block w-12 h-0.5 bg-darkGrey mr-1"></span> 
                     Black curve shows normal approximation</li>
@@ -592,9 +589,9 @@ const PoissonCalculator = () => {
               <button
                 key={index}
                 onClick={() => selectExample(example)}
-                className="p-3 bg-platinum hover:bg-turquoise/20 rounded transition-all text-left group"
+                className="p-3 bg-platinum hover:bg-darkTeal/20 rounded transition-all text-left group"
               >
-                <div className="font-bold text-darkGrey group-hover:text-turquoise">
+                <div className="font-bold text-darkGrey group-hover:text-darkTeal">
                   {example.name}
                 </div>
                 <div className="text-sm text-darkGrey opacity-70">
@@ -616,7 +613,7 @@ const PoissonCalculator = () => {
           
           <div className="grid md:grid-cols-2 gap-4 text-sm">
             <div className="bg-white/80 p-3 rounded">
-              <h4 className="font-bold text-turquoise mb-2">When to Use Poisson:</h4>
+              <h4 className="font-bold text-darkTeal mb-2">When to Use Poisson:</h4>
               <ul className="space-y-1 text-darkGrey">
                 <li>✓ Events occur independently</li>
                 <li>✓ Average rate (λ) is constant</li>
@@ -626,7 +623,7 @@ const PoissonCalculator = () => {
             </div>
             
             <div className="bg-white/80 p-3 rounded">
-              <h4 className="font-bold text-turquoise mb-2">Key Formula:</h4>
+              <h4 className="font-bold text-darkTeal mb-2">Key Formula:</h4>
               <div className="bg-darkGrey/10 p-2 rounded font-mono text-center">
                 {formulas.pmf}
               </div>
@@ -636,7 +633,7 @@ const PoissonCalculator = () => {
             </div>
           </div>
           
-          <div className="mt-3 p-3 bg-yellow/20 rounded">
+          <div className="mt-3 p-3 bg-accent/20 rounded">
             <strong className="text-darkGrey">💡 Pro Tip:</strong>
             <span className="text-darkGrey ml-2">
               The Poisson distribution is perfect for modeling "rare" events. 

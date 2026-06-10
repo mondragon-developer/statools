@@ -1,6 +1,5 @@
 import React from "react";
 
-// This component receives icon, title, and description as props
 const FeatureCard = ({ icon, title, description, className = "" }) => {
   return (
     <div className={`bg-platinum p-6 rounded-lg text-center hover:shadow-lg transition-shadow w-full h-full flex flex-col items-center justify-center ${className}`}>

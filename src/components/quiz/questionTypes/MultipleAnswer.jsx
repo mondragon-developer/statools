@@ -13,6 +13,7 @@
 
 import React from 'react';
 import { Check, X, CheckSquare, Square } from 'lucide-react';
+import { announcePolite } from '../../../utils/announce';
 
 const MultipleAnswer = ({
   question,
@@ -24,11 +25,15 @@ const MultipleAnswer = ({
   const handleToggle = (optionId) => {
     if (showResult) return;
 
-    const newAnswers = selectedAnswers.includes(optionId)
+    const wasSelected = selectedAnswers.includes(optionId);
+    const newAnswers = wasSelected
       ? selectedAnswers.filter(id => id !== optionId)
       : [...selectedAnswers, optionId];
 
     onAnswerChange(newAnswers);
+    const optionIndex = optionId.charCodeAt(0) - 65;
+    const optionText = question.options[optionIndex];
+    announcePolite(wasSelected ? 'Deselected: ' + optionText : 'Selected: ' + optionText);
   };
 
   const isSelected = (optionId) => selectedAnswers.includes(optionId);
@@ -39,9 +44,9 @@ const MultipleAnswer = ({
 
     if (!showResult) {
       if (isSelected(optionId)) {
-        return baseStyle + 'border-turquoise bg-turquoise/10 font-semibold';
+        return baseStyle + 'border-darkTeal bg-darkTeal/10 font-semibold';
       }
-      return baseStyle + 'border-platinum hover:border-turquoise/50 hover:bg-platinum';
+      return baseStyle + 'border-platinum hover:border-darkTeal/50 hover:bg-platinum';
     }
 
     // Result mode
@@ -73,7 +78,7 @@ const MultipleAnswer = ({
 
     if (!showResult) {
       return wasSelected ? (
-        <CheckSquare className="text-turquoise" size={20} />
+        <CheckSquare className="text-darkTeal" size={20} />
       ) : (
         <Square className="text-darkGrey opacity-30" size={20} />
       );

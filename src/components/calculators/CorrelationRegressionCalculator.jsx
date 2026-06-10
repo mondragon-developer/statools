@@ -15,6 +15,8 @@ import React, { useState, useMemo } from "react";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 import InfoIcon from "./InfoIcon";
+import useDocumentTitle from "../../hooks/useDocumentTitle";
+import { announcePolite } from "../../utils/announce";
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -23,7 +25,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 const MAX_INPUT_COUNT = 1000;
 const CHART_COLORS = {
   points: 'rgba(78, 205, 196, 0.8)',
-  line: 'rgba(255, 255, 0, 1)',
+  line: 'rgba(180, 83, 9, 1)',
   residuals: 'rgba(255, 0, 0, 0.6)'
 };
 
@@ -56,6 +58,8 @@ const SAMPLE_DATASETS = [
 ];
 
 const CorrelationRegressionCalculator = () => {
+  useDocumentTitle('Correlation & Regression Calculator');
+
   // State management
   const [inputX, setInputX] = useState("");
   const [inputY, setInputY] = useState("");
@@ -64,6 +68,7 @@ const CorrelationRegressionCalculator = () => {
   const [showResiduals, setShowResiduals] = useState(false);
   const [predictionX, setPredictionX] = useState("");
   const [predictionY, setPredictionY] = useState(null);
+  const [error, setError] = useState("");
 
   /**
    * Parse input string into array of numbers
@@ -80,6 +85,9 @@ const CorrelationRegressionCalculator = () => {
 
     return numbers.slice(0, MAX_INPUT_COUNT);
   };
+
+  const xCount = useMemo(() => parseInputNumbers(inputX).length, [inputX]);
+  const yCount = useMemo(() => parseInputNumbers(inputY).length, [inputY]);
 
   /**
    * Calculate mean (average)
@@ -104,18 +112,19 @@ const CorrelationRegressionCalculator = () => {
     const yValues = parseInputNumbers(inputY);
 
     // Validation
+    setError("");
     if (xValues.length === 0 || yValues.length === 0) {
-      alert("Please enter data for both X and Y variables.");
+      setError("Please enter data for both X and Y variables.");
       return;
     }
 
     if (xValues.length !== yValues.length) {
-      alert(`Error: X has ${xValues.length} values but Y has ${yValues.length} values. Both must have the same number of values.`);
+      setError(`X has ${xValues.length} values but Y has ${yValues.length} values. Both must have the same number of values.`);
       return;
     }
 
     if (xValues.length < 2) {
-      alert("Please enter at least 2 data pairs.");
+      setError("Please enter at least 2 data pairs.");
       return;
     }
 
@@ -203,20 +212,22 @@ const CorrelationRegressionCalculator = () => {
 
     setShowChart(true);
     setPredictionY(null);
+    announcePolite(`Correlation: ${r.toFixed(4)}, ${strength} ${direction}. R-squared: ${(r2 * 100).toFixed(2)}%. Regression: y equals ${intercept.toFixed(4)} plus ${slope.toFixed(4)} x.`);
   };
 
   /**
    * Make prediction based on regression equation
    */
   const makePrediction = () => {
+    setError("");
     if (!result) {
-      alert("Please calculate regression first.");
+      setError("Please calculate regression first.");
       return;
     }
 
     const x = parseFloat(predictionX);
     if (isNaN(x)) {
-      alert("Please enter a valid number for X.");
+      setError("Please enter a valid number for X.");
       return;
     }
 
@@ -234,6 +245,7 @@ const CorrelationRegressionCalculator = () => {
     setResult(null);
     setShowChart(false);
     setPredictionY(null);
+    announcePolite('Loaded sample: ' + sample.name);
   };
 
   /**
@@ -390,9 +402,9 @@ const CorrelationRegressionCalculator = () => {
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h1 className="text-3xl font-bold text-darkGrey mb-3">
+          <h2 className="text-3xl font-bold text-darkGrey mb-3">
             Correlation & Linear Regression Calculator
-          </h1>
+          </h2>
           <p className="text-darkGrey opacity-80">
             Analyze relationships between two variables. Calculate correlation, determine regression equation, and make predictions.
           </p>
@@ -409,7 +421,7 @@ const CorrelationRegressionCalculator = () => {
               <button
                 key={index}
                 onClick={() => loadSample(index)}
-                className="p-3 bg-turquoise/10 hover:bg-turquoise/20 border-2 border-turquoise rounded-lg text-left transition-all"
+                className="p-3 bg-darkTeal/10 hover:bg-darkTeal/20 border-2 border-darkTeal rounded-lg text-left transition-all"
               >
                 <div className="font-semibold text-darkGrey text-sm">{sample.name}</div>
                 <div className="text-xs text-darkGrey opacity-70 mt-1">{sample.description}</div>
@@ -428,35 +440,41 @@ const CorrelationRegressionCalculator = () => {
           <div className="grid md:grid-cols-2 gap-4 mb-4">
             {/* X Variable Input */}
             <div>
-              <label className="block text-darkGrey font-semibold mb-2">
+              <label htmlFor="corr-input-x" className="block text-darkGrey font-semibold mb-2">
                 X Variable (Independent)
               </label>
               <textarea
+                id="corr-input-x"
                 value={inputX}
                 onChange={(e) => setInputX(e.target.value)}
                 placeholder="Example: 1, 2, 3, 4, 5 or 1 2 3 4 5"
-                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-turquoise focus:outline-none resize-none"
+                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-darkTeal focus:outline-none resize-none"
                 rows="5"
+                aria-invalid={!!error}
+                aria-describedby="corr-error"
               />
+              <p className="text-xs text-darkGrey/60 mt-1">Enter values separated by commas, spaces, or new lines</p>
               <div className="text-sm text-darkGrey opacity-70 mt-1">
-                Values: {parseInputNumbers(inputX).length} / {MAX_INPUT_COUNT}
+                Values: {xCount} / {MAX_INPUT_COUNT}
               </div>
             </div>
 
             {/* Y Variable Input */}
             <div>
-              <label className="block text-darkGrey font-semibold mb-2">
+              <label htmlFor="corr-input-y" className="block text-darkGrey font-semibold mb-2">
                 Y Variable (Dependent)
               </label>
               <textarea
+                id="corr-input-y"
                 value={inputY}
                 onChange={(e) => setInputY(e.target.value)}
                 placeholder="Example: 10, 20, 30, 40, 50 or 10 20 30 40 50"
-                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-turquoise focus:outline-none resize-none"
+                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-darkTeal focus:outline-none resize-none"
                 rows="5"
               />
+              <p className="text-xs text-darkGrey/60 mt-1">Enter values separated by commas, spaces, or new lines</p>
               <div className="text-sm text-darkGrey opacity-70 mt-1">
-                Values: {parseInputNumbers(inputY).length} / {MAX_INPUT_COUNT}
+                Values: {yCount} / {MAX_INPUT_COUNT}
               </div>
             </div>
           </div>
@@ -465,7 +483,7 @@ const CorrelationRegressionCalculator = () => {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={calculateStatistics}
-              className="px-6 py-3 bg-turquoise text-white rounded-lg hover:bg-turquoise/90 font-semibold transition-all shadow-md hover:shadow-lg"
+              className="px-6 py-3 bg-darkTeal text-white rounded-lg hover:bg-darkTeal/90 font-semibold transition-all shadow-md hover:shadow-lg"
             >
               Calculate
             </button>
@@ -476,6 +494,7 @@ const CorrelationRegressionCalculator = () => {
               Clear
             </button>
           </div>
+          <p id="corr-error" className="text-red-500 text-sm mt-2" role="status">{error || ''}</p>
         </div>
 
         {/* Results Section */}
@@ -493,19 +512,19 @@ const CorrelationRegressionCalculator = () => {
                 </div>
 
                 {/* Correlation Coefficient */}
-                <div className="p-4 bg-turquoise/10 rounded-lg border-2 border-turquoise">
+                <div className="p-4 bg-darkTeal/10 rounded-lg border-2 border-darkTeal">
                   <div className="text-sm text-darkGrey opacity-70 mb-1 flex items-center gap-1">
                     Correlation (r)
                     <InfoIcon info="Measures strength and direction of linear relationship. Range: -1 to +1" />
                   </div>
                   <div className="text-2xl font-bold text-darkGrey">{result.r.toFixed(4)}</div>
-                  <div className="text-sm text-turquoise font-semibold mt-1">
+                  <div className="text-sm text-darkTeal font-semibold mt-1">
                     {result.strength} {result.direction}
                   </div>
                 </div>
 
                 {/* R-Squared */}
-                <div className="p-4 bg-yellow/10 rounded-lg border-2 border-yellow">
+                <div className="p-4 bg-accent/10 rounded-lg border-2 border-accent">
                   <div className="text-sm text-darkGrey opacity-70 mb-1 flex items-center gap-1">
                     R² (R-Squared)
                     <InfoIcon info="Percentage of variance in Y explained by X. Higher is better fit." />
@@ -539,7 +558,7 @@ const CorrelationRegressionCalculator = () => {
               </div>
 
               {/* Regression Equation */}
-              <div className="p-6 bg-gradient-to-r from-turquoise/20 to-yellow/20 rounded-lg border-2 border-turquoise">
+              <div className="p-6 bg-gradient-to-r from-darkTeal/20 to-accent/20 rounded-lg border-2 border-darkTeal">
                 <h3 className="text-lg font-bold text-darkGrey mb-3 flex items-center gap-2">
                   Regression Equation
                   <InfoIcon info="Use this equation to predict Y values from X values" />
@@ -564,27 +583,28 @@ const CorrelationRegressionCalculator = () => {
 
               <div className="flex flex-wrap gap-3 items-end">
                 <div className="flex-1 min-w-[200px]">
-                  <label className="block text-darkGrey font-semibold mb-2">
+                  <label htmlFor="corr-prediction-x" className="block text-darkGrey font-semibold mb-2">
                     Enter X value:
                   </label>
                   <input
+                    id="corr-prediction-x"
                     type="number"
                     value={predictionX}
                     onChange={(e) => setPredictionX(e.target.value)}
                     placeholder="Enter X value"
-                    className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-turquoise focus:outline-none"
+                    className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-darkTeal focus:outline-none"
                   />
                 </div>
                 <button
                   onClick={makePrediction}
-                  className="px-6 py-3 bg-turquoise text-white rounded-lg hover:bg-turquoise/90 font-semibold transition-all"
+                  className="px-6 py-3 bg-darkTeal text-white rounded-lg hover:bg-darkTeal/90 font-semibold transition-all"
                 >
                   Predict Y
                 </button>
               </div>
 
               {predictionY !== null && (
-                <div className="mt-4 p-4 bg-yellow/20 border-2 border-yellow rounded-lg">
+                <div className="mt-4 p-4 bg-accent/20 border-2 border-accent rounded-lg">
                   <div className="text-center">
                     <div className="text-sm text-darkGrey opacity-80 mb-1">Predicted Y value:</div>
                     <div className="text-3xl font-bold text-darkGrey">
@@ -605,19 +625,23 @@ const CorrelationRegressionCalculator = () => {
                       type="checkbox"
                       checked={showResiduals}
                       onChange={(e) => setShowResiduals(e.target.checked)}
-                      className="w-5 h-5 text-turquoise"
+                      className="w-5 h-5 text-darkTeal"
                     />
                     <span className="text-darkGrey font-semibold">Show Residual Plot</span>
                   </label>
                 </div>
 
                 <div className="h-96 mb-6">
-                  <Scatter data={chartData} options={chartOptions} />
+                  <div role="img" aria-label="Scatter plot with regression line showing correlation between X and Y variables">
+                    <Scatter data={chartData} options={chartOptions} />
+                  </div>
                 </div>
 
                 {showResiduals && residualChartData && (
                   <div className="h-96">
-                    <Scatter data={residualChartData} options={residualChartOptions} />
+                    <div role="img" aria-label="Residual plot showing deviation of data points from regression line">
+                      <Scatter data={residualChartData} options={residualChartOptions} />
+                    </div>
                   </div>
                 )}
               </div>

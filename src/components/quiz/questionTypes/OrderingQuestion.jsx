@@ -13,6 +13,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ArrowUp, ArrowDown, Check, X } from 'lucide-react';
+import { announcePolite } from '../../../utils/announce';
 
 const OrderingQuestion = ({
   question,
@@ -49,6 +50,9 @@ const OrderingQuestion = ({
 
     setOrder(newOrder);
     onAnswerChange(newOrder);
+
+    const movedOptionText = getOptionText(order[index]);
+    announcePolite('Moved ' + movedOptionText + ' ' + direction);
   };
 
   const getItemStyle = (optionId, index) => {
@@ -114,11 +118,12 @@ const OrderingQuestion = ({
                     className={`p-1 rounded transition-colors ${
                       index === 0
                         ? 'text-gray-300 cursor-not-allowed'
-                        : 'text-turquoise hover:bg-turquoise/10'
+                        : 'text-darkTeal hover:bg-darkTeal/10'
                     }`}
                     title="Move up"
+                    aria-label={`Move ${getOptionText(optionId)} up`}
                   >
-                    <ArrowUp size={20} />
+                    <ArrowUp size={20} aria-hidden="true" />
                   </button>
                   <button
                     onClick={() => moveItem(index, 'down')}
@@ -126,11 +131,12 @@ const OrderingQuestion = ({
                     className={`p-1 rounded transition-colors ${
                       index === order.length - 1
                         ? 'text-gray-300 cursor-not-allowed'
-                        : 'text-turquoise hover:bg-turquoise/10'
+                        : 'text-darkTeal hover:bg-darkTeal/10'
                     }`}
                     title="Move down"
+                    aria-label={`Move ${getOptionText(optionId)} down`}
                   >
-                    <ArrowDown size={20} />
+                    <ArrowDown size={20} aria-hidden="true" />
                   </button>
                 </div>
               )}

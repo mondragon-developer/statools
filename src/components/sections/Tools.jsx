@@ -20,7 +20,7 @@ const Tools = () => {
   // Define the resource categories with downloadable PDFs
   const resourceCategories = [
     {
-      icon: <PieChart size={36} className="text-turquoise" />,
+      icon: <PieChart size={36} className="text-darkTeal" />,
       title: "Probability & Distributions",
       description: "Master probability concepts and key statistical distributions with step-by-step examples.",
       resources: [
@@ -69,7 +69,7 @@ const Tools = () => {
       ]
     },
     {
-      icon: <BarChart size={36} className="text-turquoise" />,
+      icon: <BarChart size={36} className="text-darkTeal" />,
       title: "Statistical Inference",
       description: "Learn hypothesis testing, confidence intervals, and the Central Limit Theorem with practical examples.",
       resources: [
@@ -100,7 +100,7 @@ const Tools = () => {
       ]
     },
     {
-      icon: <TrendingUp size={36} className="text-turquoise" />,
+      icon: <TrendingUp size={36} className="text-darkTeal" />,
       title: "Regression Analysis",
       description: "Understand linear regression from basics to interpretation with real-world examples.",
       resources: [
@@ -125,7 +125,7 @@ const Tools = () => {
       ]
     },
     {
-      icon: <Calculator size={36} className="text-turquoise" />,
+      icon: <Calculator size={36} className="text-darkTeal" />,
       title: "Calculator Guides & Tables",
       description: "Quick reference guides for our calculators and essential statistical tables.",
       resources: [
@@ -154,14 +154,14 @@ const Tools = () => {
   ];
 
   return (
-    <section className="bg-platinum py-16" id="resources">
+    <section className="bg-platinum py-16" id="resources" tabIndex={-1} aria-labelledby="resources-heading">
       <div className="container mx-auto px-4">
         {/* Snake Game Container */}
-        <div className="w-full mb-12 flex justify-center">
+        <section aria-label="Math Snake Game" className="w-full mb-12 flex justify-center">
           <SnakeGame />
-        </div>
+        </section>
 
-        <h2 className="text-4xl font-bold text-center text-darkGrey mb-12">
+        <h2 id="resources-heading" className="text-4xl font-bold text-center text-darkGrey mb-12">
           Content and Resources
         </h2>
         <p className="text-center text-darkGrey opacity-80 mb-12 max-w-3xl mx-auto">

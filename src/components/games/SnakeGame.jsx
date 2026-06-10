@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Pause, RotateCcw, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
+import { announcePolite } from '../../utils/announce';
 
 const GRID_WIDTH = 80;
 const GRID_HEIGHT = 30;
@@ -56,6 +57,7 @@ const SnakeGame = () => {
   const [feedback, setFeedback] = useState(null);
 
   const directionRef = useRef(INITIAL_DIRECTION);
+  const scoreRef = useRef(0);
 
   const MONDRAGON_TEXT = 'I-LOVE-STATISTICS';
 
@@ -70,7 +72,7 @@ const SnakeGame = () => {
   }, [feedback]);
 
   // Generate random food position with math symbol
-  const generateFood = useCallback(() => {
+  const generateFood = useCallback((currentSnake) => {
     let newFood;
     let attempts = 0;
     do {
@@ -82,10 +84,10 @@ const SnakeGame = () => {
       attempts++;
     } while (
       attempts < 100 &&
-      snake.some(segment => segment.x === newFood.x && segment.y === newFood.y)
+      currentSnake.some(segment => segment.x === newFood.x && segment.y === newFood.y)
     );
     return newFood;
-  }, [snake]);
+  }, []);
 
   // Get the letter to display on each snake segment
   const getSnakeSegmentLetter = (index) => {
@@ -163,6 +165,7 @@ const SnakeGame = () => {
       ) {
         setGameOver(true);
         setIsPlaying(false);
+        announcePolite(`Game over! Final score: ${scoreRef.current}. Snake length: ${prevSnake.length}.`);
         return prevSnake;
       }
 
@@ -170,6 +173,7 @@ const SnakeGame = () => {
       if (prevSnake.some(segment => segment.x === newHead.x && segment.y === newHead.y)) {
         setGameOver(true);
         setIsPlaying(false);
+        announcePolite(`Game over! Final score: ${scoreRef.current}. Snake length: ${prevSnake.length}.`);
         return prevSnake;
       }
 
@@ -177,15 +181,16 @@ const SnakeGame = () => {
 
       // Check food collision
       if (newHead.x === food.x && newHead.y === food.y) {
-        setScore(prev => prev + 10);
+        setScore(prev => { scoreRef.current = prev + 10; return prev + 10; });
         
         // Trigger feedback
         setFeedback({
           text: `${food.symbol} ${SYMBOL_NAMES[food.symbol] || ''}`,
           id: Date.now()
         });
+        announcePolite(`Collected ${SYMBOL_NAMES[food.symbol] || food.symbol}. Score: ${scoreRef.current}.`);
 
-        setFood(generateFood());
+        setFood(generateFood(newSnake));
         updateMondragronText(newSnake.length);
         return newSnake;
       }
@@ -198,9 +203,15 @@ const SnakeGame = () => {
 
   // Handle keyboard input
   const handleKeyPress = useCallback((e) => {
-    if (!isPlaying || isPaused) return;
-
     const key = e.key;
+
+    if (key === 'Escape' && isPlaying) {
+      togglePause();
+      e.preventDefault();
+      return;
+    }
+
+    if (!isPlaying || isPaused) return;
 
     switch (key) {
       case 'ArrowUp':
@@ -263,7 +274,7 @@ const SnakeGame = () => {
     }
 
     // Draw food (math symbol)
-    ctx.fillStyle = '#FFFF00';
+    ctx.fillStyle = '#D97706';
     ctx.fillRect(food.x * CELL_SIZE, food.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
     ctx.fillStyle = '#2A2A2A';
     ctx.font = 'bold 12px Arial';
@@ -320,38 +331,36 @@ const SnakeGame = () => {
     });
   }, [snake, food, direction]);
 
-  const startGame = () => {
+  const initializeGameState = (playing) => {
     setSnake(INITIAL_SNAKE);
     setDirection(INITIAL_DIRECTION);
     directionRef.current = INITIAL_DIRECTION;
-    setFood(generateFood());
+    setFood(generateFood(INITIAL_SNAKE));
     setScore(0);
+    scoreRef.current = 0;
     setGameOver(false);
-    setIsPlaying(true);
+    setIsPlaying(playing);
     setIsPaused(false);
     setMondragronProgress('');
     setGameSpeed(INITIAL_GAME_SPEED);
     setMondragonsCompleted(0);
+  };
+
+  const startGame = () => {
+    initializeGameState(true);
+    announcePolite('Game started. Use arrow keys to move.');
   };
 
   const togglePause = () => {
     if (isPlaying) {
       setIsPaused(!isPaused);
+      announcePolite(isPaused ? 'Game resumed.' : 'Game paused.');
     }
   };
 
   const resetGame = () => {
-    setSnake(INITIAL_SNAKE);
-    setDirection(INITIAL_DIRECTION);
-    directionRef.current = INITIAL_DIRECTION;
-    setFood(generateFood());
-    setScore(0);
-    setGameOver(false);
-    setIsPlaying(false);
-    setIsPaused(false);
-    setMondragronProgress('');
-    setGameSpeed(INITIAL_GAME_SPEED);
-    setMondragonsCompleted(0);
+    initializeGameState(false);
+    announcePolite('Game reset.');
   };
 
   return (
@@ -379,7 +388,7 @@ const SnakeGame = () => {
             key={feedback.id}
             className="absolute z-10 animate-float-up"
           >
-            <span className="text-2xl font-bold text-turquoise bg-white px-3 py-1 rounded shadow-sm border border-turquoise">
+            <span className="text-2xl font-bold text-darkTeal bg-white px-3 py-1 rounded shadow-sm border border-darkTeal">
               {feedback.text}
             </span>
           </div>
@@ -392,7 +401,9 @@ const SnakeGame = () => {
           ref={canvasRef}
           width={GRID_WIDTH * CELL_SIZE}
           height={GRID_HEIGHT * CELL_SIZE}
-          className="border-4 border-turquoise rounded-lg bg-white w-full h-auto max-w-full block"
+          className="border-4 border-darkTeal rounded-lg bg-white w-full h-auto max-w-full block"
+          role="img"
+          aria-label={`Math Snake game canvas. Score: ${score}. Snake length: ${snake.length}. ${gameOver ? 'Game over.' : isPlaying ? (isPaused ? 'Paused.' : 'Playing.') : 'Press Start to play.'}`}
         />
 
         {/* Game Over Overlay */}
@@ -400,10 +411,10 @@ const SnakeGame = () => {
           <div className="absolute inset-0 bg-darkGrey bg-opacity-90 flex items-center justify-center rounded-lg">
             <div className="text-center">
               <p className="text-white text-2xl font-bold mb-2">Game Over!</p>
-              <p className="text-yellow text-xl mb-4">Score: {score}</p>
+              <p className="text-accent text-xl mb-4">Score: {score}</p>
               <button
                 onClick={startGame}
-                className="bg-turquoise text-white px-6 py-2 rounded-lg font-bold hover:bg-opacity-90 transition-all"
+                className="bg-darkTeal text-white px-6 py-2 rounded-lg font-bold hover:bg-opacity-90 transition-all"
               >
                 Play Again
               </button>
@@ -413,12 +424,12 @@ const SnakeGame = () => {
 
         {/* Start Screen */}
         {!isPlaying && !gameOver && (
-          <div className="absolute inset-0 bg-turquoise bg-opacity-90 flex items-center justify-center rounded-lg">
+          <div className="absolute inset-0 bg-darkTeal bg-opacity-90 flex items-center justify-center rounded-lg">
             <div className="text-center">
               <p className="text-white text-xl font-bold mb-4">Ready to Play?</p>
               <button
                 onClick={startGame}
-                className="bg-yellow border-2 border-darkGrey text-darkGrey px-6 py-3 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all flex items-center gap-2 mx-auto"
+                className="bg-accent border-2 border-darkGrey text-darkGrey px-6 py-3 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all flex items-center gap-2 mx-auto"
               >
                 <Play size={20} />
                 Start Game
@@ -439,27 +450,52 @@ const SnakeGame = () => {
       <div className="mb-4 text-center w-full max-w-md">
         <div className="flex justify-between items-center mb-2">
           <div className="text-darkGrey">
-            <span className="font-bold">Score:</span> <span className="text-turquoise text-xl font-bold">{score}</span>
+            <span className="font-bold">Score:</span> <span className="text-darkTeal text-xl font-bold">{score}</span>
           </div>
           <div className="text-darkGrey">
-            <span className="font-bold">Length:</span> <span className="text-turquoise text-xl font-bold">{snake.length}</span>
+            <span className="font-bold">Length:</span> <span className="text-darkTeal text-xl font-bold">{snake.length}</span>
           </div>
         </div>
 
         {mondragronProgress && (
-          <div className="bg-yellow bg-opacity-20 border-2 border-yellow rounded-lg p-2">
+          <div className="bg-accent bg-opacity-20 border-2 border-accent rounded-lg p-2">
             <p className="text-sm text-darkGrey font-bold">Snake Text:</p>
-            <p className="text-lg font-bold text-turquoise font-mono break-all">{mondragronProgress}</p>
+            <p className="text-lg font-bold text-darkTeal font-mono break-all">{mondragronProgress}</p>
           </div>
         )}
+      </div>
+
+      {/* Speed control — SC 2.2.1 Timing Adjustable */}
+      <div className="mb-4 w-full max-w-md">
+        <label htmlFor="snake-speed" className="block text-sm font-medium text-darkGrey mb-1">
+          Game Speed: {gameSpeed <= 80 ? 'Fast' : gameSpeed <= 130 ? 'Medium' : 'Slow'}
+        </label>
+        <input
+          id="snake-speed"
+          type="range"
+          min="50"
+          max="300"
+          step="10"
+          value={gameSpeed}
+          onChange={(e) => setGameSpeed(Number(e.target.value))}
+          aria-valuetext={`${gameSpeed <= 80 ? 'Fast' : gameSpeed <= 130 ? 'Medium' : 'Slow'} speed`}
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          style={{
+            background: `linear-gradient(to right, #0F766E 0%, #0F766E ${((300 - gameSpeed) / 250) * 100}%, #e0e0e0 ${((300 - gameSpeed) / 250) * 100}%, #e0e0e0 100%)`
+          }}
+        />
+        <div className="flex justify-between text-xs text-darkGrey/60 mt-1">
+          <span>Slow</span>
+          <span>Fast</span>
+        </div>
       </div>
 
       {/* Touch Controls - Visible on all devices but intended for touch */}
       <div className="grid grid-cols-3 gap-2 mb-4 max-w-[200px]">
         <div></div>
         <button 
-          className="bg-darkGrey text-white p-4 rounded-lg active:bg-turquoise transition-colors flex items-center justify-center shadow-md"
-          onPointerDown={(e) => { e.preventDefault(); changeDirection({ x: 0, y: -1 }); }}
+          className="bg-darkGrey text-white p-4 rounded-lg active:bg-darkTeal transition-colors flex items-center justify-center shadow-md"
+          onClick={() => changeDirection({ x: 0, y: -1 })}
           aria-label="Up"
         >
           <ArrowUp size={24} />
@@ -467,22 +503,22 @@ const SnakeGame = () => {
         <div></div>
         
         <button 
-          className="bg-darkGrey text-white p-4 rounded-lg active:bg-turquoise transition-colors flex items-center justify-center shadow-md"
-          onPointerDown={(e) => { e.preventDefault(); changeDirection({ x: -1, y: 0 }); }}
+          className="bg-darkGrey text-white p-4 rounded-lg active:bg-darkTeal transition-colors flex items-center justify-center shadow-md"
+          onClick={() => changeDirection({ x: -1, y: 0 })}
           aria-label="Left"
         >
           <ArrowLeft size={24} />
         </button>
         <button 
-          className="bg-darkGrey text-white p-4 rounded-lg active:bg-turquoise transition-colors flex items-center justify-center shadow-md"
-          onPointerDown={(e) => { e.preventDefault(); changeDirection({ x: 0, y: 1 }); }}
+          className="bg-darkGrey text-white p-4 rounded-lg active:bg-darkTeal transition-colors flex items-center justify-center shadow-md"
+          onClick={() => changeDirection({ x: 0, y: 1 })}
           aria-label="Down"
         >
           <ArrowDown size={24} />
         </button>
         <button 
-          className="bg-darkGrey text-white p-4 rounded-lg active:bg-turquoise transition-colors flex items-center justify-center shadow-md"
-          onPointerDown={(e) => { e.preventDefault(); changeDirection({ x: 1, y: 0 }); }}
+          className="bg-darkGrey text-white p-4 rounded-lg active:bg-darkTeal transition-colors flex items-center justify-center shadow-md"
+          onClick={() => changeDirection({ x: 1, y: 0 })}
           aria-label="Right"
         >
           <ArrowRight size={24} />
@@ -494,7 +530,7 @@ const SnakeGame = () => {
         {isPlaying && (
           <button
             onClick={togglePause}
-            className="bg-yellow border-2 border-darkGrey text-darkGrey px-4 py-2 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all flex items-center gap-2"
+            className="bg-accent border-2 border-darkGrey text-darkGrey px-4 py-2 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all flex items-center gap-2"
           >
             {isPaused ? <Play size={16} /> : <Pause size={16} />}
             {isPaused ? 'Resume' : 'Pause'}
@@ -519,6 +555,5 @@ const SnakeGame = () => {
     </div>
   );
 };
-
 
 export default SnakeGame;

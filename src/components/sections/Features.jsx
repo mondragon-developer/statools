@@ -49,6 +49,11 @@ const Features = () => {
       description: "Z-test, t-test, p-values"
     },
     {
+      name: "Two-Sample Comparison",
+      path: "/calculators/two-sample",
+      description: "Compare two means or proportions"
+    },
+    {
       name: "Correlation & Regression",
       path: "/calculators/correlation-regression",
       description: "Correlation, R², linear regression"
@@ -56,9 +61,9 @@ const Features = () => {
   ];
 
   return (
-    <section className="bg-white py-16" id="tools">
+    <section className="bg-white py-16" id="tools" tabIndex={-1} aria-labelledby="features-heading">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center text-darkGrey mb-12">
+        <h2 id="features-heading" className="text-4xl font-bold text-center text-darkGrey mb-12">
           Statistical Resources
         </h2>
         <div className="grid md:grid-cols-3 gap-8 items-stretch">
@@ -68,6 +73,7 @@ const Features = () => {
               <Spline
                 scene="https://prod.spline.design/1GfxCCZbNPvMURDn/scene.splinecode"
                 className="rounded-lg"
+                aria-hidden="true"
               />
             </div>
             <h3 className="text-2xl font-bold text-darkGrey my-4 text-center">Statistical Calculators</h3>
@@ -80,13 +86,13 @@ const Features = () => {
           <CalculatorResourcesCard />
 
           {/* Local Calculators Card with Navigation */}
-          <div className="bg-platinum p-6 rounded-lg hover:shadow-lg transition-shadow cursor-pointer">
+          <div className="bg-platinum p-6 rounded-lg hover:shadow-lg transition-shadow">
             <div className="flex justify-center">
                 <button 
                 onClick={handleLocalCalculatorsClick}
-                className=" bg-yellow border-2 border-darkGrey text-darkGrey px-4 py-2 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all mb-2 flex items-center space-x-2"
+                className=" bg-accent border-2 border-darkGrey text-darkGrey px-4 py-2 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all mb-2 flex items-center space-x-2"
               >
-                <HouseIcon size={48} className="text-turquoise" />
+                <HouseIcon size={48} className="text-darkTeal" aria-hidden="true" />
                 Open Full Calculators Suite
               </button>
               
@@ -101,14 +107,14 @@ const Features = () => {
             
             {/* Quick Links to Individual Calculators */}
             
-            <div className="max-h-72 overflow-y-auto pr-2 custom-scrollbar">
+            <div className="max-h-72 overflow-y-auto pr-2 custom-scrollbar" aria-label="Quick access to individual calculators">
               <p className="text-sm text-darkGrey opacity-75 mb-2 text-center">Quick Access:</p>
               <div className="space-y-2">
                 {localCalculators.map((calc, index) => (
                   <button
                     key={index}
                     onClick={() => navigate(calc.path)}
-                    className="w-full text-left px-3 py-2 bg-white rounded-md hover:bg-yellow transition-colors group"
+                    className="w-full text-left px-3 py-2 bg-white rounded-md hover:bg-accent transition-colors group"
                   >
                     <div className="font-bold text-darkGrey text-sm">
                       {calc.name}
@@ -120,12 +126,6 @@ const Features = () => {
                 ))}
               </div>
             </div>
-            {/* <button 
-              onClick={handleLocalCalculatorsClick}
-              className="w-full bg-yellow border-2 border-darkGrey text-darkGrey px-4 py-2 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all mb-4"
-            >
-              Open Calculator Suite
-            </button> */}
             </div>
           </div>
         </div>

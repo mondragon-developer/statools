@@ -3,28 +3,15 @@ import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement
 import { Line } from 'react-chartjs-2';
 import { jStat } from 'jstat';
 import InfoIcon from './InfoIcon';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
+import { announcePolite } from '../../utils/announce';
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend, Filler);
 
 /**
- * NORMAL DISTRIBUTION CALCULATOR: THE BELL CURVE EXPLORER
- * 
- * Architecture Overview:
- * This calculator is like a GPS for the statistical world's most famous curve - the bell curve.
- * Just as GPS helps you navigate physical space, this tool helps you navigate probability space.
- * 
- * Real-World Applications:
- * 1. Test Scores - Finding percentiles and grade boundaries
- * 2. Quality Control - Determining acceptable tolerance ranges
- * 3. Medical Tests - Understanding test results and reference ranges
- * 4. Financial Analysis - Risk assessment and portfolio management
- * 5. Natural Phenomena - Heights, weights, measurement errors
- * 
- * The Normal Distribution Recipe:
- * - Two key ingredients: μ (mean) and σ (standard deviation)
- * - The 68-95-99.7 rule: Most data falls within 3 standard deviations
- * - Z-scores: The universal language of normal distributions
+ * Normal distribution calculator — computes probabilities and z-scores via jStat.
+ * Supports P(X<x), P(X>x), P(a<X<b), and inverse lookups.
  */
 
 // ========================================
@@ -121,6 +108,7 @@ const NORMAL_EXAMPLES = [
 // MAIN CALCULATOR COMPONENT
 // ========================================
 const NormalDistributionCalculator = () => {
+  useDocumentTitle('Normal Distribution Calculator');
   // State management - with safe default values
   const [mean, setMean] = useState(0);
   const [sd, setSd] = useState(1);
@@ -286,7 +274,7 @@ const NormalDistributionCalculator = () => {
         label: 'Selected Area',
         data: fillData,
         borderColor: 'transparent',
-        backgroundColor: 'rgba(255, 255, 0, 0.5)',
+        backgroundColor: 'rgba(217, 119, 6, 0.5)',
         borderWidth: 0,
         pointRadius: 0,
         tension: 0.4,
@@ -411,6 +399,7 @@ const NormalDistributionCalculator = () => {
     setSd(example.sd);
     setValue1(example.mean);
     setValue2(example.mean + example.sd);
+    announcePolite('Loaded example: ' + example.name);
   };
 
   return (
@@ -439,31 +428,33 @@ const NormalDistributionCalculator = () => {
               <div className="space-y-4">
                 {/* Mean Input */}
                 <div>
-                  <label className="flex items-center text-darkGrey font-medium mb-2">
+                  <label htmlFor="norm-mean" className="flex items-center text-darkGrey font-medium mb-2">
                     Mean (μ): {safeParse(mean, 0).toFixed(2)}
                     <InfoIcon info="The center of the bell curve - where the peak is located" />
                   </label>
                   <input
+                    id="norm-mean"
                     type="number"
                     value={mean}
                     onChange={(e) => setMean(e.target.value)}
-                    className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                    className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                     placeholder="0"
                   />
                 </div>
 
                 {/* Standard Deviation Input */}
                 <div>
-                  <label className="flex items-center text-darkGrey font-medium mb-2">
+                  <label htmlFor="norm-sd" className="flex items-center text-darkGrey font-medium mb-2">
                     Standard Deviation (σ): {Math.max(safeParse(sd, 1), 0.0001).toFixed(2)}
                     <InfoIcon info="The spread of the distribution - larger values create wider curves" />
                   </label>
                   <input
+                    id="norm-sd"
                     type="number"
                     min="0.0001"
                     value={sd}
                     onChange={(e) => setSd(e.target.value)}
-                    className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                    className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                     placeholder="1"
                   />
                 </div>
@@ -493,9 +484,10 @@ const NormalDistributionCalculator = () => {
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => setInverseMode(false)}
+                    aria-pressed={!inverseMode}
                     className={`p-2 rounded font-medium transition-all ${
-                      !inverseMode 
-                        ? 'bg-turquoise text-white' 
+                      !inverseMode
+                        ? 'bg-darkTeal text-white'
                         : 'bg-gray-100 text-darkGrey hover:bg-gray-200'
                     }`}
                   >
@@ -503,9 +495,10 @@ const NormalDistributionCalculator = () => {
                   </button>
                   <button
                     onClick={() => setInverseMode(true)}
+                    aria-pressed={inverseMode}
                     className={`p-2 rounded font-medium transition-all ${
-                      inverseMode 
-                        ? 'bg-turquoise text-white' 
+                      inverseMode
+                        ? 'bg-darkTeal text-white'
                         : 'bg-gray-100 text-darkGrey hover:bg-gray-200'
                     }`}
                   >
@@ -518,11 +511,12 @@ const NormalDistributionCalculator = () => {
                 <div className="space-y-3">
                   {/* Input Type */}
                   <div>
-                    <label className="block text-darkGrey font-medium mb-2">Input Type</label>
+                    <label htmlFor="norm-input-type" className="block text-darkGrey font-medium mb-2">Input Type</label>
                     <select
+                      id="norm-input-type"
                       value={inputType}
                       onChange={(e) => setInputType(e.target.value)}
-                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                     >
                       <option value="x">X values (actual values)</option>
                       <option value="z">Z-scores (standardized)</option>
@@ -531,11 +525,12 @@ const NormalDistributionCalculator = () => {
 
                   {/* Calculation Type */}
                   <div>
-                    <label className="block text-darkGrey font-medium mb-2">Calculation Type</label>
+                    <label htmlFor="norm-calc-type" className="block text-darkGrey font-medium mb-2">Calculation Type</label>
                     <select
+                      id="norm-calc-type"
                       value={calcType}
                       onChange={(e) => setCalcType(e.target.value)}
-                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                     >
                       <option value="left">P(X ≤ value) - Left tail</option>
                       <option value="right">P(X {'>'} value) - Right tail</option>
@@ -546,29 +541,31 @@ const NormalDistributionCalculator = () => {
 
                   {/* Value Inputs */}
                   <div>
-                    <label className="block text-darkGrey font-medium mb-2">
+                    <label htmlFor="norm-value1" className="block text-darkGrey font-medium mb-2">
                       {calcType === 'between' || calcType === 'outside' ? 'First Value' : 'Value'}
                       {inputType === 'z' ? ' (Z)' : ' (X)'}
                     </label>
                     <input
+                      id="norm-value1"
                       type="number"
                       value={value1}
                       onChange={(e) => setValue1(e.target.value)}
-                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                      className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                       placeholder="0"
                     />
                   </div>
 
                   {(calcType === 'between' || calcType === 'outside') && (
                     <div>
-                      <label className="block text-darkGrey font-medium mb-2">
+                      <label htmlFor="norm-value2" className="block text-darkGrey font-medium mb-2">
                         Second Value {inputType === 'z' ? '(Z)' : '(X)'}
                       </label>
                       <input
+                        id="norm-value2"
                         type="number"
                         value={value2}
                         onChange={(e) => setValue2(e.target.value)}
-                        className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                        className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                         placeholder="1"
                       />
                     </div>
@@ -578,11 +575,12 @@ const NormalDistributionCalculator = () => {
                 <div className="space-y-3">
                   {/* Inverse Probability Input */}
                   <div>
-                    <label className="flex items-center text-darkGrey font-medium mb-2">
+                    <label htmlFor="norm-inverse-prob-range" className="flex items-center text-darkGrey font-medium mb-2">
                       Target Probability: {(safeParse(inverseProbability, 0.5) * 100).toFixed(1)}%
                       <InfoIcon info="Find X values for this cumulative probability" />
                     </label>
                     <input
+                      id="norm-inverse-prob-range"
                       type="range"
                       min="0.001"
                       max="0.999"
@@ -591,18 +589,21 @@ const NormalDistributionCalculator = () => {
                       onChange={(e) => setInverseProbability(e.target.value)}
                       className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                       style={{
-                        background: `linear-gradient(to right, #4ECDC4 0%, #4ECDC4 ${safeParse(inverseProbability, 0.5) * 100}%, #e0e0e0 ${safeParse(inverseProbability, 0.5) * 100}%, #e0e0e0 100%)`
+                        background: `linear-gradient(to right, #0F766E 0%, #0F766E ${safeParse(inverseProbability, 0.5) * 100}%, #e0e0e0 ${safeParse(inverseProbability, 0.5) * 100}%, #e0e0e0 100%)`
                       }}
+                      aria-valuetext={(safeParse(inverseProbability, 0.5) * 100).toFixed(1) + " percent"}
                     />
                     <div className="mt-2">
+                      <label htmlFor="norm-inverse-prob-number" className="sr-only">Target Probability</label>
                       <input
+                        id="norm-inverse-prob-number"
                         type="number"
                         min="0.001"
                         max="0.999"
                         step="0.001"
                         value={inverseProbability}
                         onChange={(e) => setInverseProbability(e.target.value)}
-                        className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                        className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
                         placeholder="0.5"
                       />
                     </div>
@@ -616,7 +617,7 @@ const NormalDistributionCalculator = () => {
             </div>
 
             {/* Results Display */}
-            <div className="bg-yellow/20 border-2 border-yellow p-4 rounded-lg">
+            <div className="bg-accent/20 border-2 border-accent p-4 rounded-lg">
               <h3 className="text-xl font-bold text-darkGrey mb-3">
                 🎯 Calculation Results
               </h3>
@@ -662,7 +663,7 @@ const NormalDistributionCalculator = () => {
                     </p>
                     
                     <div className="grid grid-cols-2 gap-3 mt-3">
-                      <div className="text-center p-2 bg-turquoise/10 rounded">
+                      <div className="text-center p-2 bg-darkTeal/10 rounded">
                         <p className="text-xs text-darkGrey opacity-60">Left tail value</p>
                         <p className="text-xl font-bold text-darkGrey">
                           {calculations.inverseResults.leftValue.toFixed(3)}
@@ -672,7 +673,7 @@ const NormalDistributionCalculator = () => {
                         </p>
                       </div>
                       
-                      <div className="text-center p-2 bg-yellow/30 rounded">
+                      <div className="text-center p-2 bg-accent/30 rounded">
                         <p className="text-xs text-darkGrey opacity-60">Right tail value</p>
                         <p className="text-xl font-bold text-darkGrey">
                           {calculations.inverseResults.rightValue.toFixed(3)}
@@ -710,7 +711,7 @@ const NormalDistributionCalculator = () => {
               )}
 
               {/* Display Options */}
-              <div className="mt-3 pt-3 border-t border-yellow space-y-2">
+              <div className="mt-3 pt-3 border-t border-accent space-y-2">
                 <label className="flex items-center text-darkGrey text-sm">
                   <input
                     type="checkbox"
@@ -739,10 +740,12 @@ const NormalDistributionCalculator = () => {
             <div className="bg-platinum p-4 rounded-lg">
               <h3 className="text-xl font-bold text-darkGrey mb-4 flex items-center">
                 📊 Distribution Visualization
-                <InfoIcon info="The yellow area represents your selected probability region" />
+                <InfoIcon info="The amber area represents your selected probability region" />
               </h3>
               <div className="h-96 bg-white p-2 rounded">
-                <Line data={chartData} options={chartOptions} />
+                <div role="img" aria-label="Normal distribution bell curve with highlighted probability area">
+                  <Line data={chartData} options={chartOptions} />
+                </div>
               </div>
               
               {/* Chart Legend */}
@@ -751,7 +754,7 @@ const NormalDistributionCalculator = () => {
                 <ul className="space-y-1 text-darkGrey opacity-80">
                   <li>• <span className="inline-block w-12 h-0.5 bg-darkGrey mr-1"></span> 
                     Bell curve (probability density)</li>
-                  <li>• <span className="inline-block w-3 h-3 bg-yellow rounded mr-1"></span> 
+                  <li>• <span className="inline-block w-3 h-3 bg-accent rounded mr-1"></span>
                     {inverseMode 
                       ? `Highlighted areas = ${(calculations.inverseResults?.probability * 100).toFixed(1)}% in each tail`
                       : `Selected probability area = ${(calculations.probability * 100).toFixed(2)}%`
@@ -788,7 +791,7 @@ const NormalDistributionCalculator = () => {
                     return (
                       <div key={key} className="bg-gray-50 p-2 rounded text-center">
                         <p className="font-bold text-darkGrey">{percentile}th</p>
-                        <p className="font-mono text-turquoise">{value.toFixed(3)}</p>
+                        <p className="font-mono text-darkTeal">{value.toFixed(3)}</p>
                       </div>
                     );
                   })}
@@ -820,7 +823,7 @@ const NormalDistributionCalculator = () => {
                     </li>
                   </ul>
                   
-                  <div className="mt-3 p-2 bg-yellow/20 rounded">
+                  <div className="mt-3 p-2 bg-accent/20 rounded">
                     <p className="text-xs font-semibold text-darkGrey">
                       🎯 Quick Reference: If you score at the {safeParse(inverseProbability, 0.5) > 0.5 ? Math.round(safeParse(inverseProbability, 0.5) * 100) : 50}th percentile, 
                       you're better than {safeParse(inverseProbability, 0.5) > 0.5 ? Math.round(safeParse(inverseProbability, 0.5) * 100) : 50}% of the population!
@@ -843,9 +846,9 @@ const NormalDistributionCalculator = () => {
               <button
                 key={index}
                 onClick={() => selectExample(example)}
-                className="p-3 bg-platinum hover:bg-turquoise/20 rounded transition-all text-left group"
+                className="p-3 bg-platinum hover:bg-darkTeal/20 rounded transition-all text-left group"
               >
-                <div className="font-bold text-darkGrey group-hover:text-turquoise">
+                <div className="font-bold text-darkGrey group-hover:text-darkTeal">
                   {example.name}
                 </div>
                 <div className="text-sm text-darkGrey opacity-70">
@@ -867,7 +870,7 @@ const NormalDistributionCalculator = () => {
           
           <div className="grid md:grid-cols-2 gap-4 text-sm">
             <div className="bg-white/80 p-3 rounded">
-              <h4 className="font-bold text-turquoise mb-2">Key Properties:</h4>
+              <h4 className="font-bold text-darkTeal mb-2">Key Properties:</h4>
               <ul className="space-y-1 text-darkGrey">
                 <li>✓ Symmetric bell-shaped curve</li>
                 <li>✓ Mean = Median = Mode</li>
@@ -878,7 +881,7 @@ const NormalDistributionCalculator = () => {
             </div>
             
             <div className="bg-white/80 p-3 rounded">
-              <h4 className="font-bold text-turquoise mb-2">Z-Score Interpretation:</h4>
+              <h4 className="font-bold text-darkTeal mb-2">Z-Score Interpretation:</h4>
               <ul className="space-y-1 text-darkGrey">
                 <li>• Z = 0: At the mean</li>
                 <li>• Z = ±1: One std dev from mean</li>
@@ -889,7 +892,7 @@ const NormalDistributionCalculator = () => {
             </div>
           </div>
           
-          <div className="mt-3 p-3 bg-yellow/20 rounded">
+          <div className="mt-3 p-3 bg-accent/20 rounded">
             <strong className="text-darkGrey">💡 Pro Tip:</strong>
             <span className="text-darkGrey ml-2">
               The normal distribution appears everywhere in nature due to the Central Limit Theorem. 

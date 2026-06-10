@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Line, LineChart, ComposedChart } from 'recharts';
 import { Info, Table2, BarChart3, AlertCircle, Trash2, X, Plus, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
+import { announcePolite } from '../../utils/announce';
 
 const MAX_INPUT_COUNT = 1000;
 
 const MAX_CATEGORIES = 10;
 
 const FrequencyDistributionCalculator = () => {
+  useDocumentTitle('Frequency Distribution Calculator');
   const [dataInput, setDataInput] = useState('');
   const [dataType, setDataType] = useState('continuous'); // 'discrete', 'continuous', or 'categorical'
   const [numberOfClasses, setNumberOfClasses] = useState('');
@@ -71,11 +74,12 @@ const FrequencyDistributionCalculator = () => {
       setCategoricalInputMode(dataset.inputMode || 'raw');
       setCategoryInputs([{ category: '', count: '' }, { category: '', count: '' }]);
     }
+    announcePolite('Loaded sample: ' + dataset.name);
   };
 
   const parseData = (input) => {
     const values = input
-      .split(/[\n,]+/)
+      .split(/[\n,\s]+/)
       .map(val => parseFloat(val.trim()))
       .filter(val => !isNaN(val));
 
@@ -240,6 +244,7 @@ const FrequencyDistributionCalculator = () => {
 
     setFrequencyTable(table);
     setStatistics({ n, numCategories: categories.length });
+    announcePolite('Frequency distribution calculated for ' + n + ' values.');
   };
 
   const calculateDiscreteFrequency = (data, stats) => {
@@ -278,6 +283,7 @@ const FrequencyDistributionCalculator = () => {
 
     setFrequencyTable(table);
     setStatistics(stats);
+    announcePolite('Frequency distribution calculated for ' + data.length + ' values.');
   };
 
   const calculateContinuousFrequency = (data, stats) => {
@@ -353,6 +359,7 @@ const FrequencyDistributionCalculator = () => {
 
     setFrequencyTable(table);
     setStatistics({ ...stats, numClasses, classWidth: width, startValue: start });
+    announcePolite('Frequency distribution calculated for ' + data.length + ' values.');
   };
 
   const clearAll = () => {
@@ -380,23 +387,23 @@ const FrequencyDistributionCalculator = () => {
       </div>
 
       {/* Educational Guide - Collapsible */}
-      <div className="mb-6 border-2 border-turquoise rounded-lg overflow-hidden">
+      <div className="mb-6 border-2 border-darkTeal rounded-lg overflow-hidden">
         <button
           onClick={() => setShowGuide(!showGuide)}
-          className="w-full p-4 bg-turquoise bg-opacity-10 flex items-center justify-between hover:bg-opacity-20 transition-all"
+          className="w-full p-4 bg-darkTeal bg-opacity-10 flex items-center justify-between hover:bg-opacity-20 transition-all"
         >
           <div className="flex items-center gap-2">
-            <BookOpen className="text-turquoise" size={20} />
+            <BookOpen className="text-darkTeal" size={20} />
             <span className="font-bold text-darkGrey">Student Guide: Understanding Variables & Frequency Tables</span>
           </div>
-          {showGuide ? <ChevronUp className="text-turquoise" /> : <ChevronDown className="text-turquoise" />}
+          {showGuide ? <ChevronUp className="text-darkTeal" /> : <ChevronDown className="text-darkTeal" />}
         </button>
 
         {showGuide && (
           <div className="p-4 bg-white space-y-4">
             {/* Types of Variables */}
             <div>
-              <h4 className="font-bold text-darkGrey mb-2 text-lg">Types of Variables</h4>
+              <h3 className="font-bold text-darkGrey mb-2 text-lg">Types of Variables</h3>
               <div className="grid md:grid-cols-3 gap-4">
                 <div className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
                   <h5 className="font-bold text-blue-700">Discrete (Numeric)</h5>
@@ -416,12 +423,12 @@ const FrequencyDistributionCalculator = () => {
                     <strong>Examples:</strong> Height (165.5 cm), weight (70.3 kg), temperature, time
                   </p>
                 </div>
-                <div className="p-3 bg-purple-50 rounded-lg border-l-4 border-purple-500">
-                  <h5 className="font-bold text-purple-700">Categorical (Text)</h5>
+                <div className="p-3 bg-amber-50 rounded-lg border-l-4 border-amber-500">
+                  <h5 className="font-bold text-amber-800">Categorical (Text)</h5>
                   <p className="text-sm text-darkGrey mt-1">
                     Non-numeric categories or labels that represent groups or qualities.
                   </p>
-                  <p className="text-xs text-purple-600 mt-2">
+                  <p className="text-xs text-amber-800 mt-2">
                     <strong>Examples:</strong> Gender (M/F), blood type (A, B, O, AB), survey responses (Yes/No)
                   </p>
                 </div>
@@ -430,15 +437,15 @@ const FrequencyDistributionCalculator = () => {
 
             {/* Table Column Meanings */}
             <div>
-              <h4 className="font-bold text-darkGrey mb-2 text-lg">Understanding Table Columns</h4>
+              <h3 className="font-bold text-darkGrey mb-2 text-lg">Understanding Table Columns</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border-collapse">
                   <thead>
                     <tr className="bg-platinum">
-                      <th className="border border-darkGrey p-2 text-left">Column</th>
-                      <th className="border border-darkGrey p-2 text-left">Symbol</th>
-                      <th className="border border-darkGrey p-2 text-left">Meaning</th>
-                      <th className="border border-darkGrey p-2 text-left">Formula</th>
+                      <th scope="col" className="border border-darkGrey p-2 text-left">Column</th>
+                      <th scope="col" className="border border-darkGrey p-2 text-left">Symbol</th>
+                      <th scope="col" className="border border-darkGrey p-2 text-left">Meaning</th>
+                      <th scope="col" className="border border-darkGrey p-2 text-left">Formula</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -485,9 +492,9 @@ const FrequencyDistributionCalculator = () => {
 
             {/* How to Interpret */}
             <div>
-              <h4 className="font-bold text-darkGrey mb-2 text-lg">How to Interpret Results</h4>
+              <h3 className="font-bold text-darkGrey mb-2 text-lg">How to Interpret Results</h3>
               <div className="space-y-3">
-                <div className="p-3 bg-yellow bg-opacity-20 rounded-lg">
+                <div className="p-3 bg-accent bg-opacity-20 rounded-lg">
                   <p className="font-bold text-darkGrey">Example Interpretation (Test Scores):</p>
                   <ul className="text-sm text-darkGrey mt-2 space-y-1 list-disc list-inside">
                     <li><strong>Frequency:</strong> "12 students scored between 70-80 points"</li>
@@ -496,7 +503,7 @@ const FrequencyDistributionCalculator = () => {
                     <li><strong>Cumulative %:</strong> "83.33% of students scored 80 or below"</li>
                   </ul>
                 </div>
-                <div className="p-3 bg-purple-50 rounded-lg">
+                <div className="p-3 bg-amber-50 rounded-lg">
                   <p className="font-bold text-darkGrey">Example Interpretation (Survey Yes/No):</p>
                   <ul className="text-sm text-darkGrey mt-2 space-y-1 list-disc list-inside">
                     <li><strong>Frequency:</strong> "15 respondents answered 'Yes'"</li>
@@ -508,8 +515,8 @@ const FrequencyDistributionCalculator = () => {
             </div>
 
             {/* Tips */}
-            <div className="p-3 bg-turquoise bg-opacity-10 rounded-lg">
-              <p className="font-bold text-turquoise mb-2">Tips for Students:</p>
+            <div className="p-3 bg-darkTeal bg-opacity-10 rounded-lg">
+              <p className="font-bold text-darkTeal mb-2">Tips for Students:</p>
               <ul className="text-sm text-darkGrey space-y-1 list-disc list-inside">
                 <li>The sum of all frequencies must equal the sample size (n)</li>
                 <li>The sum of all relative frequencies must equal 1.0000</li>
@@ -525,7 +532,7 @@ const FrequencyDistributionCalculator = () => {
       {/* Sample Datasets */}
       <div className="mb-6 p-4 bg-platinum rounded-lg">
         <h3 className="font-bold text-darkGrey mb-3 flex items-center gap-2">
-          <Info size={20} className="text-turquoise" />
+          <Info size={20} className="text-darkTeal" />
           Sample Datasets
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -535,8 +542,8 @@ const FrequencyDistributionCalculator = () => {
               onClick={() => loadSampleData(dataset)}
               className={`px-3 py-2 border-2 rounded-lg transition-all text-sm ${
                 loadedSample === dataset.name
-                  ? 'bg-turquoise text-white border-turquoise font-bold'
-                  : 'bg-white border-turquoise text-darkGrey hover:bg-turquoise hover:text-white'
+                  ? 'bg-darkTeal text-white border-darkTeal font-bold'
+                  : 'bg-white border-darkTeal text-darkGrey hover:bg-darkTeal hover:text-white'
               }`}
             >
               {dataset.name}
@@ -556,7 +563,7 @@ const FrequencyDistributionCalculator = () => {
               value="discrete"
               checked={dataType === 'discrete'}
               onChange={(e) => setDataType(e.target.value)}
-              className="w-4 h-4 text-turquoise"
+              className="w-4 h-4 text-darkTeal"
             />
             <span className="text-darkGrey">Discrete (Numeric)</span>
           </label>
@@ -566,7 +573,7 @@ const FrequencyDistributionCalculator = () => {
               value="continuous"
               checked={dataType === 'continuous'}
               onChange={(e) => setDataType(e.target.value)}
-              className="w-4 h-4 text-turquoise"
+              className="w-4 h-4 text-darkTeal"
             />
             <span className="text-darkGrey">Continuous (Numeric)</span>
           </label>
@@ -576,7 +583,7 @@ const FrequencyDistributionCalculator = () => {
               value="categorical"
               checked={dataType === 'categorical'}
               onChange={(e) => setDataType(e.target.value)}
-              className="w-4 h-4 text-turquoise"
+              className="w-4 h-4 text-darkTeal"
             />
             <span className="text-darkGrey">Categorical (Text)</span>
           </label>
@@ -594,7 +601,7 @@ const FrequencyDistributionCalculator = () => {
                 value="raw"
                 checked={categoricalInputMode === 'raw'}
                 onChange={(e) => setCategoricalInputMode(e.target.value)}
-                className="w-4 h-4 text-turquoise"
+                className="w-4 h-4 text-darkTeal"
               />
               <span className="text-darkGrey">Raw Data (comma-separated)</span>
             </label>
@@ -604,7 +611,7 @@ const FrequencyDistributionCalculator = () => {
                 value="counts"
                 checked={categoricalInputMode === 'counts'}
                 onChange={(e) => setCategoricalInputMode(e.target.value)}
-                className="w-4 h-4 text-turquoise"
+                className="w-4 h-4 text-darkTeal"
               />
               <span className="text-darkGrey">Category Counts</span>
             </label>
@@ -615,16 +622,19 @@ const FrequencyDistributionCalculator = () => {
       {/* Data Input - Raw mode for numeric or categorical */}
       {(dataType !== 'categorical' || categoricalInputMode === 'raw') && (
         <div className="mb-6">
-          <label className="block text-darkGrey font-bold mb-2">
+          <label htmlFor="freq-data-input" className="block text-darkGrey font-bold mb-2">
             Enter Data (comma or newline separated, max {MAX_INPUT_COUNT} values)
           </label>
           <textarea
+            id="freq-data-input"
             value={dataInput}
             onChange={(e) => { setDataInput(e.target.value); setLoadedSample(''); }}
             placeholder={dataType === 'categorical'
               ? "Enter your data here... e.g., Yes, No, Yes, Maybe, No, Yes"
               : "Enter your data here... e.g., 45, 52, 58, 63, 67, 70"}
-            className="w-full p-3 border-2 border-platinum rounded-lg focus:border-turquoise focus:outline-none min-h-32"
+            className="w-full p-3 border-2 border-platinum rounded-lg focus:border-darkTeal focus:outline-none min-h-32"
+            aria-invalid={!!error}
+            aria-describedby="freq-error"
           />
           <p className="text-sm text-darkGrey opacity-70 mt-1">
             Current count: {dataType === 'categorical'
@@ -642,7 +652,7 @@ const FrequencyDistributionCalculator = () => {
             {categoryInputs.length < MAX_CATEGORIES && (
               <button
                 onClick={addCategoryInput}
-                className="px-3 py-1 bg-turquoise text-white rounded-lg hover:bg-opacity-90 transition-all text-sm flex items-center gap-1"
+                className="px-3 py-1 bg-darkTeal text-white rounded-lg hover:bg-opacity-90 transition-all text-sm flex items-center gap-1"
               >
                 <Plus size={16} /> Add Category
               </button>
@@ -652,26 +662,31 @@ const FrequencyDistributionCalculator = () => {
             {categoryInputs.map((input, index) => (
               <div key={index} className="flex gap-2 items-center">
                 <input
+                  id={`freq-category-name-${index}`}
                   type="text"
                   value={input.category}
                   onChange={(e) => updateCategoryInput(index, 'category', e.target.value)}
                   placeholder="Category name"
-                  className="flex-1 p-2 border-2 border-platinum rounded-lg focus:border-turquoise focus:outline-none bg-white"
+                  aria-label={`Category ${index + 1} name`}
+                  className="flex-1 p-2 border-2 border-platinum rounded-lg focus:border-darkTeal focus:outline-none bg-white"
                 />
                 <input
+                  id={`freq-category-count-${index}`}
                   type="number"
                   value={input.count}
                   onChange={(e) => updateCategoryInput(index, 'count', e.target.value)}
                   placeholder="Count"
+                  aria-label={`Category ${index + 1} count`}
                   min="0"
-                  className="w-24 p-2 border-2 border-platinum rounded-lg focus:border-turquoise focus:outline-none bg-white"
+                  className="w-24 p-2 border-2 border-platinum rounded-lg focus:border-darkTeal focus:outline-none bg-white"
                 />
                 {categoryInputs.length > 2 && (
                   <button
                     onClick={() => removeCategoryInput(index)}
                     className="p-2 text-red-500 hover:bg-red-100 rounded-lg transition-all"
+                    aria-label={`Remove category ${input.category || index + 1}`}
                   >
-                    <Trash2 size={18} />
+                    <Trash2 size={18} aria-hidden="true" />
                   </button>
                 )}
               </div>
@@ -688,12 +703,13 @@ const FrequencyDistributionCalculator = () => {
         <div className="mb-6 p-4 bg-platinum rounded-lg">
           <div className="flex items-center gap-2 mb-4">
             <input
+              id="freq-auto-calculate"
               type="checkbox"
               checked={autoCalculate}
               onChange={(e) => setAutoCalculate(e.target.checked)}
-              className="w-4 h-4 text-turquoise"
+              className="w-4 h-4 text-darkTeal"
             />
-            <label className="text-darkGrey font-bold">
+            <label htmlFor="freq-auto-calculate" className="text-darkGrey font-bold">
               Auto-calculate (Sturges' Rule)
             </label>
           </div>
@@ -701,41 +717,44 @@ const FrequencyDistributionCalculator = () => {
           {!autoCalculate && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-darkGrey font-bold mb-2">
+                <label htmlFor="freq-number-of-classes" className="block text-darkGrey font-bold mb-2">
                   Number of Classes
                 </label>
                 <input
+                  id="freq-number-of-classes"
                   type="number"
                   value={numberOfClasses}
                   onChange={(e) => setNumberOfClasses(e.target.value)}
                   placeholder="e.g., 5"
-                  className="w-full p-2 border-2 border-platinum rounded-lg focus:border-turquoise focus:outline-none"
+                  className="w-full p-2 border-2 border-platinum rounded-lg focus:border-darkTeal focus:outline-none"
                   min="1"
                 />
               </div>
               <div>
-                <label className="block text-darkGrey font-bold mb-2">
+                <label htmlFor="freq-class-width" className="block text-darkGrey font-bold mb-2">
                   Class Width
                 </label>
                 <input
+                  id="freq-class-width"
                   type="number"
                   value={classWidth}
                   onChange={(e) => setClassWidth(e.target.value)}
                   placeholder="e.g., 10"
-                  className="w-full p-2 border-2 border-platinum rounded-lg focus:border-turquoise focus:outline-none"
+                  className="w-full p-2 border-2 border-platinum rounded-lg focus:border-darkTeal focus:outline-none"
                   step="0.01"
                 />
               </div>
               <div>
-                <label className="block text-darkGrey font-bold mb-2">
+                <label htmlFor="freq-min-value" className="block text-darkGrey font-bold mb-2">
                   Minimum Value (Start)
                 </label>
                 <input
+                  id="freq-min-value"
                   type="number"
                   value={minValue}
                   onChange={(e) => setMinValue(e.target.value)}
                   placeholder="e.g., 0"
-                  className="w-full p-2 border-2 border-platinum rounded-lg focus:border-turquoise focus:outline-none"
+                  className="w-full p-2 border-2 border-platinum rounded-lg focus:border-darkTeal focus:outline-none"
                   step="0.01"
                 />
               </div>
@@ -748,7 +767,7 @@ const FrequencyDistributionCalculator = () => {
       <div className="flex gap-4 mb-6">
         <button
           onClick={calculateFrequencyDistribution}
-          className="flex-1 bg-turquoise text-white px-6 py-3 rounded-lg font-bold hover:bg-opacity-90 transition-all flex items-center justify-center gap-2"
+          className="flex-1 bg-darkTeal text-white px-6 py-3 rounded-lg font-bold hover:bg-opacity-90 transition-all flex items-center justify-center gap-2"
         >
           <Table2 size={20} />
           Calculate Distribution
@@ -763,22 +782,20 @@ const FrequencyDistributionCalculator = () => {
       </div>
 
       {/* Error Message */}
-      {error && (
-        <div className="mb-6 p-4 bg-red-100 border-2 border-red-500 rounded-lg flex items-center gap-2">
-          <AlertCircle className="text-red-500" size={20} />
-          <p className="text-red-700 font-bold">{error}</p>
-        </div>
-      )}
+      <div id="freq-error" className={`mb-6 p-4 bg-red-100 border-2 border-red-500 rounded-lg flex items-center gap-2 ${error ? '' : 'hidden'}`} role="status">
+        <AlertCircle className="text-red-500" size={20} aria-hidden="true" />
+        <p className="text-red-700 font-bold">{error || ''}</p>
+      </div>
 
       {/* Results */}
       {frequencyTable.length > 0 && statistics && (
         <div className="space-y-6">
           {/* Statistics Summary */}
-          <div className="p-4 bg-yellow bg-opacity-20 border-2 border-yellow rounded-lg">
+          <div className="p-4 bg-accent bg-opacity-20 border-2 border-accent rounded-lg">
             <div className="flex justify-between items-center mb-3">
               <h3 className="font-bold text-darkGrey">Summary Statistics</h3>
               {loadedSample && (
-                <span className="text-sm bg-turquoise text-white px-3 py-1 rounded-full">
+                <span className="text-sm bg-darkTeal text-white px-3 py-1 rounded-full">
                   {loadedSample}
                 </span>
               )}
@@ -844,8 +861,9 @@ const FrequencyDistributionCalculator = () => {
                   <button
                     onClick={() => setShowDataWarning(false)}
                     className="text-orange-500 hover:text-orange-700 p-1"
+                    aria-label="Dismiss warning"
                   >
-                    <X size={20} />
+                    <X size={20} aria-hidden="true" />
                   </button>
                 </div>
               );
@@ -856,24 +874,25 @@ const FrequencyDistributionCalculator = () => {
           {/* Frequency Distribution Table */}
           <div className="overflow-x-auto">
             <h3 className="font-bold text-darkGrey mb-3 flex items-center gap-2">
-              <Table2 className="text-turquoise" size={24} />
+              <Table2 className="text-darkTeal" size={24} />
               Frequency Distribution Table
             </h3>
             <table className="w-full border-collapse">
+              <caption className="sr-only">Frequency distribution table showing class intervals, frequencies, and cumulative statistics</caption>
               <thead>
-                <tr className="bg-turquoise text-white">
-                  <th className="border border-darkGrey p-2">
+                <tr className="bg-darkTeal text-white">
+                  <th scope="col" className="border border-darkGrey p-2">
                     {dataType === 'categorical' ? 'Category' : dataType === 'discrete' ? 'Value' : 'Class Interval'}
                   </th>
                   {dataType === 'continuous' && (
-                    <th className="border border-darkGrey p-2">Midpoint</th>
+                    <th scope="col" className="border border-darkGrey p-2">Midpoint</th>
                   )}
-                  <th className="border border-darkGrey p-2">Frequency (f)</th>
-                  <th className="border border-darkGrey p-2">Relative Freq</th>
-                  <th className="border border-darkGrey p-2">Percentage (%)</th>
-                  <th className="border border-darkGrey p-2">Cumulative Freq</th>
-                  <th className="border border-darkGrey p-2">Cumulative %</th>
-                  <th className="border border-darkGrey p-2">Cumulative Rel. Freq</th>
+                  <th scope="col" className="border border-darkGrey p-2">Frequency (f)</th>
+                  <th scope="col" className="border border-darkGrey p-2">Relative Freq</th>
+                  <th scope="col" className="border border-darkGrey p-2">Percentage (%)</th>
+                  <th scope="col" className="border border-darkGrey p-2">Cumulative Freq</th>
+                  <th scope="col" className="border border-darkGrey p-2">Cumulative %</th>
+                  <th scope="col" className="border border-darkGrey p-2">Cumulative Rel. Freq</th>
                 </tr>
               </thead>
               <tbody>
@@ -898,7 +917,7 @@ const FrequencyDistributionCalculator = () => {
                   const totalRelativeFreq = (totalFrequency / statistics.n).toFixed(4);
                   const totalPercentage = ((totalFrequency / statistics.n) * 100).toFixed(2);
                   return (
-                    <tr className="bg-yellow bg-opacity-30 font-bold">
+                    <tr className="bg-accent bg-opacity-30 font-bold">
                       <td className="border border-darkGrey p-2">Total</td>
                       {dataType === 'continuous' && <td className="border border-darkGrey p-2"></td>}
                       <td className="border border-darkGrey p-2 text-center">{totalFrequency}</td>
@@ -925,7 +944,7 @@ const FrequencyDistributionCalculator = () => {
                     value="histogram"
                     checked={chartType === 'histogram'}
                     onChange={(e) => setChartType(e.target.value)}
-                    className="w-4 h-4 text-turquoise"
+                    className="w-4 h-4 text-darkTeal"
                   />
                   <span className="text-darkGrey">Histogram Only</span>
                 </label>
@@ -935,7 +954,7 @@ const FrequencyDistributionCalculator = () => {
                     value="polygon"
                     checked={chartType === 'polygon'}
                     onChange={(e) => setChartType(e.target.value)}
-                    className="w-4 h-4 text-turquoise"
+                    className="w-4 h-4 text-darkTeal"
                   />
                   <span className="text-darkGrey">Frequency Polygon Only</span>
                 </label>
@@ -945,7 +964,7 @@ const FrequencyDistributionCalculator = () => {
                     value="both"
                     checked={chartType === 'both'}
                     onChange={(e) => setChartType(e.target.value)}
-                    className="w-4 h-4 text-turquoise"
+                    className="w-4 h-4 text-darkTeal"
                   />
                   <span className="text-darkGrey">Both (Histogram + Polygon)</span>
                 </label>
@@ -956,10 +975,11 @@ const FrequencyDistributionCalculator = () => {
           {/* Visualizations */}
           <div className="p-4 bg-platinum rounded-lg">
             <h3 className="font-bold text-darkGrey mb-4 flex items-center gap-2">
-              <BarChart3 className="text-turquoise" size={24} />
+              <BarChart3 className="text-darkTeal" size={24} />
               {dataType === 'categorical' ? 'Bar Chart' : dataType === 'discrete' ? 'Bar Chart' : 'Histogram & Frequency Polygon'}
             </h3>
 
+            <div role="img" aria-label="Frequency distribution chart">
             {(dataType === 'discrete' || dataType === 'categorical') ? (
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={frequencyTable}>
@@ -1018,42 +1038,45 @@ const FrequencyDistributionCalculator = () => {
                 )}
               </ResponsiveContainer>
             )}
+            </div>
           </div>
 
           {/* Pareto Chart for Categorical Data */}
           {dataType === 'categorical' && (
             <div className="p-4 bg-platinum rounded-lg">
               <h3 className="font-bold text-darkGrey mb-4 flex items-center gap-2">
-                <BarChart3 className="text-turquoise" size={24} />
+                <BarChart3 className="text-darkTeal" size={24} />
                 Pareto Chart (with Cumulative Percentage)
               </h3>
-              <ResponsiveContainer width="100%" height={400}>
-                <ComposedChart data={frequencyTable}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="classLabel" />
-                  <YAxis yAxisId="left" />
-                  <YAxis yAxisId="right" orientation="right" domain={[0, 100]} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar yAxisId="left" dataKey="frequency" fill="#4ECDC4" name="Frequency" />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="cumulativePercentage"
-                    stroke="#FF6B6B"
-                    strokeWidth={3}
-                    name="Cumulative %"
-                    dot={{ fill: '#FF6B6B', r: 5 }}
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
+              <div role="img" aria-label="Pareto chart showing cumulative frequency distribution">
+                <ResponsiveContainer width="100%" height={400}>
+                  <ComposedChart data={frequencyTable}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="classLabel" />
+                    <YAxis yAxisId="left" />
+                    <YAxis yAxisId="right" orientation="right" domain={[0, 100]} />
+                    <Tooltip />
+                    <Legend />
+                    <Bar yAxisId="left" dataKey="frequency" fill="#4ECDC4" name="Frequency" />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="cumulativePercentage"
+                      stroke="#FF6B6B"
+                      strokeWidth={3}
+                      name="Cumulative %"
+                      dot={{ fill: '#FF6B6B', r: 5 }}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           )}
 
           {/* Dynamic Interpretation Examples */}
-          <div className="p-4 bg-turquoise bg-opacity-10 border-2 border-turquoise rounded-lg">
+          <div className="p-4 bg-darkTeal bg-opacity-10 border-2 border-darkTeal rounded-lg">
             <h3 className="font-bold text-darkGrey mb-3 flex items-center gap-2">
-              <Info className="text-turquoise" size={20} />
+              <Info className="text-darkTeal" size={20} />
               Interpretation Examples from Your Data
             </h3>
             {frequencyTable.length > 0 && (
@@ -1092,7 +1115,7 @@ const FrequencyDistributionCalculator = () => {
                   return (
                     <>
                       <div className="p-3 bg-white rounded-lg">
-                        <p className="font-bold text-turquoise mb-2">Frequency Interpretation:</p>
+                        <p className="font-bold text-darkTeal mb-2">Frequency Interpretation:</p>
                         <p>
                           {dataType === 'categorical'
                             ? `${maxRow.frequency} ${ctx.subject} ${ctx.verb} "${maxRow.classLabel}", making it the most common ${ctx.item}.`
@@ -1104,7 +1127,7 @@ const FrequencyDistributionCalculator = () => {
                       </div>
 
                       <div className="p-3 bg-white rounded-lg">
-                        <p className="font-bold text-turquoise mb-2">Relative Frequency & Percentage:</p>
+                        <p className="font-bold text-darkTeal mb-2">Relative Frequency & Percentage:</p>
                         <p>
                           {dataType === 'categorical'
                             ? `Out of every 100 ${ctx.subject}, approximately ${Math.round(parseFloat(maxRow.percentage))} ${ctx.verb} "${maxRow.classLabel}". In decimal form, this is ${maxRow.relativeFrequency} of the total.`
@@ -1116,7 +1139,7 @@ const FrequencyDistributionCalculator = () => {
                       </div>
 
                       <div className="p-3 bg-white rounded-lg">
-                        <p className="font-bold text-turquoise mb-2">Cumulative Frequency:</p>
+                        <p className="font-bold text-darkTeal mb-2">Cumulative Frequency:</p>
                         <p>
                           {dataType === 'categorical'
                             ? secondRow
@@ -1131,7 +1154,7 @@ const FrequencyDistributionCalculator = () => {
 
                       {dataType === 'continuous' && (
                         <div className="p-3 bg-white rounded-lg">
-                          <p className="font-bold text-turquoise mb-2">Midpoint (Class Mark):</p>
+                          <p className="font-bold text-darkTeal mb-2">Midpoint (Class Mark):</p>
                           <p>
                             For the most common range ({maxRow.classLabel}), the midpoint is {maxRow.midpoint} {ctx.unit}. This value represents all {ctx.subject} in this class when calculating the estimated mean using the formula: Mean ≈ Σ(f × midpoint) ÷ n
                           </p>
@@ -1140,7 +1163,7 @@ const FrequencyDistributionCalculator = () => {
 
                       {dataType === 'categorical' && (
                         <div className="p-3 bg-white rounded-lg">
-                          <p className="font-bold text-turquoise mb-2">Pareto Analysis:</p>
+                          <p className="font-bold text-darkTeal mb-2">Pareto Analysis:</p>
                           <p>
                             {(() => {
                               let cumSum = 0;
@@ -1156,7 +1179,7 @@ const FrequencyDistributionCalculator = () => {
                         </div>
                       )}
 
-                      <div className="p-3 bg-yellow bg-opacity-30 rounded-lg">
+                      <div className="p-3 bg-accent bg-opacity-30 rounded-lg">
                         <p className="font-bold text-darkGrey mb-1">Quick Stats Check:</p>
                         <ul className="list-disc list-inside space-y-1">
                           <li>Total frequencies: {frequencyTable.reduce((sum, r) => sum + r.frequency, 0)} (should equal n = {statistics.n}) {frequencyTable.reduce((sum, r) => sum + r.frequency, 0) === statistics.n ? '✓' : '✗'}</li>

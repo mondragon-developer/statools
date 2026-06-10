@@ -1,31 +1,16 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef, useId } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Bar, Pie } from 'react-chartjs-2';
 import { RotateCcw } from 'lucide-react';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
+import { announcePolite } from '../../utils/announce';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 /**
- * PROBABILITY CALCULATOR: A COMPREHENSIVE STATISTICAL TOOLKIT
- * 
- * Architecture Overview:
- * This component follows SOLID principles to create a maintainable, extensible probability toolkit.
- * Think of it as a Swiss Army knife where each tool (calculator) is perfectly designed for its specific task.
- * 
- * Main Components:
- * 1. Probability Rules Engine - Like a traffic light system for event relationships
- * 2. Combinatorics Calculator - A factory for counting possibilities
- * 3. Expected Value Analyzer - A financial advisor for random events
- * 4. Dice Simulator - A physics engine for virtual dice
+ * Probability toolkit — probability rules, combinatorics, expected value, and dice simulation.
  */
 
-// ========================================
-// MATHEMATICAL ENGINE (Single Responsibility)
-// ========================================
-/**
- * Pure mathematical functions - the brain of our calculator
- * These functions are like mathematical formulas in a textbook: pure, predictable, and reusable
- */
 const MathEngine = {
   /**
    * Calculate factorial: n! = n × (n-1) × ... × 1
@@ -173,26 +158,37 @@ const InfoIcon = ({ info }) => {
     }
   }, [isVisible, updatePosition]);
 
+  const tooltipId = useId();
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape' && isVisible) {
+      setIsVisible(false);
+      iconRef.current?.focus();
+    }
+  };
+
   return (
     <>
-      <span
+      <button
+        type="button"
         ref={iconRef}
-        className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-turquoise rounded-full cursor-help transition-all hover:scale-110 hover:shadow-lg"
+        className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-darkTeal rounded-full cursor-help transition-all hover:scale-110 hover:shadow-lg"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onFocus={handleMouseEnter}
-        onBlur={handleMouseLeave}
-        tabIndex={0}
-        aria-label="More information"
-        role="button"
+        onClick={() => setIsVisible(v => !v)}
+        onKeyDown={handleKeyDown}
+        aria-expanded={isVisible}
+        aria-describedby={isVisible ? tooltipId : undefined}
+        aria-label="More info"
       >
         ?
-      </span>
-      
-      {/* Tooltip Portal - Appears in the document flow */}
+      </button>
+
       {isVisible && (
         <div
+          id={tooltipId}
           ref={tooltipRef}
+          role="tooltip"
           className="absolute z-50 px-4 py-3 text-sm text-white bg-darkGrey rounded-lg shadow-xl max-w-sm pointer-events-none"
           style={{
             top: `${position.top}px`,
@@ -201,7 +197,6 @@ const InfoIcon = ({ info }) => {
             transition: 'opacity 0.2s ease-in-out'
           }}
         >
-          {/* Arrow pointer */}
           <div
             className="absolute w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-transparent border-t-darkGrey"
             style={{
@@ -292,7 +287,7 @@ const Dice3D = ({ value, isRolling, size = 60 }) => {
         {faces.map((face) => (
           <div
             key={face.value}
-            className="absolute bg-yellow border-2 border-darkGrey rounded-lg flex items-center justify-center"
+            className="absolute bg-accent border-2 border-darkGrey rounded-lg flex items-center justify-center"
             style={{
               width: `${size}px`,
               height: `${size}px`,
@@ -354,13 +349,13 @@ const ProbabilityRulesModule = ({ MathEngine }) => {
         ],
         backgroundColor: [
           'rgba(78, 205, 196, 0.7)',   // Turquoise for A only
-          'rgba(255, 255, 0, 0.7)',     // Yellow for B only
+          'rgba(217, 119, 6, 0.7)',     // Amber for B only
           'rgba(34, 139, 34, 0.7)',     // Green for intersection
           'rgba(128, 128, 128, 0.3)'    // Gray for neither
         ],
         borderColor: [
           'rgba(78, 205, 196, 1)',
-          'rgba(255, 255, 0, 1)',
+          'rgba(180, 83, 9, 1)',
           'rgba(34, 139, 34, 1)',
           'rgba(128, 128, 128, 1)'
         ],
@@ -391,23 +386,24 @@ const ProbabilityRulesModule = ({ MathEngine }) => {
           </span>
           <button
             onClick={reset}
-            className="p-2 bg-yellow border-2 border-darkGrey text-darkGrey rounded-lg hover:bg-darkGrey hover:text-white transition-all"
+            className="p-2 bg-accent border-2 border-darkGrey text-darkGrey rounded-lg hover:bg-darkGrey hover:text-white transition-all"
             title="Reset to defaults"
           >
             <RotateCcw size={20} />
           </button>
         </h3>
-        
+
         <div className="grid md:grid-cols-2 gap-4">
           {/* Control Panel */}
           <div className="space-y-4">
             {/* Probability A Slider */}
             <div>
-              <label className="flex items-center text-darkGrey font-medium mb-2">
+              <label htmlFor="prob-pa" className="flex items-center text-darkGrey font-medium mb-2">
                 P(A) = {probA.toFixed(2)} - Event A Likelihood
                 <InfoIcon info="Like the chance of rain today - a standalone probability" />
               </label>
               <input
+                id="prob-pa"
                 type="range"
                 min="0"
                 max="1"
@@ -416,18 +412,19 @@ const ProbabilityRulesModule = ({ MathEngine }) => {
                 onChange={(e) => setProbA(parseFloat(e.target.value))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 style={{
-                  background: `linear-gradient(to right, #4ECDC4 0%, #4ECDC4 ${probA * 100}%, #e0e0e0 ${probA * 100}%, #e0e0e0 100%)`
+                  background: `linear-gradient(to right, #0F766E 0%, #0F766E ${probA * 100}%, #e0e0e0 ${probA * 100}%, #e0e0e0 100%)`
                 }}
               />
             </div>
-            
+
             {/* Probability B Slider */}
             <div>
-              <label className="flex items-center text-darkGrey font-medium mb-2">
+              <label htmlFor="prob-pb" className="flex items-center text-darkGrey font-medium mb-2">
                 P(B) = {probB.toFixed(2)} - Event B Likelihood
                 <InfoIcon info="Like the chance of traffic - another standalone probability" />
               </label>
               <input
+                id="prob-pb"
                 type="range"
                 min="0"
                 max="1"
@@ -436,21 +433,22 @@ const ProbabilityRulesModule = ({ MathEngine }) => {
                 onChange={(e) => setProbB(parseFloat(e.target.value))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 style={{
-                  background: `linear-gradient(to right, #FFFF00 0%, #FFFF00 ${probB * 100}%, #e0e0e0 ${probB * 100}%, #e0e0e0 100%)`
+                  background: `linear-gradient(to right, #D97706 0%, #D97706 ${probB * 100}%, #e0e0e0 ${probB * 100}%, #e0e0e0 100%)`
                 }}
               />
             </div>
             
             {/* Event Relationship Selector */}
             <div>
-              <label className="block text-darkGrey font-medium mb-2">
+              <label htmlFor="prob-rule-type" className="block text-darkGrey font-medium mb-2">
                 How Events Relate
                 <InfoIcon info="Like traffic patterns - can events happen together or are they exclusive?" />
               </label>
               <select
+                id="prob-rule-type"
                 value={ruleType}
                 onChange={(e) => setRuleType(e.target.value)}
-                className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
               >
                 <option value="independent">Independent (like coin flips)</option>
                 <option value="dependent">Dependent (like drawing cards)</option>
@@ -461,11 +459,12 @@ const ProbabilityRulesModule = ({ MathEngine }) => {
             {/* Intersection Probability */}
             {ruleType !== 'mutuallyExclusive' && (
               <div>
-                <label className="flex items-center text-darkGrey font-medium mb-2">
+                <label htmlFor="prob-pab" className="flex items-center text-darkGrey font-medium mb-2">
                   P(A ∩ B) = {probAandB.toFixed(2)} - Both Events Together
                   <InfoIcon info="The overlap - like being both rainy AND having traffic" />
                 </label>
                 <input
+                  id="prob-pab"
                   type="range"
                   min="0"
                   max={Math.min(probA, probB)}
@@ -474,7 +473,7 @@ const ProbabilityRulesModule = ({ MathEngine }) => {
                   onChange={(e) => setProbAandB(parseFloat(e.target.value))}
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   style={{
-                      background: `linear-gradient(to right, #4ECDC4 0%,rgb(95, 78, 205) ${(1-(1-probAandB/Math.min(probA, probB)))*100}%, #e0e0e0 ${probAandB*100}%, #e0e0e0 100%)`
+                      background: `linear-gradient(to right, #0F766E 0%,rgb(95, 78, 205) ${(1-(1-probAandB/Math.min(probA, probB)))*100}%, #e0e0e0 ${probAandB*100}%, #e0e0e0 100%)`
                   }}
 
                 />
@@ -526,7 +525,7 @@ const ProbabilityRulesModule = ({ MathEngine }) => {
               <div className="border-b pb-2">
                 <p className="flex justify-between items-center">
                   <span className="text-sm">P(A ∪ B):</span>
-                  <span className="font-mono font-bold text-turquoise">{results.probAorB.toFixed(4)}</span>
+                  <span className="font-mono font-bold text-darkTeal">{results.probAorB.toFixed(4)}</span>
                 </p>
                 <p className="text-xs text-gray-600 mt-1">
                   {ruleType === 'mutuallyExclusive' 
@@ -572,7 +571,7 @@ const ProbabilityRulesModule = ({ MathEngine }) => {
             <p className="text-sm text-darkGrey">
               <strong>Think of this like a map of all possibilities:</strong><br/>
               • <span className="inline-block w-3 h-3 bg-turquoise rounded mr-1"></span> Only A happens (not B)<br/>
-              • <span className="inline-block w-3 h-3 bg-yellow rounded mr-1"></span> Only B happens (not A)<br/>
+              • <span className="inline-block w-3 h-3 bg-accent rounded mr-1"></span> Only B happens (not A)<br/>
               • <span className="inline-block w-3 h-3 bg-green-600 rounded mr-1"></span> Both A and B happen<br/>
               • <span className="inline-block w-3 h-3 bg-gray-400 rounded mr-1"></span> Neither A nor B happens<br/>
               <strong className="block mt-2">All four regions must add up to 1.00 (100%)</strong>
@@ -580,6 +579,7 @@ const ProbabilityRulesModule = ({ MathEngine }) => {
           </div>
           
           <div className="h-64">
+            <div role="img" aria-label="Pie chart showing probability breakdown for events A and B">
             <Pie data={vennData} options={{
               responsive: true,
               maintainAspectRatio: false,
@@ -618,8 +618,9 @@ const ProbabilityRulesModule = ({ MathEngine }) => {
                 }
               }
             }} />
+            </div>
           </div>
-          
+
           {/* Verification Check */}
           <div className="mt-4 text-center text-sm text-gray-600">
             Total probability: {(Math.max(0, probA - probAandB) + Math.max(0, probB - probAandB) + Math.max(0, probAandB) + Math.max(0, 1 - (probA + probB - probAandB))).toFixed(3)} 
@@ -687,25 +688,26 @@ const CombinatoricsModule = ({ MathEngine }) => {
           </span>
           <button
             onClick={reset}
-            className="p-2 bg-yellow border-2 border-darkGrey text-darkGrey rounded-lg hover:bg-darkGrey hover:text-white transition-all"
+            className="p-2 bg-accent border-2 border-darkGrey text-darkGrey rounded-lg hover:bg-darkGrey hover:text-white transition-all"
             title="Reset to defaults"
           >
             <RotateCcw size={20} />
           </button>
         </h3>
-        
+
         <div className="grid md:grid-cols-2 gap-6">
           {/* Controls */}
           <div className="space-y-4">
             <div>
-              <label className="block text-darkGrey font-medium mb-2">
+              <label htmlFor="prob-comb-type" className="block text-darkGrey font-medium mb-2">
                 Calculation Type
                 <InfoIcon info="Choose your counting method - like deciding if order matters in a race vs a team" />
               </label>
               <select
+                id="prob-comb-type"
                 value={combType}
                 onChange={(e) => setCombType(e.target.value)}
-                className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-turquoise outline-none"
+                className="w-full p-2 border-2 border-darkGrey/20 rounded-lg focus:border-darkTeal outline-none"
               >
                 <option value="combination">Combination - Order Doesn't Matter</option>
                 <option value="permutation">Permutation - Order Matters</option>
@@ -714,11 +716,12 @@ const CombinatoricsModule = ({ MathEngine }) => {
             </div>
             
             <div>
-              <label className="flex items-center text-darkGrey font-medium mb-2">
+              <label htmlFor="prob-total-n" className="flex items-center text-darkGrey font-medium mb-2">
                 Total items (n): {n}
                 <InfoIcon info="Your pool of choices - like items on a menu" />
               </label>
               <input
+                id="prob-total-n"
                 type="range"
                 min="1"
                 max="20"
@@ -726,7 +729,7 @@ const CombinatoricsModule = ({ MathEngine }) => {
                 onChange={(e) => setN(parseInt(e.target.value))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 style={{
-                  background: `linear-gradient(to right, #4ECDC4 0%, #4ECDC4 ${(n - 1) / 19 * 100}%, #e0e0e0 ${(n - 1) / 19 * 100}%, #e0e0e0 100%)`
+                  background: `linear-gradient(to right, #0F766E 0%, #0F766E ${(n - 1) / 19 * 100}%, #e0e0e0 ${(n - 1) / 19 * 100}%, #e0e0e0 100%)`
                 }}
               />
             </div>
@@ -734,11 +737,12 @@ const CombinatoricsModule = ({ MathEngine }) => {
             {combType !== 'factorial' && (
               <>
                 <div>
-                  <label className="flex items-center text-darkGrey font-medium mb-2">
+                  <label htmlFor="prob-select-r" className="flex items-center text-darkGrey font-medium mb-2">
                     Items to select (r): {r}
                     <InfoIcon info="How many you're choosing - like picking team members" />
                   </label>
                   <input
+                    id="prob-select-r"
                     type="range"
                     min="0"
                     max={n}
@@ -746,7 +750,7 @@ const CombinatoricsModule = ({ MathEngine }) => {
                     onChange={(e) => setR(parseInt(e.target.value))}
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     style={{
-                      background: `linear-gradient(to right, #FFFF00 0%, #FFFF00 ${r / n * 100}%, #e0e0e0 ${r / n * 100}%, #e0e0e0 100%)`
+                      background: `linear-gradient(to right, #D97706 0%, #D97706 ${r / n * 100}%, #e0e0e0 ${r / n * 100}%, #e0e0e0 100%)`
                     }}
                   />
                 </div>
@@ -771,7 +775,7 @@ const CombinatoricsModule = ({ MathEngine }) => {
           <div className="bg-white p-4 rounded-lg border-2 border-darkGrey/20">
             <h4 className="font-bold text-darkGrey mb-3">🎯 Result</h4>
             <div className="text-center">
-              <p className="text-4xl font-bold text-turquoise mb-2">
+              <p className="text-4xl font-bold text-darkTeal mb-2">
                 {result.toLocaleString()}
               </p>
               <p className="text-sm text-darkGrey opacity-80">
@@ -783,7 +787,7 @@ const CombinatoricsModule = ({ MathEngine }) => {
               </p>
             </div>
             
-            <div className="mt-4 p-3 bg-yellow/20 rounded-lg">
+            <div className="mt-4 p-3 bg-accent/20 rounded-lg">
               <p className="text-sm text-darkGrey">
                 <strong>Real-World Meaning:</strong><br/>
                 {combType === 'combination' && `Imagine selecting ${r} items from a menu of ${n} items - you have ${result.toLocaleString()} different meal combinations!`}
@@ -807,7 +811,7 @@ const CombinatoricsModule = ({ MathEngine }) => {
                   setCombType(example.type);
                   setWithReplacement(example.replacement);
                 }}
-                className="p-2 bg-platinum hover:bg-turquoise/20 rounded transition-colors text-left"
+                className="p-2 bg-platinum hover:bg-darkTeal/20 rounded transition-colors text-left"
               >
                 <strong>{example.name}</strong>
               </button>
@@ -886,13 +890,13 @@ const ExpectedValueModule = ({ MathEngine }) => {
           </span>
           <button
             onClick={reset}
-            className="p-2 bg-yellow border-2 border-darkGrey text-darkGrey rounded-lg hover:bg-darkGrey hover:text-white transition-all"
+            className="p-2 bg-accent border-2 border-darkGrey text-darkGrey rounded-lg hover:bg-darkGrey hover:text-white transition-all"
             title="Reset to defaults"
           >
             <RotateCcw size={20} />
           </button>
         </h3>
-        
+
         <div className="grid md:grid-cols-2 gap-6">
           {/* Outcome Input */}
           <div className="space-y-4">
@@ -901,8 +905,9 @@ const ExpectedValueModule = ({ MathEngine }) => {
               <div key={index} className="bg-white p-3 rounded-lg border-2 border-darkGrey/20">
                 <div className="flex gap-2 items-center">
                   <div className="flex-1">
-                    <label className="text-sm text-darkGrey">Value ($)</label>
+                    <label htmlFor={`prob-ev-value-${index}`} className="text-sm text-darkGrey">Value ($)</label>
                     <input
+                      id={`prob-ev-value-${index}`}
                       type="number"
                       value={outcome.value}
                       onChange={(e) => updateOutcome(index, 'value', e.target.value)}
@@ -910,8 +915,9 @@ const ExpectedValueModule = ({ MathEngine }) => {
                     />
                   </div>
                   <div className="flex-1">
-                    <label className="text-sm text-darkGrey">Probability</label>
+                    <label htmlFor={`prob-ev-prob-${index}`} className="text-sm text-darkGrey">Probability</label>
                     <input
+                      id={`prob-ev-prob-${index}`}
                       type="number"
                       min="0"
                       max="1"
@@ -935,7 +941,7 @@ const ExpectedValueModule = ({ MathEngine }) => {
             
             <button
               onClick={addOutcome}
-              className="w-full bg-yellow border-2 border-darkGrey text-darkGrey px-4 py-2 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all"
+              className="w-full bg-accent border-2 border-darkGrey text-darkGrey px-4 py-2 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all"
             >
               + Add Another Outcome
             </button>
@@ -951,7 +957,7 @@ const ExpectedValueModule = ({ MathEngine }) => {
           <div className="space-y-4">
             <div className="bg-white p-4 rounded-lg border-2 border-darkGrey/20">
               <h4 className="font-bold text-darkGrey mb-3">💰 Expected Value</h4>
-              <p className="text-4xl font-bold text-center text-turquoise">
+              <p className="text-4xl font-bold text-center text-darkTeal">
                 ${expectedValue.toFixed(2)}
               </p>
               <p className="text-sm text-darkGrey opacity-80 text-center mt-2">
@@ -959,7 +965,7 @@ const ExpectedValueModule = ({ MathEngine }) => {
               </p>
             </div>
             
-            <div className="bg-yellow/20 p-4 rounded-lg">
+            <div className="bg-accent/20 p-4 rounded-lg">
               <p className="text-sm text-darkGrey">
                 <strong>What This Means:</strong><br/>
                 {expectedValue > 0 && `🎉 Good news! On average, you'll gain $${expectedValue.toFixed(2)} per play. This is a favorable bet in the long run.`}
@@ -969,24 +975,26 @@ const ExpectedValueModule = ({ MathEngine }) => {
             </div>
             
             <div className="bg-white p-4 rounded-lg border-2 border-darkGrey/20">
-              <Bar data={chartData} options={{
-                responsive: true,
-                plugins: {
-                  legend: { display: false },
-                  title: {
-                    display: true,
-                    text: 'How Each Outcome Contributes'
-                  }
-                },
-                scales: {
-                  y: {
+              <div role="img" aria-label="Bar chart showing expected value outcomes and probabilities">
+                <Bar data={chartData} options={{
+                  responsive: true,
+                  plugins: {
+                    legend: { display: false },
                     title: {
                       display: true,
-                      text: 'Value × Probability'
+                      text: 'How Each Outcome Contributes'
+                    }
+                  },
+                  scales: {
+                    y: {
+                      title: {
+                        display: true,
+                        text: 'Value × Probability'
+                      }
                     }
                   }
-                }
-              }} />
+                }} />
+              </div>
             </div>
           </div>
         </div>
@@ -1070,23 +1078,24 @@ const DiceSimulatorModule = () => {
           </span>
           <button
             onClick={reset}
-            className="p-2 bg-yellow border-2 border-darkGrey text-darkGrey rounded-lg hover:bg-darkGrey hover:text-white transition-all"
+            className="p-2 bg-accent border-2 border-darkGrey text-darkGrey rounded-lg hover:bg-darkGrey hover:text-white transition-all"
             title="Reset to defaults"
           >
             <RotateCcw size={20} />
           </button>
         </h3>
-        
+
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Left Column: Dice Controls and Display */}
           <div className="space-y-4">
             {/* Dice Count Slider */}
             <div>
-              <label className="flex items-center text-darkGrey font-medium mb-2">
+              <label htmlFor="prob-dice-count" className="flex items-center text-darkGrey font-medium mb-2">
                 Number of dice: {diceCount}
                 <InfoIcon info="More dice = more possible sums and a bell curve distribution" />
               </label>
               <input
+                id="prob-dice-count"
                 type="range"
                 min="1"
                 max="6"
@@ -1094,7 +1103,7 @@ const DiceSimulatorModule = () => {
                 onChange={(e) => setDiceCount(parseInt(e.target.value))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 style={{
-                  background: `linear-gradient(to right, #4ECDC4 0%, #4ECDC4 ${(diceCount - 1) / 5 * 100}%, #e0e0e0 ${(diceCount - 1) / 5 * 100}%, #e0e0e0 100%)`
+                  background: `linear-gradient(to right, #0F766E 0%, #0F766E ${(diceCount - 1) / 5 * 100}%, #e0e0e0 ${(diceCount - 1) / 5 * 100}%, #e0e0e0 100%)`
                 }}
               />
             </div>
@@ -1112,7 +1121,7 @@ const DiceSimulatorModule = () => {
             <button
               onClick={rollDice}
               disabled={isRolling}
-              className="w-full bg-yellow border-2 border-darkGrey text-darkGrey px-4 py-3 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-accent border-2 border-darkGrey text-darkGrey px-4 py-3 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isRolling ? '🎲 Rolling...' : '🎲 Roll Dice!'}
             </button>
@@ -1123,7 +1132,7 @@ const DiceSimulatorModule = () => {
                 <p className="text-center">
                   <span className="text-darkGrey">Result: </span>
                   <span className="font-bold text-lg">{diceValues.join(' + ')} = </span>
-                  <span className="font-bold text-2xl text-turquoise">
+                  <span className="font-bold text-2xl text-darkTeal">
                     {diceValues.reduce((a, b) => a + b, 0)}
                   </span>
                 </p>
@@ -1173,37 +1182,39 @@ const DiceSimulatorModule = () => {
               <div className="bg-white p-4 rounded-lg border-2 border-darkGrey/20">
                 <h4 className="font-bold text-darkGrey mb-3">📊 Distribution Analysis</h4>
                 <div className="h-64">
-                  <Bar data={chartData} options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: { display: false },
-                      tooltip: {
-                        callbacks: {
-                          title: (context) => `Sum: ${context[0].label}`,
-                          label: (context) => `Rolled ${context.parsed.y} time${context.parsed.y !== 1 ? 's' : ''} (${((context.parsed.y / rollHistory.length) * 100).toFixed(1)}%)`
-                        }
-                      }
-                    },
-                    scales: {
-                      y: {
-                        beginAtZero: true,
-                        ticks: {
-                          stepSize: 1
-                        },
-                        title: {
-                          display: true,
-                          text: 'Frequency'
+                  <div role="img" aria-label="Bar chart showing dice roll frequency distribution">
+                    <Bar data={chartData} options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                          callbacks: {
+                            title: (context) => `Sum: ${context[0].label}`,
+                            label: (context) => `Rolled ${context.parsed.y} time${context.parsed.y !== 1 ? 's' : ''} (${((context.parsed.y / rollHistory.length) * 100).toFixed(1)}%)`
+                          }
                         }
                       },
-                      x: {
-                        title: {
-                          display: true,
-                          text: 'Sum of Dice'
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          ticks: {
+                            stepSize: 1
+                          },
+                          title: {
+                            display: true,
+                            text: 'Frequency'
+                          }
+                        },
+                        x: {
+                          title: {
+                            display: true,
+                            text: 'Sum of Dice'
+                          }
                         }
                       }
-                    }
-                  }} />
+                    }} />
+                  </div>
                 </div>
                 
                 {/* Statistical Summary */}
@@ -1231,6 +1242,7 @@ const DiceSimulatorModule = () => {
  * Like a Swiss Army knife with different tools for different probability tasks
  */
 const ProbabilityCalculator = () => {
+  useDocumentTitle('Probability Calculator');
   const [activeTab, setActiveTab] = useState('rules');
 
   // Tab configuration - easy to extend with new modules
@@ -1255,15 +1267,18 @@ const ProbabilityCalculator = () => {
         </div>
         
         {/* Tab Navigation */}
-        <div className="flex flex-wrap gap-2 mb-6 border-b-2 border-darkGrey/20">
+        <div className="flex flex-wrap gap-2 mb-6 border-b-2 border-darkGrey/20" role="tablist">
           {tabs.map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              id={"tab-" + tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              onClick={() => { setActiveTab(tab.id); announcePolite('Switched to ' + tab.label + ' tab'); }}
               className={`px-4 py-2 font-medium transition-colors ${
                 activeTab === tab.id
-                  ? 'border-b-2 border-turquoise text-turquoise'
-                  : 'text-darkGrey hover:text-turquoise'
+                  ? 'border-b-2 border-darkTeal text-darkTeal'
+                  : 'text-darkGrey hover:text-darkTeal'
               }`}
             >
               {tab.label}
@@ -1272,7 +1287,7 @@ const ProbabilityCalculator = () => {
         </div>
         
         {/* Tab Content */}
-        <div>
+        <div role="tabpanel" aria-labelledby={"tab-" + activeTab} tabIndex={0}>
           {tabs.find(tab => tab.id === activeTab)?.component}
         </div>
         

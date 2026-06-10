@@ -9,7 +9,9 @@ module.exports = {
       colors: {
         darkGrey: '#2A2A2A',
         turquoise: '#4ECDC4',
-        yellow: '#FFFF00',
+        darkTeal: '#0F766E',
+        accent: '#F59E0B',
+        accentDark: '#B45309',
         platinum: '#E6E6E6',
       }
     },

@@ -1,12 +1,5 @@
 /**
- * QuizResults Component
- *
- * Displays quiz results with:
- * - Overall grade and score
- * - Question-by-question breakdown
- * - Explanations for each answer
- * - Visual feedback (correct/incorrect indicators)
- * - Option to retake quiz
+ * QuizResults — displays quiz results with grade, breakdown, and explanations.
  */
 
 import React, { useState } from 'react';
@@ -16,24 +9,29 @@ import MultipleChoice from './questionTypes/MultipleChoice';
 import MultipleAnswer from './questionTypes/MultipleAnswer';
 import OrderingQuestion from './questionTypes/OrderingQuestion';
 import MatchingQuestion from './questionTypes/MatchingQuestion';
+import useFocusTrap from '../../hooks/useFocusTrap';
 
 const QuizResults = ({ results, onClose, onRetake }) => {
   const [expandedQuestions, setExpandedQuestions] = useState({});
+  const focusTrapRef = useFocusTrap(true);
 
   const { detailedResults, grade, totalQuestions, correctCount } = results;
 
   const toggleQuestion = (questionId) => {
-    setExpandedQuestions({
-      ...expandedQuestions,
-      [questionId]: !expandedQuestions[questionId]
-    });
+    setExpandedQuestions(prev => ({
+      ...prev,
+      [questionId]: !prev[questionId]
+    }));
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') onClose();
   };
 
   const renderQuestionWithResult = (result, index) => {
     const { question, userAnswer, isCorrect } = result;
     const isExpanded = expandedQuestions[question.id];
 
-    // Props for question components in result mode
     const resultProps = {
       question,
       showResult: true,
@@ -43,40 +41,16 @@ const QuizResults = ({ results, onClose, onRetake }) => {
     let questionComponent;
     switch (question.type) {
       case 'multipleChoice':
-        questionComponent = (
-          <MultipleChoice
-            {...resultProps}
-            selectedAnswer={userAnswer}
-            onAnswerChange={() => {}}
-          />
-        );
+        questionComponent = <MultipleChoice {...resultProps} selectedAnswer={userAnswer} onAnswerChange={() => {}} />;
         break;
       case 'multipleAnswer':
-        questionComponent = (
-          <MultipleAnswer
-            {...resultProps}
-            selectedAnswers={userAnswer || []}
-            onAnswerChange={() => {}}
-          />
-        );
+        questionComponent = <MultipleAnswer {...resultProps} selectedAnswers={userAnswer || []} onAnswerChange={() => {}} />;
         break;
       case 'ordering':
-        questionComponent = (
-          <OrderingQuestion
-            {...resultProps}
-            currentOrder={userAnswer || []}
-            onAnswerChange={() => {}}
-          />
-        );
+        questionComponent = <OrderingQuestion {...resultProps} currentOrder={userAnswer || []} onAnswerChange={() => {}} />;
         break;
       case 'matching':
-        questionComponent = (
-          <MatchingQuestion
-            {...resultProps}
-            userMatches={userAnswer || {}}
-            onAnswerChange={() => {}}
-          />
-        );
+        questionComponent = <MatchingQuestion {...resultProps} userMatches={userAnswer || {}} onAnswerChange={() => {}} />;
         break;
       default:
         questionComponent = null;
@@ -85,20 +59,24 @@ const QuizResults = ({ results, onClose, onRetake }) => {
     return (
       <div
         key={question.id}
-        className={`border-2 rounded-lg overflow-hidden ${
-          isCorrect ? 'border-green-500' : 'border-red-500'
-        }`}
+        className={`border-2 rounded-lg overflow-hidden ${isCorrect ? 'border-green-500' : 'border-red-500'}`}
       >
-        {/* Question header - clickable to expand/collapse */}
         <button
           onClick={() => toggleQuestion(question.id)}
+          aria-expanded={isExpanded}
           className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center gap-3">
             {isCorrect ? (
-              <CheckCircle className="text-green-500 flex-shrink-0" size={24} />
+              <>
+                <CheckCircle className="text-green-500 flex-shrink-0" size={24} aria-hidden="true" />
+                <span className="sr-only">Correct</span>
+              </>
             ) : (
-              <XCircle className="text-red-500 flex-shrink-0" size={24} />
+              <>
+                <XCircle className="text-red-500 flex-shrink-0" size={24} aria-hidden="true" />
+                <span className="sr-only">Incorrect</span>
+              </>
             )}
             <div className="text-left">
               <p className="font-semibold text-darkGrey">
@@ -110,21 +88,16 @@ const QuizResults = ({ results, onClose, onRetake }) => {
             </div>
           </div>
           {isExpanded ? (
-            <ChevronUp className="text-darkGrey" size={20} />
+            <ChevronUp className="text-darkGrey" size={20} aria-hidden="true" />
           ) : (
-            <ChevronDown className="text-darkGrey" size={20} />
+            <ChevronDown className="text-darkGrey" size={20} aria-hidden="true" />
           )}
         </button>
 
-        {/* Question details - expanded view */}
         {isExpanded && (
           <div className="p-4 border-t border-gray-200 bg-gray-50">
             <h4 className="font-semibold text-darkGrey mb-4">{question.question}</h4>
-
-            {/* Render question with visual feedback */}
             {questionComponent}
-
-            {/* Explanation */}
             <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="font-semibold text-darkGrey mb-2">Explanation:</p>
               <p className="text-darkGrey text-sm">{question.explanation}</p>
@@ -152,7 +125,14 @@ const QuizResults = ({ results, onClose, onRetake }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Quiz Results"
+      onKeyDown={handleKeyDown}
+      ref={focusTrapRef}
+    >
       <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full my-8">
         {/* Header */}
         <div className="border-b border-platinum p-6">
@@ -161,16 +141,16 @@ const QuizResults = ({ results, onClose, onRetake }) => {
             <button
               onClick={onClose}
               className="text-darkGrey hover:text-red-500 transition-colors"
-              title="Close results"
+              aria-label="Close results"
             >
-              <X size={24} />
+              <X size={24} aria-hidden="true" />
             </button>
           </div>
         </div>
 
         {/* Score summary */}
         <div className="p-6 border-b border-platinum">
-          <div className={`p-6 rounded-lg border-2 ${getGradeBgColor()}`}>
+          <div className={`p-6 rounded-lg border-2 ${getGradeBgColor()}`} role="status" aria-label={`Grade: ${grade.letterGrade}, ${grade.percentage}%, ${correctCount} of ${totalQuestions} correct`}>
             <div className="text-center mb-4">
               <div className={`text-6xl font-bold mb-2 ${getGradeColor()}`}>
                 {grade.letterGrade}
@@ -189,7 +169,6 @@ const QuizResults = ({ results, onClose, onRetake }) => {
               </p>
             </div>
 
-            {/* Score breakdown */}
             <div className="mt-4 flex justify-center gap-8">
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">{correctCount}</div>
@@ -230,9 +209,9 @@ const QuizResults = ({ results, onClose, onRetake }) => {
           <div className="flex justify-center gap-4">
             <button
               onClick={onRetake}
-              className="flex items-center gap-2 px-6 py-3 bg-turquoise text-white rounded-lg font-bold hover:bg-turquoise/90 transition-all"
+              className="flex items-center gap-2 px-6 py-3 bg-darkTeal text-white rounded-lg font-bold hover:bg-darkTeal/90 transition-all"
             >
-              <RotateCcw size={20} />
+              <RotateCcw size={20} aria-hidden="true" />
               Retake Quiz
             </button>
             <button

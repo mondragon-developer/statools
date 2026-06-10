@@ -47,7 +47,7 @@ const CalculatorLinks = () => {
     {
       id: 8,
       name: "CI for Known Population SD",
-      url: "https://www.statology.org/one-proportion-z-test-calculator/",
+      url: "https://www.statology.org/confidence-interval-calculator/",
       description: "Confidence intervals with known population standard deviation."
     },
     {
@@ -59,19 +59,19 @@ const CalculatorLinks = () => {
     {
       id: 10,
       name: "Two Sample Proportions Test",
-      url: "http://www2.psych.purdue.edu/~gfrancis/calculators/proportion_test_two_sample.shtml",
+      url: "https://www2.psych.purdue.edu/~gfrancis/calculators/proportion_test_two_sample.shtml",
       description: "Test proportions across two independent samples."
     },
     {
       id: 11,
       name: "Dependent t-Test",
-      url: "http://www2.psych.purdue.edu/~gfrancis/calculators/mean_test_two_sample_dependent.shtml",
+      url: "https://www2.psych.purdue.edu/~gfrancis/calculators/mean_test_two_sample_dependent.shtml",
       description: "Run t-tests for dependent means across samples."
     },
     {
       id: 12,
       name: "Independent t-Test",
-      url: "http://www2.psych.purdue.edu/~gfrancis/calculators/mean_test_two_sample_independent.shtml",
+      url: "https://www2.psych.purdue.edu/~gfrancis/calculators/mean_test_two_sample_independent.shtml",
       description: "Run t-tests for independent means across samples."
     },
     {
@@ -89,27 +89,25 @@ const CalculatorLinks = () => {
   ];
 
   return (
-    // <div className="overflow-hidden">
-      <div className="max-h-72 overflow-y-auto pr-2 custom-scrollbar">
-        <ul className="space-y-2">
-          {calculators.map(calc => (
-            <li key={calc.id} className="bg-white rounded-md shadow-sm hover:shadow-md transition-shadow">
-              <a 
-                href={calc.url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="block p-2 hover:bg-yellow transition-colors"
-              >
-                <div className="font-bold text-darkGrey text-sm">{calc.name}</div>
-                <div className="text-xs text-darkGrey opacity-75 mt-1 line-clamp-1" title={calc.description}>
-                  {calc.description}
-                </div>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    // </div>
+    <div className="max-h-72 overflow-y-auto pr-2 custom-scrollbar">
+      <ul className="space-y-2">
+        {calculators.map(calc => (
+          <li key={calc.id} className="bg-white rounded-md shadow-sm hover:shadow-md transition-shadow">
+            <a
+              href={calc.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block p-2 hover:bg-accent transition-colors"
+            >
+              <div className="font-bold text-darkGrey text-sm">{calc.name}</div>
+              <div className="text-xs text-darkGrey opacity-75 mt-1 line-clamp-1" title={calc.description}>
+                {calc.description}
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

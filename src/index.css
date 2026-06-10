@@ -2,6 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Skip navigation link */
+.skip-link {
+  position: absolute;
+  transform: translateY(-100%);
+  left: 16px;
+  padding: 8px 16px;
+  background: #B45309;
+  border: 2px solid #2A2A2A;
+  color: #FFFFFF;
+  font-weight: bold;
+  z-index: 9999;
+  border-radius: 0 0 8px 8px;
+  transition: transform 0.2s;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* Global focus-visible styles for keyboard navigation */
+:focus-visible {
+  outline: 3px solid #0F766E;
+  outline-offset: 2px;
+}
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -9,6 +46,17 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* SC 1.4.12 Text Spacing — ensure layout tolerates user overrides */
+* {
+  line-height: inherit;
+  letter-spacing: inherit;
+  word-spacing: inherit;
+}
+p, li, span, label, input, textarea, select, button, a, td, th {
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 
 /* Custom scrollbar styling */
@@ -22,16 +70,16 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #4ECDC4;
+  background: #0F766E;
   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #3ab5ae;
+  background: #0d635c;
 }
 
 /* Firefox scrollbar styling */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #4ECDC4 #e6e6e6;
+  scrollbar-color: #0F766E #e6e6e6;
 }

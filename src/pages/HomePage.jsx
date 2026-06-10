@@ -5,17 +5,23 @@ import Features from '../components/sections/Features';
 import Tools from '../components/sections/Tools';
 import CallToAction from '../components/sections/CallToAction';
 import Footer from '../components/layout/Footer';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const HomePage = () => {
+  useDocumentTitle('Home');
+
   return (
-    <div className="bg-platinum min-h-screen flex flex-col">
+    <>
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <Navbar />
-      <Hero />
-      <Features />
-      <Tools />
-      <CallToAction />
+      <main id="main-content" tabIndex={-1}>
+        <Hero />
+        <Features />
+        <Tools />
+        <CallToAction />
+      </main>
       <Footer />
-    </div>
+    </>
   );
 };
 

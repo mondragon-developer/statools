@@ -13,6 +13,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowRight } from 'lucide-react';
+import { announcePolite } from '../../../utils/announce';
 
 const MatchingQuestion = ({
   question,
@@ -42,6 +43,10 @@ const MatchingQuestion = ({
     };
     setMatches(newMatches);
     onAnswerChange(newMatches);
+
+    const leftItem = question.options.find(opt => opt.id === leftId);
+    const leftText = leftItem ? leftItem.left : leftId;
+    announcePolite('Matched ' + leftText + ' with ' + rightValue);
   };
 
   const isCorrectMatch = (leftId) => {
@@ -69,7 +74,7 @@ const MatchingQuestion = ({
     const baseStyle = 'flex-1 p-2 rounded border-2 transition-all ';
 
     if (!showResult) {
-      return baseStyle + 'border-turquoise/30 focus:border-turquoise focus:outline-none';
+      return baseStyle + 'border-darkTeal/30 focus:border-darkTeal focus:outline-none';
     }
 
     const correct = isCorrectMatch(leftId);
@@ -98,7 +103,7 @@ const MatchingQuestion = ({
                 </span>
               </div>
 
-              <ArrowRight className="text-turquoise opacity-50" size={20} />
+              <ArrowRight className="text-darkTeal opacity-50" size={20} />
 
               {/* Right side - dropdown selector */}
               <div className="w-2/3">
@@ -140,7 +145,7 @@ const MatchingQuestion = ({
             {question.options.map((option) => (
               <div key={option.id} className="flex items-center gap-2 text-sm text-darkGrey">
                 <span className="font-medium">{option.left}</span>
-                <ArrowRight size={16} className="text-turquoise" />
+                <ArrowRight size={16} className="text-darkTeal" />
                 <span>{correctAnswer[option.id]}</span>
               </div>
             ))}

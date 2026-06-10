@@ -13,6 +13,7 @@
 
 import React from 'react';
 import { Check, X } from 'lucide-react';
+import { announcePolite } from '../../../utils/announce';
 
 const MultipleChoice = ({
   question,
@@ -27,9 +28,9 @@ const MultipleChoice = ({
     if (!showResult) {
       // Normal mode - just show selection
       if (selectedAnswer === optionId) {
-        return baseStyle + 'border-turquoise bg-turquoise/10 font-semibold';
+        return baseStyle + 'border-darkTeal bg-darkTeal/10 font-semibold';
       }
-      return baseStyle + 'border-platinum hover:border-turquoise/50 hover:bg-platinum';
+      return baseStyle + 'border-platinum hover:border-darkTeal/50 hover:bg-platinum';
     }
 
     // Result mode - show correct/incorrect
@@ -66,7 +67,12 @@ const MultipleChoice = ({
         return (
           <button
             key={optionId}
-            onClick={() => !showResult && onAnswerChange(optionId)}
+            onClick={() => {
+              if (!showResult) {
+                onAnswerChange(optionId);
+                announcePolite('Selected: ' + option);
+              }
+            }}
             disabled={showResult}
             className={getOptionStyle(optionId)}
           >
