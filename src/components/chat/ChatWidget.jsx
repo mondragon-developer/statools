@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback, useId, lazy, Suspense } from 'react';
-import { MessageCircle, X, Send, Mic, MicOff } from 'lucide-react';
+import { X, Send, Mic, MicOff } from 'lucide-react';
 import useFocusTrap from '../../hooks/useFocusTrap';
 import useSpeechRecognition from '../../hooks/useSpeechRecognition';
 import { announcePolite, announceAssertive } from '../../utils/announce';
 import { sendMessage } from '../../api/chatApi';
 
 const loadChatMarkdown = () => import('./ChatMarkdown');
+const LOGO = `${import.meta.env.BASE_URL}mdragon.svg`;
 const ChatMarkdown = lazy(loadChatMarkdown);
 
 // Generate unique ID per browser session
@@ -137,11 +138,13 @@ const ChatWidget = () => {
         onClick={toggleOpen}
         aria-expanded={isOpen}
         aria-label={isOpen ? 'Close chat assistant' : 'Open chat assistant'}
-        className="print:hidden fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-darkTeal text-white shadow-lg
-          hover:bg-turquoise focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accentDark focus-visible:ring-offset-2
-          flex items-center justify-center transition-colors"
+        className="print:hidden fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full overflow-hidden bg-darkTeal text-white shadow-lg
+          border-2 border-white hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accentDark focus-visible:ring-offset-2
+          flex items-center justify-center transition-transform"
       >
-        {isOpen ? <X size={24} aria-hidden="true" /> : <MessageCircle size={24} aria-hidden="true" />}
+        {isOpen
+          ? <X size={24} aria-hidden="true" />
+          : <img src={LOGO} alt="" className="w-full h-full object-cover" />}
       </button>
 
       {/* Chat panel */}
@@ -158,7 +161,10 @@ const ChatWidget = () => {
         >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-darkGrey text-white rounded-t-xl">
-            <h2 id={headingId} className="text-sm font-semibold">Statistics Assistant</h2>
+            <h2 id={headingId} className="flex items-center gap-2 text-sm font-semibold">
+              <img src={LOGO} alt="" className="w-7 h-7 rounded-full object-cover bg-white" />
+              Statistics Assistant
+            </h2>
             <button
               onClick={closePanel}
               aria-label="Close chat"
@@ -179,8 +185,11 @@ const ChatWidget = () => {
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex items-start gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
+                {msg.role === 'assistant' && (
+                  <img src={LOGO} alt="" className="w-7 h-7 flex-shrink-0 rounded-full object-cover mt-0.5" />
+                )}
                 <div
                   role="article"
                   className={`max-w-[80%] px-3 py-2 rounded-lg text-sm leading-relaxed ${
@@ -203,7 +212,8 @@ const ChatWidget = () => {
 
             {/* Loading indicator */}
             {isLoading && (
-              <div className="flex justify-start" role="status" aria-label="Assistant is typing">
+              <div className="flex items-start gap-2 justify-start" role="status" aria-label="Assistant is typing">
+                <img src={LOGO} alt="" className="w-7 h-7 flex-shrink-0 rounded-full object-cover" />
                 <div className="bg-platinum/50 text-darkGrey px-3 py-2 rounded-lg text-sm flex gap-1">
                   <span className="animate-bounce" style={{ animationDelay: '0ms' }}>.</span>
                   <span className="animate-bounce" style={{ animationDelay: '150ms' }}>.</span>
