@@ -1,5 +1,28 @@
 // Vercel serverless proxy for Chatbase API — keeps API key server-side
+// The live site is served from GitHub Pages, which has no backend, so the
+// widget calls this function cross-origin.
+const ALLOWED_ORIGINS = [
+  'https://mondragon-developer.github.io',
+  'https://statools.vercel.app',
+];
+
+function applyCors(req, res) {
+  const origin = req.headers.origin;
+  if (origin && (ALLOWED_ORIGINS.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  }
+}
+
 export default async function handler(req, res) {
+  applyCors(req, res);
+
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
