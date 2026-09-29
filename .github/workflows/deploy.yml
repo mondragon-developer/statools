@@ -24,6 +24,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The build still runs so a broken main fails CI, but the app itself is served by
+      # Vercel. GitHub Pages only forwards old /statools/ links there.
       - name: Build
         run: npm run build
 
@@ -31,4 +33,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./gh-pages-redirect

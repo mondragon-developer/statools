@@ -6,7 +6,7 @@ A comprehensive web-based statistics education platform providing interactive ca
 
 MDragon Data Tools is a React-based single-page application designed to support statistics education through interactive tools and comprehensive learning materials. The platform combines custom-built calculators with curated external resources and an AI-powered chatbot assistant to create a complete statistical learning environment.
 
-**Live Site**: [https://mondragon-developer.github.io/statools/](https://mondragon-developer.github.io/statools/)
+**Live Site**: [https://statools.vercel.app/](https://statools.vercel.app/)
 
 ## Features
 

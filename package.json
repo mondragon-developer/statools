@@ -8,8 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "preview:open": "vite preview --open /statools/",
-    "test-production": "npm run build && echo '\n\n Preview server starting...\n\nIMPORTANT: Visit http://localhost:4173/statools/ \n\n' && vite preview"
+    "preview:open": "vite preview --open /",
+    "test-production": "npm run build && echo '\n\n Preview server starting...\n\nIMPORTANT: Visit http://localhost:4173/ \n\n' && vite preview"
   },
   "dependencies": {
     "@react-three/drei": "^9.88.17",

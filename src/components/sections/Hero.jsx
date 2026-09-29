@@ -1,4 +1,10 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
+import QuietBoundary from "../ui/QuietBoundary";
+
+const Spline = lazy(() => import("@splinetool/react-spline"));
+
+// The scene ships with its own background color; clearing it lets the page show through.
+const makeTransparent = (app) => app.setBackgroundColor("rgba(0, 0, 0, 0)");
 
 const Hero = () => {
   const scrollToSection = (sectionId) => {
@@ -37,8 +43,34 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Left open so the fixed RobotCompanion shows through beside the heading. */}
-      <div className="hidden md:block h-[600px]" aria-hidden="true" />
+      <div
+        className="relative w-full"
+        aria-hidden="true"
+        style={{
+          height: "600px",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          className="absolute"
+          style={{
+            height: "700px",
+            top: "-50px",
+            marginLeft: "-20%",
+            width: "180%",
+            overflow: "hidden",
+          }}
+        >
+          <QuietBoundary>
+            <Suspense fallback={null}>
+              <Spline
+                scene="https://prod.spline.design/71R0PmKp72sQaYqg/scene.splinecode"
+                onLoad={makeTransparent}
+              />
+            </Suspense>
+          </QuietBoundary>
+        </div>
+      </div>
     </section>
   );
 };

@@ -28,7 +28,7 @@ const AccessibilityPage = () => {
   useDocumentTitle('Accessibility');
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-platinum">
       <nav className="bg-darkGrey text-white p-4 shadow-md" aria-label="Page navigation">
         <div className="container mx-auto">
           <Link to="/" className="flex items-center space-x-2 w-fit">

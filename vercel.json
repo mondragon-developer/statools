@@ -11,6 +11,11 @@
       "permanent": false
     },
     {
+      "source": "/statools/",
+      "destination": "/",
+      "permanent": false
+    },
+    {
       "source": "/statools/:path*",
       "destination": "/:path*",
       "permanent": false

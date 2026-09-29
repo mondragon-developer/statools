@@ -7,7 +7,7 @@ const JourneyLayout = () => {
   useScrollToHash();
 
   return (
-    <div className="min-h-screen print:bg-white">
+    <div className="min-h-screen bg-platinum print:bg-white">
       <a className="skip-link print:hidden" href="#main-content">Skip to main content</a>
       <nav className="bg-darkGrey text-white p-4 shadow-md print:hidden" aria-label="Journey navigation">
         <div className="container mx-auto flex flex-wrap justify-between items-center gap-3">

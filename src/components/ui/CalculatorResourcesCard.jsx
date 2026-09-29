@@ -4,7 +4,7 @@ import CalculatorLinks from './CalculatorLinks';
 
 const CalculatorResourcesCard = () => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-lg transition-all h-full flex flex-col">
+    <div className="bg-platinum p-6 rounded-lg hover:shadow-lg transition-all h-full flex flex-col">
       <div className="flex justify-center" aria-hidden="true">
         <CloudFogIcon size={48} className="text-darkTeal mb-4" />
       </div>

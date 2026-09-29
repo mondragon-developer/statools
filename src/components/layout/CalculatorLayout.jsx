@@ -19,7 +19,7 @@ const CalculatorLayout = () => {
   const currentCalc = pathSegments.length > 1 ? pathSegments[pathSegments.length - 1] : null;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-platinum">
       <a className="skip-link" href="#main-content">Skip to main content</a>
       <nav className="bg-darkGrey text-white p-4 shadow-md" aria-label="Calculator navigation">
         <div className="container mx-auto flex justify-between items-center">

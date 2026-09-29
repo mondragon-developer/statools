@@ -17,7 +17,6 @@ import JourneyLayout from './components/layout/JourneyLayout';
 import ChatWidget from './components/chat/ChatWidget';
 import VoiceCommands from './components/ui/VoiceCommands';
 import AccessibilityBanner from './components/ui/AccessibilityBanner';
-import RobotCompanion from './components/ui/RobotCompanion';
 
 const LearnHubPage = lazy(() => import('./pages/learn/LearnHubPage'));
 const StagePage = lazy(() => import('./pages/learn/StagePage'));
@@ -33,7 +32,6 @@ function App() {
     <>
       <AccessibilityBanner />
       <Router basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
-        <RobotCompanion />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/accessibility" element={<AccessibilityPage />} />

@@ -39,16 +39,8 @@
   border: 0;
 }
 
-/* Backing for text that sits directly on the page over the full-strength home robot. */
-.on-robot {
-  background-color: rgba(230, 230, 230, 0.88);
-  border-radius: 0.5rem;
-}
-
 body {
   margin: 0;
-  /* Pages are transparent so the fixed robot shows between cards; this is the page color. */
-  background: #E6E6E6;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
