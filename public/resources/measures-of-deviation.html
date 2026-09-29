@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MEASURES OF DEVIATION</title>
+    <style>
+        @media print {
+            body { margin: 0.5in; }
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+            .page-break { page-break-before: always; }
+            h1, h2, h3 { page-break-after: avoid; }
+            table { page-break-inside: avoid; }
+            pre { page-break-inside: avoid; }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #2A2A2A;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        /* Headers */
+        h1 {
+            color: #4ECDC4;
+            border-bottom: 4px solid #4ECDC4;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 26pt;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #2A2A2A;
+            border-bottom: 3px solid #4ECDC4;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 18px;
+            font-size: 20pt;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: #4ECDC4;
+            font-size: 15pt;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #2A2A2A;
+            font-size: 13pt;
+            font-weight: 600;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        /* Paragraphs */
+        p {
+            margin: 12px 0;
+            text-align: justify;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 35px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        /* Code and formulas */
+        code {
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 10pt;
+            color: #c7254e;
+            font-weight: 500;
+        }
+
+        pre {
+            background-color: #f8f8f8;
+            border: 2px solid #4ECDC4;
+            border-left: 6px solid #4ECDC4;
+            padding: 18px 20px;
+            overflow-x: auto;
+            border-radius: 6px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #2A2A2A;
+            font-size: 10.5pt;
+            line-height: 1.6;
+            display: block;
+            white-space: pre-wrap;
+            font-weight: normal;
+        }
+
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #4ECDC4 0%, #3db3aa 100%);
+        }
+
+        th {
+            background-color: #4ECDC4;
+            color: white;
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11pt;
+            border: none;
+        }
+
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            font-size: 10.5pt;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f0f9f9;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 5px solid #FFFF00;
+            background-color: #fffef0;
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Strong text */
+        strong {
+            color: #2A2A2A;
+            font-weight: 600;
+        }
+
+        /* Horizontal rules */
+        hr {
+            border: none;
+            border-top: 3px solid #E6E6E6;
+            margin: 30px 0;
+        }
+
+        /* Special formatting for examples */
+        .example-box {
+            background: #f9f9f9;
+            border: 2px solid #4ECDC4;
+            border-radius: 8px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+
+        .solution-box {
+            background: #f0f9f9;
+            border-left: 4px solid #4ECDC4;
+            padding: 15px 20px;
+            margin: 15px 0 15px 20px;
+        }
+
+        /* Answer highlighting */
+        .answer {
+            background-color: #fffacd;
+            border: 2px solid #FFFF00;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #E6E6E6;
+            text-align: center;
+            color: #888;
+            font-size: 9pt;
+        }
+
+        .footer a {
+            color: #4ECDC4;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Improve readability */
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Math-like formatting */
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<h1>Measures of Deviation (Dispersion/Variability)</h1>
+<h2>Introduction</h2>
+<p>While measures of central tendency tell us about the &quot;center&quot; of data, <strong>measures of deviation</strong> (also called dispersion or variability) tell us how <strong>spread out</strong> the data is. Two datasets can have the same mean but very different spreads!</p>
+<p><strong>Example:</strong></p>
+<ul>
+<li>Dataset A: 10, 10, 10, 10, 10 (Mean = 10, No spread)</li>
+<li>Dataset B: 0, 5, 10, 15, 20 (Mean = 10, Large spread)</li>
+</ul>
+<p>The main measures of deviation are: <strong>range</strong>, <strong>variance</strong>, <strong>standard deviation</strong>, and <strong>interquartile range (IQR)</strong>.</p>
+<hr>
+<h2>1. Range</h2>
+<h3>Definition</h3>
+<p>The <strong>range</strong> is the difference between the maximum and minimum values.</p>
+<h3>Formula</h3>
+<pre><code>Range = Maximum value - Minimum value
+</code></pre>
+<h3>Example</h3>
+<p>Find the range of: 12, 18, 15, 22, 9, 25, 14</p>
+<pre><code>Maximum = 25
+Minimum = 9
+Range = 25 - 9 = 16
+</code></pre>
+<h3>When to Use</h3>
+<ul>
+<li>✅ For a <strong>quick, simple</strong> measure of spread</li>
+<li>✅ When you need the <strong>total span</strong> of data</li>
+<li>✅ For initial data exploration</li>
+</ul>
+<h3>Limitations</h3>
+<ul>
+<li>❌ <strong>Highly sensitive to outliers</strong> (one extreme value changes everything)</li>
+<li>❌ Ignores all middle values</li>
+<li>❌ Not useful for statistical inference</li>
+</ul>
+<hr>
+<h2>2. Variance</h2>
+<h3>Definition</h3>
+<p><strong>Variance</strong> measures the average squared deviation from the mean. It quantifies how far data points spread from the average.</p>
+<h3>Formulas</h3>
+<p><strong>Population Variance (σ²):</strong></p>
+<pre><code>σ² = Σ(x - μ)² / N
+</code></pre>
+<p><strong>Sample Variance (s²):</strong></p>
+<pre><code>s² = Σ(x - x̄)² / (n - 1)
+</code></pre>
+<p>Where:</p>
+<ul>
+<li>x = each data value</li>
+<li>μ (or x̄) = mean</li>
+<li>N (or n) = number of values</li>
+<li>(n-1) = degrees of freedom for sample</li>
+</ul>
+<h3>Example</h3>
+<p>Calculate variance for: 4, 8, 6, 10, 7</p>
+<pre><code>Step 1: Find the mean
+x̄ = (4 + 8 + 6 + 10 + 7) / 5 = 35 / 5 = 7
+
+Step 2: Find deviations from mean
+4 - 7 = -3
+8 - 7 = 1
+6 - 7 = -1
+10 - 7 = 3
+7 - 7 = 0
+
+Step 3: Square the deviations
+(-3)² = 9
+(1)² = 1
+(-1)² = 1
+(3)² = 9
+(0)² = 0
+
+Step 4: Sum the squared deviations
+9 + 1 + 1 + 9 + 0 = 20
+
+Step 5: Divide by (n-1) for sample variance
+s² = 20 / (5-1) = 20 / 4 = 5
+</code></pre>
+<h3>Key Properties</h3>
+<ul>
+<li>Always non-negative (≥ 0)</li>
+<li>Variance = 0 means no variability (all values identical)</li>
+<li>Units are squared (e.g., if data is in cm, variance is in cm²)</li>
+<li>Larger variance = more spread</li>
+</ul>
+<hr>
+<h2>3. Standard Deviation</h2>
+<h3>Definition</h3>
+<p><strong>Standard deviation (SD)</strong> is the square root of variance. It&#39;s the most commonly used measure of spread.</p>
+<h3>Formulas</h3>
+<p><strong>Population SD (σ):</strong></p>
+<pre><code>σ = √[Σ(x - μ)² / N]
+</code></pre>
+<p><strong>Sample SD (s):</strong></p>
+<pre><code>s = √[Σ(x - x̄)² / (n - 1)]
+</code></pre>
+<h3>Example</h3>
+<p>Using the variance from the previous example:</p>
+<pre><code>Variance (s²) = 5
+Standard Deviation (s) = √5 ≈ 2.24
+</code></pre>
+<h3>Why Use SD Instead of Variance?</h3>
+<p><strong>Same units as original data!</strong></p>
+<ul>
+<li>Data in cm → SD in cm (not cm²)</li>
+<li>Makes interpretation easier</li>
+<li>More intuitive to understand</li>
+</ul>
+<h3>Interpreting Standard Deviation</h3>
+<p><strong>Small SD:</strong> Data points cluster close to the mean</p>
+<pre><code>Data: 10, 11, 10, 9, 10
+Mean = 10, SD ≈ 0.71 (very small spread)
+</code></pre>
+<p><strong>Large SD:</strong> Data points spread far from the mean</p>
+<pre><code>Data: 0, 5, 10, 15, 20
+Mean = 10, SD ≈ 7.91 (large spread)
+</code></pre>
+<h3>Empirical Rule (for Normal Distributions)</h3>
+<ul>
+<li><strong>68%</strong> of data within 1 SD of mean</li>
+<li><strong>95%</strong> of data within 2 SD of mean</li>
+<li><strong>99.7%</strong> of data within 3 SD of mean</li>
+</ul>
+<h3>When to Use</h3>
+<ul>
+<li>✅ With <strong>normally distributed</strong> data</li>
+<li>✅ When you need a measure in <strong>original units</strong></li>
+<li>✅ For statistical testing and inference</li>
+<li>✅ Most widely understood measure</li>
+</ul>
+<h3>Limitations</h3>
+<ul>
+<li>❌ <strong>Sensitive to outliers</strong></li>
+<li>❌ Less useful with skewed distributions</li>
+<li>❌ Requires more calculation than range</li>
+</ul>
+<hr>
+<h2>4. Interquartile Range (IQR)</h2>
+<h3>Definition</h3>
+<p>The <strong>IQR</strong> is the range of the middle 50% of data. It measures the spread of the central portion, ignoring extreme values.</p>
+<h3>Formula</h3>
+<pre><code>IQR = Q3 - Q1
+</code></pre>
+<p>Where:</p>
+<ul>
+<li>Q1 = First quartile (25th percentile)</li>
+<li>Q3 = Third quartile (75th percentile)</li>
+</ul>
+<h3>How to Calculate</h3>
+<p><strong>Step 1:</strong> Order the data<br><strong>Step 2:</strong> Find the median (Q2)<br><strong>Step 3:</strong> Find Q1 (median of lower half)<br><strong>Step 4:</strong> Find Q3 (median of upper half)<br><strong>Step 5:</strong> Calculate IQR = Q3 - Q1</p>
+<h3>Example</h3>
+<p>Find IQR of: 3, 5, 7, 8, 12, 15, 18, 20, 24</p>
+<pre><code>Data is already ordered: 3, 5, 7, 8, 12, 15, 18, 20, 24
+
+Median (Q2) = 12
+
+Lower half: 3, 5, 7, 8
+Q1 = (5 + 7) / 2 = 6
+
+Upper half: 15, 18, 20, 24
+Q3 = (18 + 20) / 2 = 19
+
+IQR = Q3 - Q1 = 19 - 6 = 13
+</code></pre>
+<h3>Identifying Outliers with IQR</h3>
+<p><strong>Outlier boundaries:</strong></p>
+<pre><code>Lower boundary = Q1 - 1.5 × IQR
+Upper boundary = Q3 + 1.5 × IQR
+</code></pre>
+<p>Any values outside these boundaries are potential outliers.</p>
+<h3>When to Use</h3>
+<ul>
+<li>✅ With <strong>skewed</strong> data</li>
+<li>✅ When data has <strong>outliers</strong></li>
+<li>✅ For <strong>robust</strong> measure of spread</li>
+<li>✅ In <strong>box plots</strong></li>
+</ul>
+<h3>Advantages</h3>
+<ul>
+<li><strong>Resistant to outliers</strong> (uses middle 50% only)</li>
+<li>Works well with any distribution</li>
+<li>Easy to visualize</li>
+</ul>
+<hr>
+<h2>5. Comparing Measures of Spread</h2>
+<h3>Quick Reference Table</h3>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Formula</th>
+<th>Pros</th>
+<th>Cons</th>
+<th>Best Use</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Range</strong></td>
+<td>Max - Min</td>
+<td>Simple, quick</td>
+<td>Very sensitive to outliers</td>
+<td>Initial exploration</td>
+</tr>
+<tr>
+<td><strong>Variance</strong></td>
+<td>Average of (x - x̄)²</td>
+<td>Uses all data</td>
+<td>Squared units, hard to interpret</td>
+<td>Statistical calculations</td>
+</tr>
+<tr>
+<td><strong>Standard Deviation</strong></td>
+<td>√Variance</td>
+<td>Uses all data, original units</td>
+<td>Sensitive to outliers</td>
+<td>Normal distributions</td>
+</tr>
+<tr>
+<td><strong>IQR</strong></td>
+<td>Q3 - Q1</td>
+<td>Resistant to outliers</td>
+<td>Ignores extreme values</td>
+<td>Skewed data, outliers</td>
+</tr>
+</tbody></table>
+<h3>Relationship Between Measures</h3>
+<p><strong>For the same dataset:</strong></p>
+<ul>
+<li>Range is always ≥ IQR</li>
+<li>Variance = (Standard Deviation)²</li>
+<li>Larger values of any measure = more spread</li>
+</ul>
+<hr>
+<h2>6. Real-World Applications</h2>
+<h3>Scenario 1: Test Scores</h3>
+<p><strong>Data:</strong> 85, 88, 90, 92, 95, 97, 98</p>
+<pre><code>Mean = 92.1
+SD = 4.53 (small - scores are consistent)
+</code></pre>
+<p><strong>Interpretation:</strong> Low SD means students performed similarly. Teacher can proceed with confidence.</p>
+<h3>Scenario 2: Stock Prices</h3>
+<p><strong>Stock A:</strong> Mean = $100, SD = $2 (stable)<br><strong>Stock B:</strong> Mean = $100, SD = $15 (volatile)</p>
+<p><strong>Interpretation:</strong> Both stocks average $100, but Stock B has much higher risk (variability).</p>
+<h3>Scenario 3: Manufacturing Quality</h3>
+<p><strong>Widget lengths:</strong> Mean = 10cm, SD = 0.05cm</p>
+<p><strong>Quality Control Rule:</strong> Parts must be within 2 SD of mean</p>
+<ul>
+<li>Acceptable range: 10 ± 2(0.05) = 9.9cm to 10.1cm</li>
+<li>Parts outside this range are defective</li>
+</ul>
+<h3>Scenario 4: Income Distribution</h3>
+<p><strong>Data:</strong> $20K, $25K, $30K, $35K, $40K, $500K (outlier!)</p>
+<pre><code>Mean = $108K (misleading due to outlier)
+SD = $190K (inflated by outlier)
+IQR = $15K (better representation)
+</code></pre>
+<p><strong>Interpretation:</strong> IQR is more useful here because the billionaire outlier doesn&#39;t affect it.</p>
+<hr>
+<h2>7. Sample vs. Population</h2>
+<h3>Population (Entire Group)</h3>
+<ul>
+<li>Use <strong>N</strong> in denominator</li>
+<li>Symbol: <strong>σ</strong> (sigma) for SD, <strong>σ²</strong> for variance</li>
+<li>Example: All students in the entire school</li>
+</ul>
+<h3>Sample (Subset of Population)</h3>
+<ul>
+<li>Use <strong>n-1</strong> in denominator (Bessel&#39;s correction)</li>
+<li>Symbol: <strong>s</strong> for SD, <strong>s²</strong> for variance</li>
+<li>Example: 30 randomly selected students</li>
+</ul>
+<p><strong>Why n-1?</strong></p>
+<ul>
+<li>Corrects for bias in sample estimates</li>
+<li>Provides better estimate of population variance</li>
+<li>Standard practice in statistics</li>
+</ul>
+<hr>
+<h2>8. Common Mistakes to Avoid</h2>
+<h3>❌ Mistake 1: Using range with outliers</h3>
+<p><strong>📝 Problem:</strong> One extreme value makes range meaningless</p>
+<pre><code>Data: 10, 12, 14, 15, 100
+Range = 90 (misleading!)
+IQR = 3 (better representation)
+</code></pre>
+<h3>❌ Mistake 2: Confusing variance and standard deviation</h3>
+<p><strong>Remember:</strong></p>
+<ul>
+<li>Variance is <strong>squared units</strong></li>
+<li>Standard deviation is <strong>original units</strong></li>
+<li>SD = √variance</li>
+</ul>
+<h3>❌ Mistake 3: Thinking low SD always means &quot;good&quot;</h3>
+<p><strong>Context matters!</strong></p>
+<ul>
+<li>Test scores: Low SD = consistency ✓</li>
+<li>Innovation metrics: Low SD = lack of diversity ✗</li>
+</ul>
+<h3>❌ Mistake 4: Using wrong formula (n vs n-1)</h3>
+<p><strong>Sample data:</strong> Use n-1<br><strong>Population data:</strong> Use N</p>
+<hr>
+<h2>9. Coefficient of Variation (CV)</h2>
+<h3>Definition</h3>
+<p><strong>CV</strong> compares standard deviation to the mean, expressed as a percentage. Useful for comparing variability across different scales.</p>
+<h3>Formula</h3>
+<pre><code>CV = (SD / Mean) × 100%
+</code></pre>
+<h3>Example</h3>
+<p><strong>Dataset A:</strong> Mean = 10, SD = 2</p>
+<pre><code>CV = (2/10) × 100% = 20%
+</code></pre>
+<p><strong>Dataset B:</strong> Mean = 1000, SD = 20</p>
+<pre><code>CV = (20/1000) × 100% = 2%
+</code></pre>
+<p><strong>Interpretation:</strong> Even though Dataset B has larger SD, it has LESS relative variability (2% vs 20%).</p>
+<hr>
+<h2>10. Practice Problems</h2>
+<h3>Problem 1</h3>
+<p>Find the range, variance, and standard deviation of: 5, 8, 10, 12, 15</p>
+<details>
+<summary>Click for solution</summary>
+
+<p><strong>Range:</strong> 15 - 5 = 10</p>
+<p><strong>Mean:</strong> (5 + 8 + 10 + 12 + 15) / 5 = 10</p>
+<p><strong>Variance:</strong></p>
+<ul>
+<li>Deviations: -5, -2, 0, 2, 5</li>
+<li>Squared: 25, 4, 0, 4, 25</li>
+<li>Sum: 58</li>
+<li>s² = 58 / 4 = 14.5</li>
+</ul>
+<p><strong>Standard Deviation:</strong> s = √14.5 ≈ 3.81</p>
+</details>
+
+<h3>Problem 2</h3>
+<p>Two machines produce widgets:</p>
+<ul>
+<li>Machine A: Mean = 100g, SD = 5g</li>
+<li>Machine B: Mean = 100g, SD = 15g</li>
+</ul>
+<p>Which machine is more consistent?</p>
+<details>
+<summary>Click for solution</summary>
+
+<p><strong>✅ Answer:</strong> Machine A</p>
+<p>Both produce widgets averaging 100g, but Machine A has smaller SD (5g vs 15g), meaning its output is more consistent with less variability.</p>
+</details>
+
+<hr>
+<h2>Key Takeaways</h2>
+<ol>
+<li><strong>Range</strong> = Quick measure, sensitive to outliers</li>
+<li><strong>Variance</strong> = Average squared deviation, hard to interpret</li>
+<li><strong>Standard Deviation</strong> = Most common measure, same units as data</li>
+<li><strong>IQR</strong> = Resistant to outliers, uses middle 50%</li>
+<li>Choose measure based on <strong>distribution</strong> and <strong>presence of outliers</strong></li>
+<li>Larger values = <strong>more spread/variability</strong></li>
+<li>Use <strong>n-1</strong> for sample variance/SD, <strong>N</strong> for population</li>
+</ol>
+<hr>
+<h2>Additional Resources</h2>
+<ul>
+<li>Use the <strong>Statistics Calculator</strong> to automatically calculate all measures</li>
+<li>Take the <strong>Practice Quiz</strong> to test your understanding</li>
+<li>Learn about the <strong>Empirical Rule</strong> for normal distributions</li>
+</ul>
+<hr>
+<p><strong>Ready to test your knowledge?</strong> Take the interactive quiz to master measures of deviation!</p>
+
+<div class="footer">
+    <p><strong>MDragon Data Tools</strong> | Statistics Education Platform</p>
+    <p><a href="https://mondragon-developer.github.io/statools/" target="_blank">mondragon-developer.github.io/statools</a></p>
+</div>
+</body>
+</html>

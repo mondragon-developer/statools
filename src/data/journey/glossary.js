@@ -1,0 +1,18 @@
+export const GLOSSARY = [
+  { term: 'Data', definition: 'Recorded information, usually organized in a table of rows and columns.' },
+  { term: 'Variable', definition: 'A characteristic recorded for every observation, like age or genre. One column in a table.' },
+  { term: 'Observation', definition: 'One thing you recorded information about, like one person or one song. One row in a table.' },
+  { term: 'Mean', definition: 'The average: add all values and divide by how many there are. Sensitive to extreme values.' },
+  { term: 'Median', definition: 'The middle value when the data is sorted. Half the values are below it and half above.' },
+  { term: 'Outlier', definition: 'A value that is far away from the rest of the data. It may be an error or a real but rare case.' },
+  { term: 'Standard deviation', definition: 'The typical distance of values from the mean. Bigger means more spread out.' },
+  { term: 'Probability', definition: 'A number from 0 to 1 describing how often an event happens in the long run.' },
+  { term: 'Sample', definition: 'The group you actually collected data from.' },
+  { term: 'Population', definition: 'The whole group you want to learn about. Usually too large to measure completely.' },
+  { term: 'Z-score', definition: 'How many standard deviations a value is above or below the mean.' },
+  { term: 'Confidence interval', definition: 'A range of plausible values for a population number, from a method that captures the true value a stated percentage of the time.' },
+  { term: 'P-value', definition: 'If the null hypothesis were true, the chance of getting results at least as extreme as yours. It is not the chance the null hypothesis is true.' },
+  { term: 'Correlation', definition: 'A number from -1 to 1 describing the direction and strength of a straight-line relationship. It does not prove causation.' },
+  { term: 'Regression', definition: 'A method that fits a line (or model) to predict one variable from another, with some error left over.' },
+  { term: 'Residual', definition: 'Actual value minus predicted value: how far off a prediction was.' },
+];

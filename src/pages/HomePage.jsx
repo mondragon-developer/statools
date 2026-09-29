@@ -6,9 +6,11 @@ import Tools from '../components/sections/Tools';
 import CallToAction from '../components/sections/CallToAction';
 import Footer from '../components/layout/Footer';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import useScrollToHash from '../hooks/useScrollToHash';
 
 const HomePage = () => {
   useDocumentTitle('Home');
+  useScrollToHash();
 
   return (
     <>

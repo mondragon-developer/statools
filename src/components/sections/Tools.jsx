@@ -1,184 +1,79 @@
-import { LineChart, BarChart, PieChart, Calculator, BookOpen, FileText, TrendingUp, Table } from 'lucide-react';
-import ResourceCard from '../ui/ResourceCard';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 import SnakeGame from '../games/SnakeGame';
-import centralTendencyQuestions from '../../data/quizzes/centralTendency';
-import measuresOfDeviationQuestions from '../../data/quizzes/measuresOfDeviation';
-import probabilityFundamentalsQuestions from '../../data/quizzes/probabilityFundamentals';
-import binomialDistributionQuestions from '../../data/quizzes/binomialDistribution';
-import poissonDistributionQuestions from '../../data/quizzes/poissonDistribution';
-import normalDistributionQuestions from '../../data/quizzes/normalDistribution';
-import tDistributionQuestions from '../../data/quizzes/tDistribution';
-import centralLimitTheoremQuestions from '../../data/quizzes/centralLimitTheorem';
-import hypothesisTestingOneSampleQuestions from '../../data/quizzes/hypothesisTestingOneSample';
-import hypothesisTestingTwoSamplesQuestions from '../../data/quizzes/hypothesisTestingTwoSamples';
-import confidenceIntervalsQuestions from '../../data/quizzes/confidenceIntervals';
-import linearRegressionBasicsQuestions from '../../data/quizzes/linearRegressionBasics';
-import regressionAnalysisQuestions from '../../data/quizzes/regressionAnalysis';
-import interpretingRegressionQuestions from '../../data/quizzes/interpretingRegression';
+import ProgressStrip from '../journey/ProgressStrip';
+import TodayMission from '../journey/TodayMission';
+import StageMap from '../journey/StageMap';
+import CalculatorCoach from '../journey/CalculatorCoach';
+import ResourceLibrary from '../journey/ResourceLibrary';
+import { STAGES, lessonPath } from '../../data/journey';
 
 const Tools = () => {
-  // Define the resource categories with downloadable PDFs
-  const resourceCategories = [
-    {
-      icon: <PieChart size={36} className="text-darkTeal" />,
-      title: "Probability & Distributions",
-      description: "Master probability concepts and key statistical distributions with step-by-step examples.",
-      resources: [
-        {
-          name: "Measures of Central Tendency",
-          path: "/statools/resources/measures-of-central-tendency.pdf",
-          fileName: "Measures_of_Central_Tendency.pdf",
-          quiz: centralTendencyQuestions
-        },
-        {
-          name: "Measures of Deviation",
-          path: "/statools/resources/measures-of-deviation.pdf",
-          fileName: "Measures_of_Deviation.pdf",
-          quiz: measuresOfDeviationQuestions
-        },
-        {
-          name: "Probability Fundamentals",
-          path: "/statools/resources/probability-fundamentals.pdf",
-          fileName: "Probability_Fundamentals.pdf",
-          quiz: probabilityFundamentalsQuestions
-        },
-        {
-          name: "Binomial Distribution Guide",
-          path: "/statools/resources/binomial-distribution.pdf",
-          fileName: "Binomial_Distribution_Guide.pdf",
-          quiz: binomialDistributionQuestions
-        },
-        {
-          name: "Poisson Distribution Examples",
-          path: "/statools/resources/poisson-distribution.pdf",
-          fileName: "Poisson_Distribution_Examples.pdf",
-          quiz: poissonDistributionQuestions
-        },
-        {
-          name: "Normal Distribution & Z-Scores",
-          path: "/statools/resources/normal-distribution.pdf",
-          fileName: "Normal_Distribution_Guide.pdf",
-          quiz: normalDistributionQuestions
-        },
-        {
-          name: "T-Distribution Explained",
-          path: "/statools/resources/t-distribution.pdf",
-          fileName: "T_Distribution_Guide.pdf",
-          quiz: tDistributionQuestions
-        }
-      ]
-    },
-    {
-      icon: <BarChart size={36} className="text-darkTeal" />,
-      title: "Statistical Inference",
-      description: "Learn hypothesis testing, confidence intervals, and the Central Limit Theorem with practical examples.",
-      resources: [
-        {
-          name: "Central Limit Theorem",
-          path: "/statools/resources/central-limit-theorem.pdf",
-          fileName: "Central_Limit_Theorem.pdf",
-          quiz: centralLimitTheoremQuestions
-        },
-        {
-          name: "Hypothesis Testing: One Sample",
-          path: "/statools/resources/hypothesis-testing-one-sample.pdf",
-          fileName: "Hypothesis_Testing_One_Sample.pdf",
-          quiz: hypothesisTestingOneSampleQuestions
-        },
-        {
-          name: "Hypothesis Testing: Two Samples",
-          path: "/statools/resources/hypothesis-testing-two-samples.pdf",
-          fileName: "Hypothesis_Testing_Two_Samples.pdf",
-          quiz: hypothesisTestingTwoSamplesQuestions
-        },
-        {
-          name: "Confidence Intervals Step-by-Step",
-          path: "/statools/resources/confidence-intervals.pdf",
-          fileName: "Confidence_Intervals_Guide.pdf",
-          quiz: confidenceIntervalsQuestions
-        }
-      ]
-    },
-    {
-      icon: <TrendingUp size={36} className="text-darkTeal" />,
-      title: "Regression Analysis",
-      description: "Understand linear regression from basics to interpretation with real-world examples.",
-      resources: [
-        {
-          name: "Linear Regression Basics",
-          path: "/statools/resources/linear-regression-basics.pdf",
-          fileName: "Linear_Regression_Basics.pdf",
-          quiz: linearRegressionBasicsQuestions
-        },
-        {
-          name: "Regression Analysis Step-by-Step",
-          path: "/statools/resources/regression-step-by-step.pdf",
-          fileName: "Regression_Analysis_Step_by_Step.pdf",
-          quiz: regressionAnalysisQuestions
-        },
-        {
-          name: "Interpreting Regression Results",
-          path: "/statools/resources/interpreting-regression.pdf",
-          fileName: "Interpreting_Regression_Results.pdf",
-          quiz: interpretingRegressionQuestions
-        }
-      ]
-    },
-    {
-      icon: <Calculator size={36} className="text-darkTeal" />,
-      title: "Calculator Guides & Tables",
-      description: "Quick reference guides for our calculators and essential statistical tables.",
-      resources: [
-        {
-          name: "Statistics Calculator Guide",
-          path: "/statools/resources/statistics-calculator-guide.pdf",
-          fileName: "Statistics_Calculator_Guide.pdf"
-        },
-        {
-          name: "Probability Calculator Guide",
-          path: "/statools/resources/probability-calculator-guide.pdf",
-          fileName: "Probability_Calculator_Guide.pdf"
-        },
-        {
-          name: "Distribution Calculators Guide",
-          path: "/statools/resources/distribution-calculators-guide.pdf",
-          fileName: "Distribution_Calculators_Guide.pdf"
-        },
-        {
-          name: "Statistical Tables Cheat Sheet",
-          path: "/statools/resources/statistical-tables.pdf",
-          fileName: "Statistical_Tables_Cheat_Sheet.pdf"
-        }
-      ]
-    }
-  ];
+  const firstLesson = lessonPath(STAGES[0], STAGES[0].lessons[0]);
 
   return (
     <section className="bg-platinum py-16" id="resources" tabIndex={-1} aria-labelledby="resources-heading">
-      <div className="container mx-auto px-4">
-        {/* Snake Game Container */}
-        <section aria-label="Math Snake Game" className="w-full mb-12 flex justify-center">
-          <SnakeGame />
+      <div className="container mx-auto px-4 space-y-10">
+        <div className="text-center max-w-3xl mx-auto">
+          <p className="flex items-center justify-center gap-2 text-darkTeal font-bold uppercase tracking-wide text-sm mb-2">
+            <Sparkles size={16} aria-hidden="true" /> The Data Detective & AI Apprentice
+          </p>
+          <h2 id="resources-heading" className="text-4xl font-bold text-darkGrey mb-4">
+            Learn Statistics - and See the Ideas Behind AI
+          </h2>
+          <p className="text-lg text-darkGrey/80 mb-6">
+            Start with short, friendly missions. No advanced math required. Each lesson explains one idea,
+            lets you practice it, and then puts a real calculator in your hands.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link
+              to={firstLesson}
+              className="bg-darkTeal text-white font-bold px-6 py-3 rounded-lg hover:bg-darkTeal/90 transition-colors
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accentDark focus-visible:ring-offset-2"
+            >
+              Begin Stage 1
+            </Link>
+            <a
+              href="#resource-library"
+              className="bg-white border-2 border-darkGrey text-darkGrey font-bold px-6 py-3 rounded-lg hover:bg-darkGrey hover:text-white transition-colors
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accentDark focus-visible:ring-offset-2"
+            >
+              Browse all resources
+            </a>
+          </div>
+        </div>
+
+        <ProgressStrip />
+        <TodayMission />
+
+        <section aria-labelledby="quest-map-heading">
+          <div className="flex flex-wrap items-end justify-between gap-2 mb-4">
+            <h3 id="quest-map-heading" className="text-2xl font-bold text-darkGrey">Your Statistics Quest</h3>
+            <Link to="/learn" className="text-darkTeal font-semibold underline hover:no-underline">
+              See the full journey map, badges, and glossary
+            </Link>
+          </div>
+          <StageMap compact headingLevel="h4" />
         </section>
 
-        <h2 id="resources-heading" className="text-4xl font-bold text-center text-darkGrey mb-12">
-          Content and Resources
-        </h2>
-        <p className="text-center text-darkGrey opacity-80 mb-12 max-w-3xl mx-auto">
-          Download comprehensive study guides, step-by-step examples, and calculator tutorials.
-          All materials are free and designed to support your statistics learning journey.
-        </p>
-        <div className="grid md:grid-cols-2 gap-8">
-          {resourceCategories.map((category, index) => (
-            <ResourceCard
-              key={index}
-              icon={category.icon}
-              title={category.title}
-              description={category.description}
-              resources={category.resources}
-            />
-          ))}
-        </div>
+        <CalculatorCoach />
+
+        <section id="resource-library" tabIndex={-1} aria-labelledby="library-heading" className="focus:outline-none">
+          <h3 id="library-heading" className="text-2xl font-bold text-darkGrey text-center mb-2">Resource Library</h3>
+          <p className="text-center text-darkGrey/80 mb-6 max-w-3xl mx-auto">
+            Free study guides and practice quizzes for learning on your own. Each guide is labeled with the journey stage it supports.
+          </p>
+          <ResourceLibrary />
+        </section>
+
+        <section aria-labelledby="play-heading">
+          <h3 id="play-heading" className="text-2xl font-bold text-darkGrey text-center mb-1">Brain Break</h3>
+          <p className="text-center text-darkGrey/80 mb-4">Optional: a quick round of Math Snake. It is not needed for your progress.</p>
+          <div className="flex justify-center">
+            <SnakeGame />
+          </div>
+        </section>
       </div>
     </section>
   );

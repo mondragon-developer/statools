@@ -20,7 +20,7 @@ const AccessibilityBanner = () => {
     <div
       role="region"
       aria-label="Accessibility features available"
-      className="fixed top-0 left-0 right-0 z-50 bg-darkTeal text-white text-sm px-4 py-2 flex items-center justify-center gap-4 shadow-md"
+      className="print:hidden fixed top-0 left-0 right-0 z-50 bg-darkTeal text-white text-sm px-4 py-2 flex items-center justify-center gap-4 shadow-md"
     >
       <p>
         This site supports <strong>keyboard navigation</strong>, <strong>screen readers</strong>, and{' '}

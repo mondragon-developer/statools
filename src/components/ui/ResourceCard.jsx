@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Download, FileText, Brain, ChevronDown, ChevronUp } from 'lucide-react';
 import QuizContainer from '../quiz/QuizContainer';
 
@@ -64,6 +64,9 @@ const ResourceCard = ({ icon, title, description, resources }) => {
                     <FileText size={18} className="text-darkTeal" aria-hidden="true" />
                     <span className="text-sm font-medium text-darkGrey">
                       {resource.name}
+                      {resource.label && (
+                        <span className="block text-xs font-normal text-darkGrey/70">{resource.label}</span>
+                      )}
                     </span>
                   </div>
 

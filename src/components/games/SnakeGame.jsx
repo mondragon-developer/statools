@@ -2,10 +2,16 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Pause, RotateCcw, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 import { announcePolite } from '../../utils/announce';
 
-const GRID_WIDTH = 80;
-const GRID_HEIGHT = 30;
-const CELL_SIZE = 15;
-const INITIAL_SNAKE = [{ x: 40, y: 15 }];
+// The canvas keeps a ~1200px drawing width and is scaled to fit its container,
+// so zooming means fewer, larger cells rather than a bigger canvas.
+const ZOOM_LEVELS = [
+  { label: 'Small', cols: 80, rows: 30, cell: 15 },
+  { label: 'Medium', cols: 60, rows: 22, cell: 20 },
+  { label: 'Large', cols: 48, rows: 18, cell: 25 },
+  { label: 'Extra large', cols: 40, rows: 15, cell: 30 },
+];
+const DEFAULT_ZOOM = 2;
+const ZOOM_STORAGE_KEY = 'snake-zoom';
 const INITIAL_DIRECTION = { x: 1, y: 0 };
 const INITIAL_GAME_SPEED = 150;
 
@@ -42,17 +48,54 @@ const SYMBOL_NAMES = {
   '∩': 'Intersection'
 };
 
+const MIN_DELAY = 50;
+const MAX_DELAY = 300;
+
+function readStoredZoom() {
+  try {
+    const stored = Number(localStorage.getItem(ZOOM_STORAGE_KEY));
+    return Number.isInteger(stored) && stored >= 0 && stored < ZOOM_LEVELS.length ? stored : DEFAULT_ZOOM;
+  } catch {
+    return DEFAULT_ZOOM;
+  }
+}
+
+function initialSnake(grid) {
+  return [{ x: Math.floor(grid.cols / 2), y: Math.floor(grid.rows / 2) }];
+}
+
+function randomFood(grid, currentSnake) {
+  let newFood;
+  let attempts = 0;
+  do {
+    newFood = {
+      x: Math.floor(Math.random() * grid.cols),
+      y: Math.floor(Math.random() * grid.rows),
+      symbol: MATH_SYMBOLS[Math.floor(Math.random() * MATH_SYMBOLS.length)]
+    };
+    attempts++;
+  } while (
+    attempts < 100 &&
+    currentSnake.some(segment => segment.x === newFood.x && segment.y === newFood.y)
+  );
+  return newFood;
+}
+
 const SnakeGame = () => {
   const canvasRef = useRef(null);
-  const [snake, setSnake] = useState(INITIAL_SNAKE);
+  const [zoomIndex, setZoomIndex] = useState(readStoredZoom);
+  const grid = ZOOM_LEVELS[zoomIndex];
+  const [snake, setSnake] = useState(() => initialSnake(grid));
   const [direction, setDirection] = useState(INITIAL_DIRECTION);
-  const [food, setFood] = useState({ x: 60, y: 15, symbol: 'π' });
+  const [food, setFood] = useState(() => ({ ...randomFood(grid, initialSnake(grid)), symbol: 'π' }));
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [mondragronProgress, setMondragronProgress] = useState('');
   const [gameSpeed, setGameSpeed] = useState(INITIAL_GAME_SPEED);
+  // The speed the player picked; each new game (and zoom change) starts from it.
+  const [baseSpeed, setBaseSpeed] = useState(INITIAL_GAME_SPEED);
   const [mondragonsCompleted, setMondragonsCompleted] = useState(0);
   const [feedback, setFeedback] = useState(null);
 
@@ -72,22 +115,7 @@ const SnakeGame = () => {
   }, [feedback]);
 
   // Generate random food position with math symbol
-  const generateFood = useCallback((currentSnake) => {
-    let newFood;
-    let attempts = 0;
-    do {
-      newFood = {
-        x: Math.floor(Math.random() * GRID_WIDTH),
-        y: Math.floor(Math.random() * GRID_HEIGHT),
-        symbol: MATH_SYMBOLS[Math.floor(Math.random() * MATH_SYMBOLS.length)]
-      };
-      attempts++;
-    } while (
-      attempts < 100 &&
-      currentSnake.some(segment => segment.x === newFood.x && segment.y === newFood.y)
-    );
-    return newFood;
-  }, []);
+  const generateFood = useCallback((currentSnake) => randomFood(grid, currentSnake), [grid]);
 
   // Get the letter to display on each snake segment
   const getSnakeSegmentLetter = (index) => {
@@ -159,9 +187,9 @@ const SnakeGame = () => {
       // Check wall collision
       if (
         newHead.x < 0 ||
-        newHead.x >= GRID_WIDTH ||
+        newHead.x >= grid.cols ||
         newHead.y < 0 ||
-        newHead.y >= GRID_HEIGHT
+        newHead.y >= grid.rows
       ) {
         setGameOver(true);
         setIsPlaying(false);
@@ -199,7 +227,7 @@ const SnakeGame = () => {
       newSnake.pop();
       return newSnake;
     });
-  }, [food, gameOver, isPaused, generateFood, updateMondragronText]);
+  }, [food, gameOver, isPaused, generateFood, updateMondragronText, grid]);
 
   // Handle keyboard input
   const handleKeyPress = useCallback((e) => {
@@ -256,20 +284,23 @@ const SnakeGame = () => {
 
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const { cols, rows, cell: CELL_SIZE } = grid;
+    // Eye and font sizes were tuned for 15px cells; scale them with the cell.
+    const unit = CELL_SIZE / 15;
 
     // Draw grid
     ctx.strokeStyle = '#E6E6E6';
     ctx.lineWidth = 0.5;
-    for (let i = 0; i <= GRID_WIDTH; i++) {
+    for (let i = 0; i <= cols; i++) {
       ctx.beginPath();
       ctx.moveTo(i * CELL_SIZE, 0);
-      ctx.lineTo(i * CELL_SIZE, GRID_HEIGHT * CELL_SIZE);
+      ctx.lineTo(i * CELL_SIZE, rows * CELL_SIZE);
       ctx.stroke();
     }
-    for (let i = 0; i <= GRID_HEIGHT; i++) {
+    for (let i = 0; i <= rows; i++) {
       ctx.beginPath();
       ctx.moveTo(0, i * CELL_SIZE);
-      ctx.lineTo(GRID_WIDTH * CELL_SIZE, i * CELL_SIZE);
+      ctx.lineTo(cols * CELL_SIZE, i * CELL_SIZE);
       ctx.stroke();
     }
 
@@ -277,7 +308,7 @@ const SnakeGame = () => {
     ctx.fillStyle = '#D97706';
     ctx.fillRect(food.x * CELL_SIZE, food.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
     ctx.fillStyle = '#2A2A2A';
-    ctx.font = 'bold 12px Arial';
+    ctx.font = `bold ${Math.round(12 * unit)}px Arial`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(
@@ -295,21 +326,24 @@ const SnakeGame = () => {
 
         // Draw eyes on head
         ctx.fillStyle = '#2A2A2A';
-        const eyeSize = 2;
-        const eyeOffset = 4;
+        const eyeSize = 2 * unit;
+        const eyeOffset = 4 * unit;
+        const near = 3 * unit;
+        const edge = 2 * unit;
+        const far = CELL_SIZE - 5 * unit;
 
         if (direction.x === 1) { // Right
-          ctx.fillRect(segment.x * CELL_SIZE + CELL_SIZE - eyeOffset, segment.y * CELL_SIZE + 3, eyeSize, eyeSize);
-          ctx.fillRect(segment.x * CELL_SIZE + CELL_SIZE - eyeOffset, segment.y * CELL_SIZE + CELL_SIZE - 5, eyeSize, eyeSize);
+          ctx.fillRect(segment.x * CELL_SIZE + CELL_SIZE - eyeOffset, segment.y * CELL_SIZE + near, eyeSize, eyeSize);
+          ctx.fillRect(segment.x * CELL_SIZE + CELL_SIZE - eyeOffset, segment.y * CELL_SIZE + far, eyeSize, eyeSize);
         } else if (direction.x === -1) { // Left
-          ctx.fillRect(segment.x * CELL_SIZE + 2, segment.y * CELL_SIZE + 3, eyeSize, eyeSize);
-          ctx.fillRect(segment.x * CELL_SIZE + 2, segment.y * CELL_SIZE + CELL_SIZE - 5, eyeSize, eyeSize);
+          ctx.fillRect(segment.x * CELL_SIZE + edge, segment.y * CELL_SIZE + near, eyeSize, eyeSize);
+          ctx.fillRect(segment.x * CELL_SIZE + edge, segment.y * CELL_SIZE + far, eyeSize, eyeSize);
         } else if (direction.y === -1) { // Up
-          ctx.fillRect(segment.x * CELL_SIZE + 3, segment.y * CELL_SIZE + 2, eyeSize, eyeSize);
-          ctx.fillRect(segment.x * CELL_SIZE + CELL_SIZE - 5, segment.y * CELL_SIZE + 2, eyeSize, eyeSize);
+          ctx.fillRect(segment.x * CELL_SIZE + near, segment.y * CELL_SIZE + edge, eyeSize, eyeSize);
+          ctx.fillRect(segment.x * CELL_SIZE + far, segment.y * CELL_SIZE + edge, eyeSize, eyeSize);
         } else { // Down
-          ctx.fillRect(segment.x * CELL_SIZE + 3, segment.y * CELL_SIZE + CELL_SIZE - eyeOffset, eyeSize, eyeSize);
-          ctx.fillRect(segment.x * CELL_SIZE + CELL_SIZE - 5, segment.y * CELL_SIZE + CELL_SIZE - eyeOffset, eyeSize, eyeSize);
+          ctx.fillRect(segment.x * CELL_SIZE + near, segment.y * CELL_SIZE + CELL_SIZE - eyeOffset, eyeSize, eyeSize);
+          ctx.fillRect(segment.x * CELL_SIZE + far, segment.y * CELL_SIZE + CELL_SIZE - eyeOffset, eyeSize, eyeSize);
         }
       } else {
         // Body with letters
@@ -319,7 +353,7 @@ const SnakeGame = () => {
         // Draw letter
         const letter = getSnakeSegmentLetter(index);
         ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 10px Arial';
+        ctx.font = `bold ${Math.round(10 * unit)}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(
@@ -329,20 +363,21 @@ const SnakeGame = () => {
         );
       }
     });
-  }, [snake, food, direction]);
+  }, [snake, food, direction, grid]);
 
-  const initializeGameState = (playing) => {
-    setSnake(INITIAL_SNAKE);
+  const initializeGameState = (playing, targetGrid = grid) => {
+    const startSnake = initialSnake(targetGrid);
+    setSnake(startSnake);
     setDirection(INITIAL_DIRECTION);
     directionRef.current = INITIAL_DIRECTION;
-    setFood(generateFood(INITIAL_SNAKE));
+    setFood(randomFood(targetGrid, startSnake));
     setScore(0);
     scoreRef.current = 0;
     setGameOver(false);
     setIsPlaying(playing);
     setIsPaused(false);
     setMondragronProgress('');
-    setGameSpeed(INITIAL_GAME_SPEED);
+    setGameSpeed(baseSpeed);
     setMondragonsCompleted(0);
   };
 
@@ -362,6 +397,23 @@ const SnakeGame = () => {
     initializeGameState(false);
     announcePolite('Game reset.');
   };
+
+  // A different grid invalidates every position, so a zoom change always restarts.
+  const changeZoom = (index) => {
+    setZoomIndex(index);
+    try {
+      localStorage.setItem(ZOOM_STORAGE_KEY, String(index));
+    } catch {
+      // Storage can be blocked (private mode); the zoom still applies for this visit.
+    }
+    initializeGameState(false, ZOOM_LEVELS[index]);
+    announcePolite(`Board zoom set to ${ZOOM_LEVELS[index].label}. Game reset.`);
+  };
+
+  const speedLabel = gameSpeed <= 80 ? 'Fast' : gameSpeed <= 130 ? 'Medium' : 'Slow';
+  // Left-to-right runs slow to fast, the reverse of the tick delay stored in gameSpeed.
+  const sliderValue = MIN_DELAY + MAX_DELAY - gameSpeed;
+  const sliderFill = ((sliderValue - MIN_DELAY) / (MAX_DELAY - MIN_DELAY)) * 100;
 
   return (
     <div className="flex flex-col items-center justify-center bg-white p-4 rounded-lg">
@@ -399,8 +451,8 @@ const SnakeGame = () => {
       <div className="relative mb-4 w-full max-w-[1200px] flex justify-center">
         <canvas
           ref={canvasRef}
-          width={GRID_WIDTH * CELL_SIZE}
-          height={GRID_HEIGHT * CELL_SIZE}
+          width={grid.cols * grid.cell}
+          height={grid.rows * grid.cell}
           className="border-4 border-darkTeal rounded-lg bg-white w-full h-auto max-w-full block"
           role="img"
           aria-label={`Math Snake game canvas. Score: ${score}. Snake length: ${snake.length}. ${gameOver ? 'Game over.' : isPlaying ? (isPaused ? 'Paused.' : 'Playing.') : 'Press Start to play.'}`}
@@ -468,20 +520,24 @@ const SnakeGame = () => {
       {/* Speed control — SC 2.2.1 Timing Adjustable */}
       <div className="mb-4 w-full max-w-md">
         <label htmlFor="snake-speed" className="block text-sm font-medium text-darkGrey mb-1">
-          Game Speed: {gameSpeed <= 80 ? 'Fast' : gameSpeed <= 130 ? 'Medium' : 'Slow'}
+          Game Speed: {speedLabel}
         </label>
         <input
           id="snake-speed"
           type="range"
-          min="50"
-          max="300"
+          min={MIN_DELAY}
+          max={MAX_DELAY}
           step="10"
-          value={gameSpeed}
-          onChange={(e) => setGameSpeed(Number(e.target.value))}
-          aria-valuetext={`${gameSpeed <= 80 ? 'Fast' : gameSpeed <= 130 ? 'Medium' : 'Slow'} speed`}
+          value={sliderValue}
+          onChange={(e) => {
+            const delay = MIN_DELAY + MAX_DELAY - Number(e.target.value);
+            setGameSpeed(delay);
+            setBaseSpeed(delay);
+          }}
+          aria-valuetext={`${speedLabel} speed`}
           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
           style={{
-            background: `linear-gradient(to right, #0F766E 0%, #0F766E ${((300 - gameSpeed) / 250) * 100}%, #e0e0e0 ${((300 - gameSpeed) / 250) * 100}%, #e0e0e0 100%)`
+            background: `linear-gradient(to right, #0F766E 0%, #0F766E ${sliderFill}%, #e0e0e0 ${sliderFill}%, #e0e0e0 100%)`
           }}
         />
         <div className="flex justify-between text-xs text-darkGrey/60 mt-1">
@@ -489,6 +545,27 @@ const SnakeGame = () => {
           <span>Fast</span>
         </div>
       </div>
+
+      <fieldset className="mb-4 w-full max-w-md">
+        <legend className="block text-sm font-medium text-darkGrey mb-1">Board zoom (changing it restarts the game)</legend>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {ZOOM_LEVELS.map((level, index) => (
+            <button
+              key={level.label}
+              type="button"
+              onClick={() => changeZoom(index)}
+              aria-pressed={index === zoomIndex}
+              className={`px-3 py-2 rounded-lg text-sm font-medium border-2 transition-colors
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accentDark focus-visible:ring-offset-1
+                ${index === zoomIndex
+                  ? 'bg-darkTeal border-darkTeal text-white'
+                  : 'bg-white border-platinum text-darkGrey hover:border-darkTeal'}`}
+            >
+              {level.label}
+            </button>
+          ))}
+        </div>
+      </fieldset>
 
       {/* Touch Controls - Visible on all devices but intended for touch */}
       <div className="grid grid-cols-3 gap-2 mb-4 max-w-[200px]">
