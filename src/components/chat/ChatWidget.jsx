@@ -1,9 +1,12 @@
-import React, { useState, useRef, useEffect, useCallback, useId } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useId, lazy, Suspense } from 'react';
 import { MessageCircle, X, Send, Mic, MicOff } from 'lucide-react';
 import useFocusTrap from '../../hooks/useFocusTrap';
 import useSpeechRecognition from '../../hooks/useSpeechRecognition';
 import { announcePolite, announceAssertive } from '../../utils/announce';
 import { sendMessage } from '../../api/chatApi';
+
+const loadChatMarkdown = () => import('./ChatMarkdown');
+const ChatMarkdown = lazy(loadChatMarkdown);
 
 // Generate unique ID per browser session
 function getConversationId() {
@@ -49,6 +52,8 @@ const ChatWidget = () => {
   // Focus input when panel opens
   useEffect(() => {
     if (isOpen) {
+      // Preloaded so the first reply does not flash raw markdown inside the live region.
+      loadChatMarkdown();
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
@@ -96,11 +101,16 @@ const ChatWidget = () => {
     announcePolite('Sending message');
 
     try {
-      const reply = await sendMessage(text, conversationId.current);
+      const history = [...messages, userMsg]
+        .filter(m => m.id !== 'welcome' && !m.failed)
+        .map(({ role, content }) => ({ role, content }));
+      const reply = await sendMessage(history, conversationId.current);
       const assistantMsg = { id: `a-${Date.now()}`, role: 'assistant', content: reply };
+      // No separate announcement: the role="log" region already reads new messages.
       setMessages(prev => [...prev, assistantMsg]);
-      announcePolite(`Assistant says: ${reply.slice(0, 120)}`);
-    } catch (err) {
+    } catch {
+      // Left out of later requests so a rejected message cannot keep failing the conversation.
+      setMessages(prev => prev.map(m => (m.id === userMsg.id ? { ...m, failed: true } : m)));
       setError('Could not get a response. Please try again.');
       announceAssertive('Error: could not get a response');
     } finally {
@@ -173,14 +183,20 @@ const ChatWidget = () => {
               >
                 <div
                   role="article"
-                  aria-label={msg.role === 'user' ? `You said: ${msg.content}` : `Assistant said: ${msg.content}`}
                   className={`max-w-[80%] px-3 py-2 rounded-lg text-sm leading-relaxed ${
                     msg.role === 'user'
                       ? 'bg-darkTeal text-white'
                       : 'bg-platinum/50 text-darkGrey'
                   }`}
                 >
-                  {msg.content}
+                  <span className="sr-only">{msg.role === 'user' ? 'You said: ' : 'Assistant said: '}</span>
+                  {msg.role === 'assistant' && msg.id !== 'welcome' ? (
+                    <Suspense fallback={msg.content}>
+                      <ChatMarkdown>{msg.content}</ChatMarkdown>
+                    </Suspense>
+                  ) : (
+                    msg.content
+                  )}
                 </div>
               </div>
             ))}
@@ -241,6 +257,7 @@ const ChatWidget = () => {
               value={isListening ? transcript || input : input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about statistics..."
+              maxLength={4000}
               disabled={isLoading}
               aria-describedby={error ? errorId : undefined}
               className="flex-1 px-3 py-2 text-sm border border-platinum rounded-lg
