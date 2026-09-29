@@ -25,7 +25,7 @@ const AccessibilityBanner = () => {
       <p>
         This site supports <strong>keyboard navigation</strong>, <strong>screen readers</strong>, and{' '}
         <strong>voice commands</strong>.{' '}
-        <a href="/statools/accessibility" className="underline hover:text-platinum">Learn more</a>
+        <a href={`${import.meta.env.BASE_URL}accessibility`} className="underline hover:text-platinum">Learn more</a>
       </p>
       <button
         onClick={dismiss}

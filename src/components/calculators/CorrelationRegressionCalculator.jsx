@@ -398,7 +398,7 @@ const CorrelationRegressionCalculator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-platinum py-8">
+    <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">

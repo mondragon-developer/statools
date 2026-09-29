@@ -9,6 +9,7 @@ import Breadcrumbs from '../../components/journey/Breadcrumbs';
 import ProgressStrip from '../../components/journey/ProgressStrip';
 import StageMap from '../../components/journey/StageMap';
 import CalculatorCoach from '../../components/journey/CalculatorCoach';
+import ProgressTransfer from '../../components/journey/ProgressTransfer';
 import { announcePolite } from '../../utils/announce';
 
 const LearnHubPage = () => {
@@ -97,6 +98,10 @@ const LearnHubPage = () => {
           Open the Resource Library
         </Link>
       </section>
+
+      <div id="save-progress" tabIndex={-1} className="focus:outline-none">
+        <ProgressTransfer />
+      </div>
 
       <section aria-labelledby="reset-heading" className="border-t border-darkGrey/20 pt-6">
         <h2 id="reset-heading" className="text-lg font-bold text-darkGrey mb-1">Start over</h2>

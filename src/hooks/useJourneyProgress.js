@@ -21,10 +21,56 @@ const emptyProgress = () => ({
 function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? { ...emptyProgress(), ...JSON.parse(raw) } : emptyProgress();
+    return raw ? sanitize(JSON.parse(raw)) : emptyProgress();
   } catch {
     return emptyProgress();
   }
+}
+
+const isRecord = (value) => typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const pick = (value, keep, map = (v) => v) => {
+  const out = {};
+  if (isRecord(value)) {
+    Object.entries(value).forEach(([k, v]) => { if (keep(v)) out[k] = map(v); });
+  }
+  return out;
+};
+const isString = (v) => typeof v === 'string';
+const stringMap = (value, max = 4000) => pick(value, isString, v => v.slice(0, max));
+const count = (v) => (Number.isFinite(v) && v >= 0 ? Math.floor(v) : 0);
+
+// Imported codes are user-supplied text, so every field and nested value is type-checked:
+// the teacher report and capstone page render these values directly.
+export function sanitize(raw) {
+  const base = emptyProgress();
+  if (!isRecord(raw)) return base;
+  const out = { ...base };
+  out.lessons = stringMap(raw.lessons, 40);
+  out.checkpoints = stringMap(raw.checkpoints, 40);
+  out.badges = stringMap(raw.badges, 40);
+  out.reflections = stringMap(raw.reflections, 1000);
+  out.practice = pick(raw.practice, v => v === true);
+  out.calculators = pick(raw.calculators, v => v === true);
+  if (isRecord(raw.capstone)) {
+    const c = raw.capstone;
+    out.capstone = {
+      caseId: isString(c.caseId) ? c.caseId : undefined,
+      submittedAt: isString(c.submittedAt) ? c.submittedAt : undefined,
+      answers: stringMap(c.answers, 2000),
+      drafts: pick(c.drafts, isRecord, d => stringMap(d, 2000)),
+    };
+  }
+  out.xp = count(raw.xp);
+  if (isRecord(raw.streak)) {
+    out.streak = {
+      current: count(raw.streak.current),
+      longest: count(raw.streak.longest),
+      lastDay: isString(raw.streak.lastDay) ? raw.streak.lastDay : null,
+    };
+  }
+  if (typeof raw.certificateName === 'string') out.certificateName = raw.certificateName.slice(0, 80);
+  return out;
 }
 
 let state = load();
@@ -175,6 +221,10 @@ export const journeyActions = {
 
   reset() {
     commit(emptyProgress());
+  },
+
+  importProgress(imported) {
+    commit(sanitize(imported));
   },
 };
 

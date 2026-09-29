@@ -1,9 +1,22 @@
 {
-  "rewrites": [
+  "git": {
+    "deploymentEnabled": {
+      "gh-pages": false
+    }
+  },
+  "redirects": [
     {
-      "source": "/statools/api/chat",
-      "destination": "/api/chat"
+      "source": "/statools",
+      "destination": "/",
+      "permanent": false
     },
+    {
+      "source": "/statools/:path*",
+      "destination": "/:path*",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
     {
       "source": "/(.*)",
       "destination": "/index.html"

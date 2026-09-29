@@ -85,7 +85,7 @@ const VoiceCommands = () => {
       const target = goMatch[1].trim();
       const route = NAV_ROUTES[target];
       if (route) {
-        window.location.href = `/statools${route}`;
+        window.location.href = `${import.meta.env.BASE_URL}${route.replace(/^\//, '')}`;
         showFeedback(`Navigating to ${target}`);
         announceAssertive(`Navigating to ${target}`);
         return true;
@@ -145,7 +145,7 @@ const VoiceCommands = () => {
     // Try as navigation target
     const route = NAV_ROUTES[text];
     if (route) {
-      window.location.href = `/statools${route}`;
+      window.location.href = `${import.meta.env.BASE_URL}${route.replace(/^\//, '')}`;
       showFeedback(`Navigating to ${text}`);
       announceAssertive(`Navigating to ${text}`);
       return true;

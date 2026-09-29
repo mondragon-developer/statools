@@ -13,6 +13,8 @@ import linearRegressionBasicsQuestions from '../quizzes/linearRegressionBasics';
 import regressionAnalysisQuestions from '../quizzes/regressionAnalysis';
 import interpretingRegressionQuestions from '../quizzes/interpretingRegression';
 
+const BASE = import.meta.env.BASE_URL;
+
 export const RESOURCE_CATEGORIES = ['Foundations', 'Probability', 'Inference', 'Regression', 'Calculator Guides'];
 
 // stage: the journey stage the guide supports; null means it is a reference for every stage.
@@ -20,7 +22,7 @@ export const RESOURCES = [
   {
     id: 'central-tendency',
     name: 'Measures of Central Tendency',
-    path: '/statools/resources/measures-of-central-tendency.pdf',
+    path: `${BASE}resources/measures-of-central-tendency.pdf`,
     fileName: 'Measures_of_Central_Tendency.pdf',
     quiz: centralTendencyQuestions,
     category: 'Foundations',
@@ -29,7 +31,7 @@ export const RESOURCES = [
   {
     id: 'deviation',
     name: 'Measures of Deviation',
-    path: '/statools/resources/measures-of-deviation.pdf',
+    path: `${BASE}resources/measures-of-deviation.pdf`,
     fileName: 'Measures_of_Deviation.pdf',
     quiz: measuresOfDeviationQuestions,
     category: 'Foundations',
@@ -38,7 +40,7 @@ export const RESOURCES = [
   {
     id: 'probability-fundamentals',
     name: 'Probability Fundamentals',
-    path: '/statools/resources/probability-fundamentals.pdf',
+    path: `${BASE}resources/probability-fundamentals.pdf`,
     fileName: 'Probability_Fundamentals.pdf',
     quiz: probabilityFundamentalsQuestions,
     category: 'Probability',
@@ -47,7 +49,7 @@ export const RESOURCES = [
   {
     id: 'binomial',
     name: 'Binomial Distribution Guide',
-    path: '/statools/resources/binomial-distribution.pdf',
+    path: `${BASE}resources/binomial-distribution.pdf`,
     fileName: 'Binomial_Distribution_Guide.pdf',
     quiz: binomialDistributionQuestions,
     category: 'Probability',
@@ -56,7 +58,7 @@ export const RESOURCES = [
   {
     id: 'normal',
     name: 'Normal Distribution & Z-Scores',
-    path: '/statools/resources/normal-distribution.pdf',
+    path: `${BASE}resources/normal-distribution.pdf`,
     fileName: 'Normal_Distribution_Guide.pdf',
     quiz: normalDistributionQuestions,
     category: 'Probability',
@@ -65,7 +67,7 @@ export const RESOURCES = [
   {
     id: 'poisson',
     name: 'Poisson Distribution Examples',
-    path: '/statools/resources/poisson-distribution.pdf',
+    path: `${BASE}resources/poisson-distribution.pdf`,
     fileName: 'Poisson_Distribution_Examples.pdf',
     quiz: poissonDistributionQuestions,
     category: 'Probability',
@@ -74,7 +76,7 @@ export const RESOURCES = [
   {
     id: 't-distribution',
     name: 'T-Distribution Explained',
-    path: '/statools/resources/t-distribution.pdf',
+    path: `${BASE}resources/t-distribution.pdf`,
     fileName: 'T_Distribution_Guide.pdf',
     quiz: tDistributionQuestions,
     category: 'Probability',
@@ -83,7 +85,7 @@ export const RESOURCES = [
   {
     id: 'clt',
     name: 'Central Limit Theorem',
-    path: '/statools/resources/central-limit-theorem.pdf',
+    path: `${BASE}resources/central-limit-theorem.pdf`,
     fileName: 'Central_Limit_Theorem.pdf',
     quiz: centralLimitTheoremQuestions,
     category: 'Inference',
@@ -92,7 +94,7 @@ export const RESOURCES = [
   {
     id: 'confidence-intervals',
     name: 'Confidence Intervals Step-by-Step',
-    path: '/statools/resources/confidence-intervals.pdf',
+    path: `${BASE}resources/confidence-intervals.pdf`,
     fileName: 'Confidence_Intervals_Guide.pdf',
     quiz: confidenceIntervalsQuestions,
     category: 'Inference',
@@ -101,7 +103,7 @@ export const RESOURCES = [
   {
     id: 'hypothesis-one',
     name: 'Hypothesis Testing: One Sample',
-    path: '/statools/resources/hypothesis-testing-one-sample.pdf',
+    path: `${BASE}resources/hypothesis-testing-one-sample.pdf`,
     fileName: 'Hypothesis_Testing_One_Sample.pdf',
     quiz: hypothesisTestingOneSampleQuestions,
     category: 'Inference',
@@ -110,7 +112,7 @@ export const RESOURCES = [
   {
     id: 'hypothesis-two',
     name: 'Hypothesis Testing: Two Samples',
-    path: '/statools/resources/hypothesis-testing-two-samples.pdf',
+    path: `${BASE}resources/hypothesis-testing-two-samples.pdf`,
     fileName: 'Hypothesis_Testing_Two_Samples.pdf',
     quiz: hypothesisTestingTwoSamplesQuestions,
     category: 'Inference',
@@ -119,7 +121,7 @@ export const RESOURCES = [
   {
     id: 'regression-basics',
     name: 'Linear Regression Basics',
-    path: '/statools/resources/linear-regression-basics.pdf',
+    path: `${BASE}resources/linear-regression-basics.pdf`,
     fileName: 'Linear_Regression_Basics.pdf',
     quiz: linearRegressionBasicsQuestions,
     category: 'Regression',
@@ -128,7 +130,7 @@ export const RESOURCES = [
   {
     id: 'regression-steps',
     name: 'Regression Analysis Step-by-Step',
-    path: '/statools/resources/regression-step-by-step.pdf',
+    path: `${BASE}resources/regression-step-by-step.pdf`,
     fileName: 'Regression_Analysis_Step_by_Step.pdf',
     quiz: regressionAnalysisQuestions,
     category: 'Regression',
@@ -137,7 +139,7 @@ export const RESOURCES = [
   {
     id: 'regression-interpreting',
     name: 'Interpreting Regression Results',
-    path: '/statools/resources/interpreting-regression.pdf',
+    path: `${BASE}resources/interpreting-regression.pdf`,
     fileName: 'Interpreting_Regression_Results.pdf',
     quiz: interpretingRegressionQuestions,
     category: 'Regression',
@@ -146,7 +148,7 @@ export const RESOURCES = [
   {
     id: 'guide-statistics',
     name: 'Statistics Calculator Guide',
-    path: '/statools/resources/statistics-calculator-guide.pdf',
+    path: `${BASE}resources/statistics-calculator-guide.pdf`,
     fileName: 'Statistics_Calculator_Guide.pdf',
     category: 'Calculator Guides',
     stage: null,
@@ -154,7 +156,7 @@ export const RESOURCES = [
   {
     id: 'guide-probability',
     name: 'Probability Calculator Guide',
-    path: '/statools/resources/probability-calculator-guide.pdf',
+    path: `${BASE}resources/probability-calculator-guide.pdf`,
     fileName: 'Probability_Calculator_Guide.pdf',
     category: 'Calculator Guides',
     stage: null,
@@ -162,7 +164,7 @@ export const RESOURCES = [
   {
     id: 'guide-distributions',
     name: 'Distribution Calculators Guide',
-    path: '/statools/resources/distribution-calculators-guide.pdf',
+    path: `${BASE}resources/distribution-calculators-guide.pdf`,
     fileName: 'Distribution_Calculators_Guide.pdf',
     category: 'Calculator Guides',
     stage: null,
@@ -170,7 +172,7 @@ export const RESOURCES = [
   {
     id: 'tables',
     name: 'Statistical Tables Cheat Sheet',
-    path: '/statools/resources/statistical-tables.pdf',
+    path: `${BASE}resources/statistical-tables.pdf`,
     fileName: 'Statistical_Tables_Cheat_Sheet.pdf',
     category: 'Calculator Guides',
     stage: null,

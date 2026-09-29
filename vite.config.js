@@ -1,9 +1,11 @@
+/* global process */
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/statools/',
+  // GitHub Pages serves the site under /statools/; Vercel serves it from the domain root.
+  base: process.env.VERCEL ? '/' : '/statools/',
   server: {
     hmr: {
       clientPort: 443

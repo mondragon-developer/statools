@@ -305,7 +305,7 @@ const Mission = ({ lesson, tried }) => {
       </p>
       <div className="flex flex-wrap items-center gap-3">
         <a
-          href={`/statools${calc.path}`}
+          href={`${import.meta.env.BASE_URL}${calc.path.slice(1)}`}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => journeyActions.markCalculatorTried(lesson.id)}

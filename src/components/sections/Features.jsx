@@ -1,8 +1,10 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { BookOpen, Calculator, HouseIcon, Dices } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CalculatorResourcesCard from "../ui/CalculatorResourcesCard";
-import Spline from "@splinetool/react-spline";
+import QuietBoundary from "../ui/QuietBoundary";
+
+const Spline = lazy(() => import("@splinetool/react-spline"));
 
 const Features = () => {
   const navigate = useNavigate();
@@ -61,20 +63,24 @@ const Features = () => {
   ];
 
   return (
-    <section className="bg-white py-16" id="tools" tabIndex={-1} aria-labelledby="features-heading">
+    <section className="py-16" id="tools" tabIndex={-1} aria-labelledby="features-heading">
       <div className="container mx-auto px-4">
-        <h2 id="features-heading" className="text-4xl font-bold text-center text-darkGrey mb-12">
+        <h2 id="features-heading" className="on-robot w-fit mx-auto px-4 py-1 text-4xl font-bold text-center text-darkGrey mb-12">
           Statistical Resources
         </h2>
         <div className="grid md:grid-cols-3 gap-8 items-stretch">
           {/* Spline Visualization Card */}
-          <div className="bg-platinum p-6 rounded-lg hover:shadow-lg transition-shadow">
+          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
             <div className="w-full h-80 mb-6">
-              <Spline
-                scene="https://prod.spline.design/1GfxCCZbNPvMURDn/scene.splinecode"
-                className="rounded-lg"
-                aria-hidden="true"
-              />
+              <QuietBoundary>
+                <Suspense fallback={null}>
+                  <Spline
+                    scene="https://prod.spline.design/1GfxCCZbNPvMURDn/scene.splinecode"
+                    className="rounded-lg"
+                    aria-hidden="true"
+                  />
+                </Suspense>
+              </QuietBoundary>
             </div>
             <h3 className="text-2xl font-bold text-darkGrey my-4 text-center">Statistical Calculators</h3>
             <p className="text-darkGrey opacity-80 text-center">
@@ -86,7 +92,7 @@ const Features = () => {
           <CalculatorResourcesCard />
 
           {/* Local Calculators Card with Navigation */}
-          <div className="bg-platinum p-6 rounded-lg hover:shadow-lg transition-shadow">
+          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
             <div className="flex justify-center">
                 <button 
                 onClick={handleLocalCalculatorsClick}

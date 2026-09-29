@@ -41,6 +41,12 @@ const ProgressStrip = () => {
               : streakBroken
                 ? 'Welcome back - pick up right where you left off.'
                 : 'Progress is saved in this browser.'}
+            {!isNew && (
+              <>
+                {' '}
+                <Link to="/learn#save-progress" className="underline text-darkTeal hover:no-underline">Save a progress code</Link>
+              </>
+            )}
           </p>
         </div>
       </div>

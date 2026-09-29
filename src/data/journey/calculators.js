@@ -1,5 +1,5 @@
 // Keys are what lesson missions and the Calculator Coach reference.
-// Paths are router paths (the /statools basename is added by the router).
+// Paths are router paths; the router adds the deploy base (/statools/ on GitHub Pages).
 export const CALCULATORS = {
   statistics: {
     name: 'Mean, Median, Variance, SD Calculator',

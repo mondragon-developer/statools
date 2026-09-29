@@ -17,12 +17,14 @@ import JourneyLayout from './components/layout/JourneyLayout';
 import ChatWidget from './components/chat/ChatWidget';
 import VoiceCommands from './components/ui/VoiceCommands';
 import AccessibilityBanner from './components/ui/AccessibilityBanner';
+import RobotCompanion from './components/ui/RobotCompanion';
 
 const LearnHubPage = lazy(() => import('./pages/learn/LearnHubPage'));
 const StagePage = lazy(() => import('./pages/learn/StagePage'));
 const LessonPage = lazy(() => import('./pages/learn/LessonPage'));
 const CapstonePage = lazy(() => import('./pages/learn/CapstonePage'));
 const CertificatePage = lazy(() => import('./pages/learn/CertificatePage'));
+const TeacherReportPage = lazy(() => import('./pages/learn/TeacherReportPage'));
 
 const pageLoading = <p className="text-darkGrey" role="status">Loading...</p>;
 
@@ -30,7 +32,8 @@ function App() {
   return (
     <>
       <AccessibilityBanner />
-      <Router basename="/statools">
+      <Router basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
+        <RobotCompanion />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/accessibility" element={<AccessibilityPage />} />
@@ -40,6 +43,7 @@ function App() {
             <Route path="stage/:stageId/lesson/:lessonId" element={<Suspense fallback={pageLoading}><LessonPage /></Suspense>} />
             <Route path="capstone" element={<Suspense fallback={pageLoading}><CapstonePage /></Suspense>} />
             <Route path="certificate" element={<Suspense fallback={pageLoading}><CertificatePage /></Suspense>} />
+            <Route path="report" element={<Suspense fallback={pageLoading}><TeacherReportPage /></Suspense>} />
           </Route>
           <Route path="/calculators" element={<CalculatorLayout />}>
             <Route index element={<LocalCalculatorsPage />} />

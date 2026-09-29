@@ -1,5 +1,4 @@
 import React from "react";
-import Spline from "@splinetool/react-spline";
 
 const Hero = () => {
   const scrollToSection = (sectionId) => {
@@ -38,29 +37,8 @@ const Hero = () => {
         </div>
       </div>
 
-      <div
-        className="relative w-full"
-        aria-hidden="true"
-        style={{
-          height: "600px",
-          overflow: "hidden",
-          background:
-            "radial-gradient(ellipse at center, transparent 70%, #E6E6E6 100%)",
-        }}
-      >
-        <div
-          className="absolute"
-          style={{
-            height: "700px",
-            top: "-50px",
-            marginLeft: "-20%",
-            width: "180%",
-            overflow: "hidden",
-          }}
-        >
-          <Spline scene="https://prod.spline.design/71R0PmKp72sQaYqg/scene.splinecode" />
-        </div>
-      </div>
+      {/* Left open so the fixed RobotCompanion shows through beside the heading. */}
+      <div className="hidden md:block h-[600px]" aria-hidden="true" />
     </section>
   );
 };

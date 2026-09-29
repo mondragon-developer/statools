@@ -113,7 +113,7 @@ const CapstonePage = () => {
                 {caseFile.calculators.map(key => (
                   <a
                     key={key}
-                    href={`/statools${CALCULATORS[key].path}`}
+                    href={`${import.meta.env.BASE_URL}${CALCULATORS[key].path.slice(1)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 bg-accent text-darkGrey font-semibold px-3 py-2 rounded-lg hover:bg-white

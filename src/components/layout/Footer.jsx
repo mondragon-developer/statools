@@ -18,7 +18,7 @@ const Footer = () => {
           <span className="text-lg text-accent">Statistics</span>
         </div>
         <nav aria-label="Footer navigation" className="space-x-4">
-          <a href="/statools/accessibility" className="text-white hover:text-accent transition-colors">Accessibility</a>
+          <a href={`${import.meta.env.BASE_URL}accessibility`} className="text-white hover:text-accent transition-colors">Accessibility</a>
           <a href="#contact" onClick={(e) => scrollToSection(e, 'contact')} className="text-white hover:text-accent transition-colors">Contact</a>
         </nav>
       </div>

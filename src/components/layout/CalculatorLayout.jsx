@@ -15,11 +15,11 @@ const CALC_NAMES = {
 
 const CalculatorLayout = () => {
   const location = useLocation();
-  const pathSegments = location.pathname.replace(/^\/statools/, '').split('/').filter(Boolean);
+  const pathSegments = location.pathname.split('/').filter(Boolean);
   const currentCalc = pathSegments.length > 1 ? pathSegments[pathSegments.length - 1] : null;
 
   return (
-    <div className="min-h-screen bg-platinum">
+    <div className="min-h-screen">
       <a className="skip-link" href="#main-content">Skip to main content</a>
       <nav className="bg-darkGrey text-white p-4 shadow-md" aria-label="Calculator navigation">
         <div className="container mx-auto flex justify-between items-center">
