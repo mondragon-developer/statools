@@ -95,12 +95,14 @@ const AccessibilityPage = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-darkGrey/10">
-              <tr><td className="py-2 pr-4">"Go to statistics"</td><td>Opens the Statistics calculator</td></tr>
-              <tr><td className="py-2 pr-4">"Go to binomial"</td><td>Opens the Binomial calculator</td></tr>
-              <tr><td className="py-2 pr-4">"Click Calculate"</td><td>Clicks the Calculate button on the current page</td></tr>
-              <tr><td className="py-2 pr-4">"Scroll to tools"</td><td>Scrolls to the Tools section</td></tr>
-              <tr><td className="py-2 pr-4">"Open chat"</td><td>Opens the chat assistant</td></tr>
-              <tr><td className="py-2 pr-4">"Close chat"</td><td>Closes the chat assistant</td></tr>
+              <tr><td className="py-2 pr-4">"Local calculators" (any name on the page)</td><td>Moves focus to it and frames it, like pressing Tab to reach it</td></tr>
+              <tr><td className="py-2 pr-4">"Next" / "Previous"</td><td>Moves to the next or previous control, like Tab and Shift+Tab</td></tr>
+              <tr><td className="py-2 pr-4">"Click" or "Click Calculate"</td><td>Presses the selected item, or the named button</td></tr>
+              <tr><td className="py-2 pr-4">"Go to binomial" / "Go to stage 2"</td><td>Opens that calculator or journey stage</td></tr>
+              <tr><td className="py-2 pr-4">"Scroll to tools" / "Scroll down" / "Go back"</td><td>Moves to a section, scrolls the page, or returns to the previous page</td></tr>
+              <tr><td className="py-2 pr-4">"Type" and your words</td><td>Fills the selected text field, or sets a number field or slider</td></tr>
+              <tr><td className="py-2 pr-4">"Open chat" / "Close chat"</td><td>Opens or closes the chat assistant (the AI tutor on calculator pages)</td></tr>
+              <tr><td className="py-2 pr-4">"Help" / "Stop listening"</td><td>Lists the commands, or turns voice commands off</td></tr>
             </tbody>
           </table>
           <p className="mt-2 text-sm text-darkGrey/60">Voice commands are not available in Firefox or Safari.</p>

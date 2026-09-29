@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useId, lazy, Suspense } from 'react';
 import { X, Send, Mic, MicOff } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import useFocusTrap from '../../hooks/useFocusTrap';
 import useSpeechRecognition from '../../hooks/useSpeechRecognition';
 import { announcePolite, announceAssertive } from '../../utils/announce';
@@ -20,6 +21,7 @@ function getConversationId() {
 }
 
 const ChatWidget = () => {
+  const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     { id: 'welcome', role: 'assistant', content: 'Hi! I can help you with statistics questions. Ask me anything!' }
@@ -129,6 +131,9 @@ const ChatWidget = () => {
       announceAssertive('Listening for voice input');
     }
   };
+
+  // Calculator pages have their own tutor panel with calculator context; one chat button is enough.
+  if (/^\/calculators\/[^/]+/.test(pathname)) return null;
 
   return (
     <>

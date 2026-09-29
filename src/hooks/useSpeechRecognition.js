@@ -5,6 +5,7 @@ export default function useSpeechRecognition({ onResult, lang = 'en-US' } = {}) 
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const recognitionRef = useRef(null);
+  const startTimer = useRef(null);
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const isSupported = !!SpeechRecognition;
@@ -29,23 +30,50 @@ export default function useSpeechRecognition({ onResult, lang = 'en-US' } = {}) 
       }
     };
 
-    recognition.onend = () => setIsListening(false);
+    // Voice commands listen continuously; tell them to release the microphone while dictating.
+    const announceDictation = (active) => window.dispatchEvent(new CustomEvent('statools:dictation', { detail: { active } }));
+    recognition.onend = () => {
+      setIsListening(false);
+      announceDictation(false);
+    };
     recognition.onerror = () => setIsListening(false);
 
     recognitionRef.current = recognition;
-    recognition.start();
+    announceDictation(true);
+    // Give voice commands a moment to stop before this recognizer claims the microphone.
+    startTimer.current = setTimeout(() => {
+      startTimer.current = null;
+      try {
+        recognition.start();
+      } catch {
+        setIsListening(false);
+        announceDictation(false);
+      }
+    }, 150);
     setIsListening(true);
     setTranscript('');
   }, [isSupported, isListening, lang, onResult]);
 
+  // Stopping inside the start delay must cancel the pending start, or the mic comes on anyway.
+  const cancelPendingStart = () => {
+    if (!startTimer.current) return;
+    clearTimeout(startTimer.current);
+    startTimer.current = null;
+    window.dispatchEvent(new CustomEvent('statools:dictation', { detail: { active: false } }));
+  };
+
   const stopListening = useCallback(() => {
+    cancelPendingStart();
     recognitionRef.current?.stop();
     setIsListening(false);
   }, []);
 
   // Cleanup on unmount
   useEffect(() => {
-    return () => recognitionRef.current?.abort();
+    return () => {
+      cancelPendingStart();
+      recognitionRef.current?.abort();
+    };
   }, []);
 
   return { isListening, isSupported, transcript, startListening, stopListening };

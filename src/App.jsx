@@ -56,9 +56,10 @@ function App() {
             <Route path="frequency-distribution" element={<FrequencyDistributionCalculator />} />
           </Route>
         </Routes>
+        {/* Inside the router so spoken navigation stays client-side and the mic keeps listening. */}
+        <VoiceCommands />
+        <ChatWidget />
       </Router>
-      <ChatWidget />
-      <VoiceCommands />
     </>
   );
 }

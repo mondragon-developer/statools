@@ -1,14 +1,15 @@
 // Chatbase API client — sends messages through Vercel serverless proxy
-// Absolute URL because the GitHub Pages build has no /api route of its own.
+// Absolute so the local dev server (vite on localhost) also reaches the deployed function.
 const API_URL = import.meta.env.VITE_CHAT_API_URL || 'https://statools.vercel.app/api/chat';
 
 // Chatbase's chat endpoint is stateless, so the whole history goes with every
 // request; conversationId only groups the exchange in the Chatbase dashboard.
-export async function sendMessage(messages, conversationId) {
+// `context` (optional) describes the calculator the student is using; see CalculatorTutor.
+export async function sendMessage(messages, conversationId, context) {
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages, conversationId }),
+    body: JSON.stringify({ messages, conversationId, context }),
   });
 
   if (!res.ok) {

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Home, Calculator, ChevronRight } from 'lucide-react';
+import CalculatorTutor from '../chat/CalculatorTutor';
 
 const CALC_NAMES = {
   'statistics': 'Descriptive Statistics',
@@ -9,6 +10,7 @@ const CALC_NAMES = {
   'binomial': 'Binomial Distribution',
   'poisson': 'Poisson Distribution',
   'hypothesis-test': 'Hypothesis Test',
+  'two-sample': 'Two-Sample Comparison',
   'correlation-regression': 'Correlation & Regression',
   'frequency-distribution': 'Frequency Distribution',
 };
@@ -17,9 +19,12 @@ const CalculatorLayout = () => {
   const location = useLocation();
   const pathSegments = location.pathname.split('/').filter(Boolean);
   const currentCalc = pathSegments.length > 1 ? pathSegments[pathSegments.length - 1] : null;
+  const [tutorOpen, setTutorOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-platinum">
+    // The tutor is a bottom sheet on phones and a right dock on wider screens; the padding
+    // keeps it from permanently covering part of the calculator.
+    <div className={`min-h-screen bg-platinum ${tutorOpen ? 'pb-[60vh] md:pb-0 md:pr-96' : ''}`}>
       <a className="skip-link" href="#main-content">Skip to main content</a>
       <nav className="bg-darkGrey text-white p-4 shadow-md" aria-label="Calculator navigation">
         <div className="container mx-auto flex justify-between items-center">
@@ -54,6 +59,8 @@ const CalculatorLayout = () => {
       <main id="main-content" className="flex-grow" tabIndex={-1}>
         <Outlet />
       </main>
+
+      {currentCalc && <CalculatorTutor key={currentCalc} calcKey={currentCalc} onOpenChange={setTutorOpen} />}
 
       <footer className="bg-darkGrey text-white py-4 text-center">
         <p className="text-sm opacity-80">
