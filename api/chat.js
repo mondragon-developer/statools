@@ -17,27 +17,34 @@ In this mode:
 - When they have a result, do not interpret it first. Ask what they think it means, then help them refine their explanation.
 - Only mention fields, buttons, modes, and outputs that appear in the context.`;
 
-// The live site is served from GitHub Pages, which has no backend, so the
-// widget calls this function cross-origin.
+// The old GitHub Pages address still hosts a redirect page, and the vercel.app
+// address stays live, so the widget may call this function cross-origin.
 const ALLOWED_ORIGINS = [
   'https://mondragon-developer.github.io',
   'https://statools.vercel.app',
   'https://statools.mdragonsolutions.com',
 ];
 
-function applyCors(req, res) {
-  const origin = req.headers.origin;
-  if (origin && (ALLOWED_ORIGINS.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin))) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Access-Control-Max-Age', '86400');
-  }
+// The Vite dev server has no backend and reaches the deployed function from
+// localhost; production deployments must not reflect arbitrary local origins.
+function isAllowedOrigin(origin) {
+  if (!origin) return false;
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  return process.env.VERCEL_ENV !== 'production' && /^http:\/\/localhost:\d+$/.test(origin);
+}
+
+function applyCors(req, res, allowed) {
+  if (!allowed) return;
+  res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  res.setHeader('Vary', 'Origin');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Max-Age', '86400');
 }
 
 export default async function handler(req, res) {
-  applyCors(req, res);
+  const allowed = isAllowedOrigin(req.headers.origin);
+  applyCors(req, res, allowed);
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
@@ -45,6 +52,13 @@ export default async function handler(req, res) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Browsers always send Origin on a POST, so a missing or foreign one is a script
+  // or another site. Refusing here keeps them from spending the Chatbase quota;
+  // a forged header still gets through, which the Vercel rate limit covers.
+  if (!allowed) {
+    return res.status(403).json({ error: 'Origin not allowed' });
   }
 
   const { messages, message, conversationId, context } = req.body || {};
@@ -103,8 +117,9 @@ ${calculatorContext}
     });
 
     if (!response.ok) {
-      const errorBody = await response.text();
-      return res.status(response.status).json({ error: errorBody });
+      // Upstream error text can name the bot, plan, or quota; keep it in the function logs.
+      console.error('Chatbase responded', response.status, (await response.text()).slice(0, 500));
+      return res.status(502).json({ error: 'The tutor is unavailable right now. Please try again in a moment.' });
     }
 
     const data = await response.json();
