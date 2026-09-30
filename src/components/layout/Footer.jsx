@@ -54,6 +54,12 @@ const Footer = () => (
     <p className="container mx-auto px-4 mt-8 text-center text-white/70 text-sm">
       &copy; {new Date().getFullYear()} MDragon Data Tools. All rights reserved.
     </p>
+    <p className="container mx-auto px-4 mt-2 text-center text-white/70 text-sm">
+      Created by{' '}
+      <a href="https://mdragonsolutions.com" target="_blank" rel="noopener noreferrer" className={linkClass}>
+        mdragonsolutions.com<span className="sr-only"> (opens in a new tab)</span>
+      </a>
+    </p>
   </footer>
 );
 

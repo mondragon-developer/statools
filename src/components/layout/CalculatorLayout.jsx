@@ -64,7 +64,15 @@ const CalculatorLayout = () => {
 
       <footer className="bg-darkGrey text-white py-4 text-center">
         <p className="text-sm opacity-80">
-          &copy; {new Date().getFullYear()} MDragon Data Tools
+          &copy; {new Date().getFullYear()} MDragon Data Tools. Created by{' '}
+          <a
+            href="https://mdragonsolutions.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
+          >
+            mdragonsolutions.com<span className="sr-only"> (opens in a new tab)</span>
+          </a>
         </p>
       </footer>
     </div>

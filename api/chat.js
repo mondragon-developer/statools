@@ -22,6 +22,7 @@ In this mode:
 const ALLOWED_ORIGINS = [
   'https://mondragon-developer.github.io',
   'https://statools.vercel.app',
+  'https://statools.mdragonsolutions.com',
 ];
 
 function applyCors(req, res) {

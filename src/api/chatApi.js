@@ -1,6 +1,6 @@
 // Chatbase API client — sends messages through Vercel serverless proxy
 // Absolute so the local dev server (vite on localhost) also reaches the deployed function.
-const API_URL = import.meta.env.VITE_CHAT_API_URL || 'https://statools.vercel.app/api/chat';
+const API_URL = import.meta.env.VITE_CHAT_API_URL || 'https://statools.mdragonsolutions.com/api/chat';
 
 // Chatbase's chat endpoint is stateless, so the whole history goes with every
 // request; conversationId only groups the exchange in the Chatbase dashboard.
