@@ -8,6 +8,7 @@ import StageMap from '../journey/StageMap';
 import CalculatorCoach from '../journey/CalculatorCoach';
 import ResourceLibrary from '../journey/ResourceLibrary';
 import NetlifyLessonsCard from '../journey/NetlifyLessonsCard';
+import AILab from '../journey/AILab';
 import { STAGES, lessonPath } from '../../data/journey';
 
 const Tools = () => {
@@ -57,6 +58,8 @@ const Tools = () => {
           </div>
           <StageMap compact headingLevel="h4" />
         </section>
+
+        <AILab />
 
         <CalculatorCoach />
 

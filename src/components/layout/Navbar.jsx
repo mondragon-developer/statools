@@ -17,10 +17,11 @@ const Navbar = () => {
           <span className="text-2xl font-bold text-darkTeal">MDragon Data Tools</span>{' '}
           <span className="text-xl text-accent">Statistics</span>
         </a>
-        <div className="space-x-6">
+        <div className="flex flex-wrap justify-end gap-x-6 gap-y-1">
           <a href="#main-content" onClick={(e) => scrollToSection(e, 'main-content')} className="text-white hover:text-accent transition-colors">Home</a>
           <a href="#tools" onClick={(e) => scrollToSection(e, 'tools')} className="text-white hover:text-accent transition-colors">Tools</a>
           <a href="#resources" onClick={(e) => scrollToSection(e, 'resources')} className="text-white hover:text-accent transition-colors">Tutorials</a>
+          <a href="#ai-lab" onClick={(e) => scrollToSection(e, 'ai-lab')} className="text-white hover:text-accent transition-colors">AI Lab</a>
           <a href="#contact" onClick={(e) => scrollToSection(e, 'contact')} className="text-white hover:text-accent transition-colors">Contact</a>
         </div>
       </div>

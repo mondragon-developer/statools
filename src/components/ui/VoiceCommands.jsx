@@ -40,7 +40,7 @@ const NAV_ROUTES = {
 };
 
 // Page sections reachable by name; ids win over a same-named menu link ("scroll to tools").
-const SECTIONS = { tools: 'tools', resources: 'resources', tutorials: 'resources', contact: 'contact', 'resource library': 'resource-library' };
+const SECTIONS = { tools: 'tools', resources: 'resources', tutorials: 'resources', contact: 'contact', 'resource library': 'resource-library', 'ai lab': 'ai-lab', 'ai': 'ai-lab', 'a i lab': 'ai-lab', 'a i': 'ai-lab' };
 
 const NUMBER_WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7 };
 
@@ -207,7 +207,7 @@ const VoiceCommands = () => {
     const section = SECTIONS[wanted] && document.getElementById(SECTIONS[wanted]);
     if (section) {
       highlight(section);
-      say(`Selected ${wanted}`);
+      say(`Selected ${nameOf(section.querySelector('h1, h2, h3') || section)}`);
       return;
     }
     const target = findTarget(wanted);
