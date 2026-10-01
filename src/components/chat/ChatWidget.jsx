@@ -5,6 +5,7 @@ import useFocusTrap from '../../hooks/useFocusTrap';
 import useSpeechRecognition from '../../hooks/useSpeechRecognition';
 import { announcePolite, announceAssertive } from '../../utils/announce';
 import { sendMessage } from '../../api/chatApi';
+import AiNotice from './AiNotice';
 
 const loadChatMarkdown = () => import('./ChatMarkdown');
 const LOGO = `${import.meta.env.BASE_URL}mdragon.svg`;
@@ -231,6 +232,8 @@ const ChatWidget = () => {
             {/* Scroll anchor */}
             <div ref={messagesEndRef} />
           </div>
+
+          <AiNotice />
 
           {/* Error display */}
           {error && (

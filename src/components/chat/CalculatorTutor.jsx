@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useId, lazy, Suspense } from 'react
 import { X, Send, GraduationCap } from 'lucide-react';
 import { sendMessage } from '../../api/chatApi';
 import { CALCULATOR_GUIDES } from '../../data/calculatorGuides';
+import AiNotice from './AiNotice';
 
 const ChatMarkdown = lazy(() => import('./ChatMarkdown'));
 const LOGO = `${import.meta.env.BASE_URL}mdragon.svg`;
@@ -210,6 +211,8 @@ const CalculatorTutor = ({ calcKey, onOpenChange }) => {
             <div ref={endRef} />
           </div>
 
+          <AiNotice />
+
           {error && <p role="alert" className="px-4 py-2 text-sm text-red-700 bg-red-50 border-t border-red-200">{error}</p>}
 
           {/* pl-16 on phones clears the voice-commands button that sits in the bottom-left corner. */}
@@ -240,7 +243,7 @@ const CalculatorTutor = ({ calcKey, onOpenChange }) => {
             </div>
             <p id={noteId} className="flex items-start gap-1 text-xs text-darkGrey/70">
               <GraduationCap size={14} className="flex-shrink-0 mt-0.5" aria-hidden="true" />
-              Enter sends, Shift+Enter adds a line. Your messages and what you typed in this calculator are sent to the AI service.
+              Enter sends, Shift+Enter adds a line. Your messages and what you typed in this calculator are sent to the AI service; it can make mistakes.
             </p>
           </form>
         </aside>

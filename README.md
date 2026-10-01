@@ -203,7 +203,7 @@ Each calculator follows a modular architecture:
 
 ## License
 
-This project is licensed under the MIT License.
+The source code is licensed under the MIT License. The educational content (lessons, quizzes, guides, PDFs, artwork, and the MDragon Data Tools name and logo) is not covered by that license and remains the property of MDragon Solutions; see the Terms of Use page on the site.
 
 ## Contact
 

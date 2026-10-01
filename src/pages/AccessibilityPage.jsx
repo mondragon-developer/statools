@@ -106,6 +106,10 @@ const AccessibilityPage = () => {
             </tbody>
           </table>
           <p className="mt-2 text-sm text-darkGrey/60">Voice commands are not available in Firefox or Safari.</p>
+          <p className="mt-2 text-sm text-darkGrey/60">
+            Speech is converted to text by your browser&apos;s own speech service (Google&apos;s, in Chrome). The site receives only the
+            recognized words. See the <Link to="/privacy" className="underline text-darkTeal hover:no-underline">Privacy</Link> page.
+          </p>
         </Section>
 
         <Section icon={MessageCircle} title="Chat Assistant with Voice Input">

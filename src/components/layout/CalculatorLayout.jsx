@@ -74,6 +74,13 @@ const CalculatorLayout = () => {
             mdragonsolutions.com<span className="sr-only"> (opens in a new tab)</span>
           </a>
         </p>
+        <p className="text-xs opacity-80 mt-1">
+          <Link to="/privacy" className="underline hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded">Privacy</Link>
+          {' / '}
+          <Link to="/terms" className="underline hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded">Terms of Use</Link>
+          {' / '}
+          <Link to="/accessibility" className="underline hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded">Accessibility</Link>
+        </p>
       </footer>
     </div>
   );

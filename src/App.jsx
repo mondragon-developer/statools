@@ -24,6 +24,8 @@ const LessonPage = lazy(() => import('./pages/learn/LessonPage'));
 const CapstonePage = lazy(() => import('./pages/learn/CapstonePage'));
 const CertificatePage = lazy(() => import('./pages/learn/CertificatePage'));
 const TeacherReportPage = lazy(() => import('./pages/learn/TeacherReportPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
 
 const pageLoading = <p className="text-darkGrey" role="status">Loading...</p>;
 
@@ -35,6 +37,8 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/accessibility" element={<AccessibilityPage />} />
+          <Route path="/privacy" element={<Suspense fallback={pageLoading}><PrivacyPage /></Suspense>} />
+          <Route path="/terms" element={<Suspense fallback={pageLoading}><TermsPage /></Suspense>} />
           <Route path="/learn" element={<JourneyLayout />}>
             <Route index element={<Suspense fallback={pageLoading}><LearnHubPage /></Suspense>} />
             <Route path="stage/:stageId" element={<Suspense fallback={pageLoading}><StagePage /></Suspense>} />

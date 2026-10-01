@@ -1,7 +1,7 @@
 import React from 'react';
-import { Mail, Bug, Github, Accessibility } from 'lucide-react';
+import { Mail, Bug, Github, Accessibility, Shield, FileText } from 'lucide-react';
+import { CONTACT_EMAIL as EMAIL, OWNER_URL } from '../../data/site';
 
-const EMAIL = 'jmondrag@mdc.edu';
 const mailto = (subject) => `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}`;
 
 const linkClass = 'inline-flex items-center gap-2 text-white hover:text-accent underline-offset-4 hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded';
@@ -44,6 +44,16 @@ const Footer = () => (
             </a>
           </li>
           <li>
+            <a href={`${import.meta.env.BASE_URL}privacy`} className={linkClass}>
+              <Shield size={16} aria-hidden="true" /> Privacy
+            </a>
+          </li>
+          <li>
+            <a href={`${import.meta.env.BASE_URL}terms`} className={linkClass}>
+              <FileText size={16} aria-hidden="true" /> Terms of Use
+            </a>
+          </li>
+          <li>
             <a href="https://github.com/mondragon-developer/statools" target="_blank" rel="noopener noreferrer" className={linkClass}>
               <Github size={16} aria-hidden="true" /> Source code<span className="sr-only"> (opens in a new tab)</span>
             </a>
@@ -56,7 +66,7 @@ const Footer = () => (
     </p>
     <p className="container mx-auto px-4 mt-2 text-center text-white/70 text-sm">
       Created by{' '}
-      <a href="https://mdragonsolutions.com" target="_blank" rel="noopener noreferrer" className={linkClass}>
+      <a href={OWNER_URL} target="_blank" rel="noopener noreferrer" className={linkClass}>
         mdragonsolutions.com<span className="sr-only"> (opens in a new tab)</span>
       </a>
     </p>
