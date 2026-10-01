@@ -27,3 +27,5 @@ dist-ssr
 temp/
 .history/
 TRACKER.md
+SECURITY_BASELINE.md
+findings.yaml
