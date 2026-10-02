@@ -11,7 +11,7 @@
  * @param {Array} correctAnswer - Correct order of answer IDs
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowUp, ArrowDown, Check, X } from 'lucide-react';
 import { announcePolite } from '../../../utils/announce';
 
@@ -22,6 +22,7 @@ const OrderingQuestion = ({
   showResult = false,
   correctAnswer = []
 }) => {
+  const controls = useRef({});
   const [order, setOrder] = useState(() => currentOrder.length ? currentOrder : question.options.map((_, idx) => String.fromCharCode(65 + idx)).sort(() => Math.random() - 0.5));
 
   useEffect(() => {
@@ -39,7 +40,12 @@ const OrderingQuestion = ({
     // Swap items
     [newOrder[index], newOrder[newIndex]] = [newOrder[newIndex], newOrder[index]];
 
+    const movedId = order[index];
     setOrder(newOrder);
+    requestAnimationFrame(() => {
+      const buttons = controls.current[movedId]?.querySelectorAll('button:not([disabled])');
+      buttons?.[0]?.focus();
+    });
     onAnswerChange(newOrder);
 
     const movedOptionText = getOptionText(order[index]);
@@ -47,7 +53,7 @@ const OrderingQuestion = ({
   };
 
   const getItemStyle = (optionId, index) => {
-    const baseStyle = 'flex items-center justify-between p-4 rounded-lg border-2 transition-all ';
+    const baseStyle = 'flex flex-wrap gap-3 items-center justify-between p-4 rounded-lg border-2 transition-all ';
 
     if (!showResult) {
       return baseStyle + 'border-platinum bg-white';
@@ -88,7 +94,7 @@ const OrderingQuestion = ({
 
       <div className="space-y-2">
         {order.map((optionId, index) => (
-          <div key={`${optionId}-${index}`} className={getItemStyle(optionId, index)}>
+          <div key={optionId} ref={el => { controls.current[optionId] = el; }} className={getItemStyle(optionId, index)}>
             <div className="flex items-center gap-3 flex-1">
               <span className="font-bold text-darkGrey text-lg w-6">
                 {index + 1}.

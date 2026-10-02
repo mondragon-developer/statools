@@ -113,6 +113,7 @@ const MultipleAnswer = ({
             key={optionId}
             onClick={() => handleToggle(optionId)}
             disabled={showResult}
+            aria-pressed={isSelected(optionId)}
             className={getOptionStyle(optionId)}
           >
             <div className="flex items-center justify-between">

@@ -102,3 +102,6 @@ do not send sensitive datasets. The AI assistant is not a support ticket system.
 AI chat requires an adult self-declaration in each mounted tutor. The relay requires
 `adultConfirmed: true`; this is not identity or age verification. Deploy frontend
 and API together. Lessons and calculators do not require this confirmation.
+
+Homepage WCAG 2.2 AA review and remaining manual checks: [accessibility audit](docs/ACCESSIBILITY_AUDIT.md).
+For development scans, run Vite and open `/?audit=1`; the audit panel is not shipped in production.

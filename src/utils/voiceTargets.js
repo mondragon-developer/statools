@@ -8,7 +8,7 @@ export const normalize = (text) => (text || '')
   .trim();
 
 const isVisible = (el) => el.getClientRects().length > 0
-  && !el.closest('[aria-hidden="true"], [data-voice-ignore]')
+  && !el.closest('[inert], [aria-hidden="true"], [data-voice-ignore]')
   && getComputedStyle(el).visibility !== 'hidden';
 
 const isEnabled = (el) => !el.disabled && el.getAttribute('aria-disabled') !== 'true';

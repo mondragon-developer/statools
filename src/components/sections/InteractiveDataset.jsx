@@ -22,7 +22,7 @@ export default function InteractiveDataset() {
     <div className="min-w-0 bg-white border border-darkTeal/20 rounded-2xl p-5 sm:p-8 shadow-sm">
       <h2 className="text-sm font-semibold text-darkTeal">A small dataset, a clearer picture</h2>
       <p className="text-sm text-darkGrey/80 mt-2">Change one number. See how the story changes.</p>
-      <div className="flex flex-wrap gap-2 mt-4 font-mono text-xl text-darkGrey" aria-label={`Dataset: ${values.join(', ')}`}>
+      <div className="flex flex-wrap gap-2 mt-4 font-mono text-xl text-darkGrey" role="group" aria-label={`Dataset: ${values.join(', ')}`}>
         {values.map((value, index) => <span key={index} aria-hidden="true" className={`rounded-lg px-3 py-2 ${index === 4 ? 'bg-darkTeal text-white font-bold' : 'bg-platinum/60'}`}>{value}</span>)}
       </div>
       <label htmlFor="hero-last-value" className="block mt-5 text-sm font-semibold text-darkGrey">Move the last value: {lastValue}</label>
@@ -35,11 +35,11 @@ export default function InteractiveDataset() {
         <button type="button" onClick={() => setLastValue(9)} className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-darkGrey hover:bg-platinum/60 focus-visible:outline focus-visible:outline-2"><RotateCcw size={14} aria-hidden="true" /> Reset</button>
       </div>
       <svg viewBox="0 0 360 92" role="img" aria-label={`Dot plot of ${values.join(', ')}. Mean ${format(mean)}; median ${format(median)}.`} className="w-full mt-4">
-        <line x1="20" x2="340" y1="48" y2="48" stroke="#9ca3af" />
-        {[-10, 0, 10, 20, 30].map(tick => <g key={tick}><line x1={position(tick)} x2={position(tick)} y1="45" y2="52" stroke="#9ca3af" /><text x={position(tick)} y="68" textAnchor="middle" fontSize="11" fill="#374151">{tick}</text></g>)}
-        {values.map((value, index) => <circle key={index} cx={position(value)} cy={36 - values.slice(0, index).filter(v => v === value).length * 13} r="5" fill={index === 4 ? '#0f766e' : '#4b5563'} />)}
+        <line x1="20" x2="340" y1="48" y2="48" stroke="#6b7280" />
+        {[-10, 0, 10, 20, 30].map(tick => <g key={tick}><line x1={position(tick)} x2={position(tick)} y1="45" y2="52" stroke="#6b7280" /><text x={position(tick)} y="68" textAnchor="middle" fontSize="11" fill="#374151">{tick}</text></g>)}
+        {values.map((value, index) => index === 4 ? <path key={index} d={`M ${position(value)} ${29 - values.slice(0, index).filter(v => v === value).length * 13} l 7 7 l -7 7 l -7 -7 Z`} fill="#0f766e" /> : <circle key={index} cx={position(value)} cy={36 - values.slice(0, index).filter(v => v === value).length * 13} r="5" fill={index === 4 ? '#0f766e' : '#4b5563'} />)}
         <line x1={position(mean)} x2={position(mean)} y1="7" y2="51" stroke="#0f766e" strokeWidth="2" strokeDasharray="3 3" />
-        <text x="180" y="87" textAnchor="middle" fontSize="11" fill="#374151">Dashed line = mean · Teal dot = value you control</text>
+        <text x="180" y="87" textAnchor="middle" fontSize="11" fill="#374151">Dashed line = mean · Diamond = value you control</text>
       </svg>
       <div aria-live="polite" aria-atomic="true">
         <dl className="grid grid-cols-3 gap-2 my-4">

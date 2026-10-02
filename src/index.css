@@ -4,7 +4,8 @@
 
 /* Skip navigation link */
 .skip-link {
-  position: absolute;
+  position: fixed;
+  top: 0;
   transform: translateY(-100%);
   left: 16px;
   padding: 8px 16px;
@@ -101,3 +102,12 @@ p, li, span, label, input, textarea, select, button, a, td, th {
   scrollbar-width: thin;
   scrollbar-color: #0F766E #e6e6e6;
 }
+
+/* Keep focused controls clear of the floating voice/chat launchers. */
+html { scroll-padding-block: 1rem 7rem; }
+body { padding-bottom: 6rem; }
+:where(a, button, input, select, textarea, [tabindex]) { scroll-margin-block: 1rem 7rem; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+@media print { body { padding-bottom: 0; } }

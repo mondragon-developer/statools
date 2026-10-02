@@ -113,7 +113,7 @@ const ChatWidget = () => {
         .map(({ role, content }) => ({ role, content }));
       const reply = await sendMessage(history, conversationId, undefined, adultConfirmed);
       const assistantMsg = { id: `a-${Date.now()}`, role: 'assistant', content: reply };
-      // No separate announcement: the role="log" region already reads new messages.
+      // The log region already announces new messages.
       setMessages(prev => [...prev, assistantMsg]);
     } catch {
       // Left out of later requests so a rejected message cannot keep failing the conversation.
@@ -167,10 +167,10 @@ const ChatWidget = () => {
           onKeyDown={handlePanelKeyDown}
           className="fixed bottom-24 right-4 z-50 w-[calc(100vw-2rem)] sm:w-96
             max-h-[70vh] bg-white rounded-xl shadow-2xl border border-platinum
-            flex flex-col overflow-hidden"
+            flex flex-col overflow-y-auto"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 bg-darkGrey text-white rounded-t-xl">
+          <div className="flex items-center justify-between px-4 py-3 shrink-0 bg-darkGrey text-white rounded-t-xl">
             <h2 id={headingId} className="flex items-center gap-2 text-sm font-semibold">
               <img src={LOGO} alt="" className="w-7 h-7 rounded-full object-cover bg-white" />
               AI Statistics Tutor (18+)
@@ -188,6 +188,7 @@ const ChatWidget = () => {
           {!adultConfirmed ? <AdultTutorGate onConfirm={() => setAdultConfirmed(true)} onClose={closePanel} /> : <>
           {/* Message list */}
           <div
+            tabIndex={0}
             role="log"
             aria-label="Chat messages"
             aria-live="polite"
@@ -284,7 +285,7 @@ const ChatWidget = () => {
               maxLength={4000}
               disabled={isLoading}
               aria-describedby={error ? errorId : undefined}
-              className="flex-1 px-3 py-2 text-sm border border-platinum rounded-lg
+              className="min-w-0 flex-1 px-3 py-2 text-sm border border-platinum rounded-lg
                 focus:outline-none focus:ring-2 focus:ring-accentDark
                 disabled:opacity-50 disabled:cursor-not-allowed"
             />

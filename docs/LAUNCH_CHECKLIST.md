@@ -158,3 +158,9 @@ Validation: lint, nine tests, notices, and build passed. API tests cover missing
 false, string, and numeric age flags with no upstream request. Browser preview
 confirmed both gates, general-chat controls after confirmation, and return to the
 calculator using Continue without AI. No live AI message was sent or deployment made.
+
+## Homepage accessibility review
+
+See [ACCESSIBILITY_AUDIT.md](ACCESSIBILITY_AUDIT.md) for the October 2 homepage
+review, corrected issues, sampled zero-violation axe scans, and criterion-by-criterion
+limits. Full assistive-technology, all-page, and PDF conformance remain unverified.

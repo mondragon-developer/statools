@@ -1,50 +1,49 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
+// A callback ref observes dialogs mounted after loading, not just open-state changes.
 export default function useFocusTrap(isActive) {
-  const containerRef = useRef(null);
-
+  const [container, setContainer] = useState(null);
   useEffect(() => {
-    if (!isActive || !containerRef.current) return;
-
-    const container = containerRef.current;
+    if (!isActive || !container) return;
     const previouslyFocused = document.activeElement;
-
-    const focusableSelector = 'a[href], button:not([disabled]), textarea, input:not([disabled]), select, [tabindex]:not([tabindex="-1"])';
-
-    const getFocusable = () => Array.from(container.querySelectorAll(focusableSelector)).filter(el => el.offsetParent !== null);
-
-    // Focus the first focusable element
-    const focusable = getFocusable();
-    if (focusable.length > 0) {
-      focusable[0].focus();
-    }
-
-    const handleKeyDown = (e) => {
-      if (e.key === 'Tab') {
-        const elements = getFocusable();
-        if (elements.length === 0) return;
-        const first = elements[0];
-        const last = elements[elements.length - 1];
-
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
+    const selector = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const getFocusable = () => [...container.querySelectorAll(selector)].filter(el => el.getClientRects().length && !el.closest('[inert]'));
+    container.tabIndex = -1;
+    (getFocusable()[0] || container).focus();
+    // Disable every background branch, including floating controls and virtual-cursor access.
+    const background = [];
+    let branch = container;
+    while (branch.parentElement && branch !== document.body) {
+      for (const sibling of branch.parentElement.children) {
+        if (sibling !== branch && !sibling.inert && !sibling.matches('[aria-live], [role="alert"], [role="status"]')) {
+          sibling.inert = true;
+          background.push(sibling);
         }
       }
-    };
-
-    container.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      container.removeEventListener('keydown', handleKeyDown);
-      if (previouslyFocused && previouslyFocused.focus) {
-        previouslyFocused.focus();
+      branch = branch.parentElement;
+    }
+    const handleKeyDown = e => {
+      if (e.key !== 'Tab') return;
+      const elements = getFocusable();
+      const first = elements[0] || container;
+      const last = elements.at(-1) || container;
+      if (!elements.length || (e.shiftKey && document.activeElement === first)) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
       }
     };
-  }, [isActive]);
-
-  return containerRef;
+    const keepFocus = e => {
+      if (!container.contains(e.target)) (getFocusable()[0] || container).focus();
+    };
+    container.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('focusin', keepFocus);
+    return () => {
+      container.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('focusin', keepFocus);
+      background.forEach(el => { el.inert = false; });
+      if (previouslyFocused?.isConnected && !previouslyFocused.closest('[inert]')) previouslyFocused.focus();
+    };
+  }, [isActive, container]);
+  return setContainer;
 }

@@ -81,14 +81,11 @@ const VoiceCommands = () => {
   const recognitionRef = useRef(null);
   const activeRef = useRef(false);
   const pausedRef = useRef(false);
-  const feedbackTimer = useRef(null);
 
   const isSupported = Boolean(getRecognizer());
 
   const say = useCallback((message, { urgent = true } = {}) => {
     setFeedback(message);
-    clearTimeout(feedbackTimer.current);
-    feedbackTimer.current = setTimeout(() => setFeedback(''), 4000);
     (urgent ? announceAssertive : announcePolite)(message);
   }, []);
 
@@ -104,6 +101,7 @@ const VoiceCommands = () => {
     recognition?.abort();
     setIsActive(false);
     setTranscript('');
+    setFeedback('');
     setShowHelp(false);
   }, []);
 
@@ -156,7 +154,7 @@ const VoiceCommands = () => {
       const dir = text.replace('scroll ', '').replace('to ', '');
       const amount = window.innerHeight * 0.8;
       const top = dir === 'top' ? 0 : dir === 'bottom' ? document.body.scrollHeight : window.scrollY + (dir === 'down' ? amount : -amount);
-      window.scrollTo({ top, behavior: 'smooth' });
+      window.scrollTo({ top, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
       say(`Scrolled ${dir}.`, { urgent: false });
       return;
     }
@@ -170,7 +168,7 @@ const VoiceCommands = () => {
       const opening = text.startsWith('open');
       // Calculator pages swap the chat bubble for the tutor, so match whichever is present.
       const button = document.querySelector(opening
-        ? '[aria-label="Open chat assistant"], [data-tutor-toggle]'
+        ? '[aria-label="Open AI tutor (18+)"], [data-tutor-toggle]'
         : '[aria-label="Close chat assistant"], [aria-label="Close AI tutor"]');
       if (button) {
         button.click();
@@ -291,7 +289,6 @@ const VoiceCommands = () => {
   useEffect(() => () => {
     activeRef.current = false;
     recognitionRef.current?.abort();
-    clearTimeout(feedbackTimer.current);
   }, []);
 
   const toggle = () => {
@@ -322,14 +319,14 @@ const VoiceCommands = () => {
         {isActive ? <MicOff size={20} aria-hidden="true" /> : <Mic size={20} aria-hidden="true" />}
       </button>
 
-      {/* Visual only: every message is already announced through the shared live regions. */}
+      {/* Feedback stays available until dismissed; live regions also announce it. */}
       {/* Shown after a fatal error too, so a blocked microphone explains itself on screen. */}
       {(feedback || (isActive && (transcript || showHelp))) && (
         <div
-          aria-hidden="true"
           data-voice-ignore
           className="print:hidden fixed bottom-20 left-6 z-50 max-w-xs bg-darkGrey text-white text-sm px-4 py-3 rounded-lg shadow-lg space-y-1"
         >
+          <button type="button" onClick={() => { setFeedback(''); setShowHelp(false); setTranscript(''); }} className="underline p-1 focus-visible:outline-white">Dismiss voice feedback</button>
           {isActive && (
             <p className="flex items-center gap-2 text-xs text-accent font-semibold">
               <span className="w-2 h-2 rounded-full bg-red-500 motion-safe:animate-pulse" /> Listening

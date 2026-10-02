@@ -48,6 +48,7 @@ const ResourceLibrary = () => {
         ))}
       </div>
 
+      <p role="status" className="sr-only">Showing {RESOURCES.filter(r => filter === 'All' || r.category === filter).length} guides. Filter: {filter}.</p>
       <div className="grid md:grid-cols-2 gap-8">
         {categories.map(category => (
           <ResourceCard

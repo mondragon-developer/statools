@@ -59,8 +59,8 @@ const ResourceCard = ({ icon, title, description, resources }) => {
                 key={index}
                 className="bg-platinum/50 rounded-md hover:bg-darkTeal/10 transition-colors overflow-hidden"
               >
-                <div className="flex items-center justify-between p-3">
-                  <div className="flex items-center space-x-3 flex-1">
+                <div className="flex flex-wrap gap-3 items-center justify-between p-3">
+                  <div className="flex items-center space-x-3 flex-1 min-w-0">
                     <FileText size={18} className="text-darkTeal" aria-hidden="true" />
                     <span className="text-sm font-medium text-darkGrey">
                       {resource.name}
@@ -84,7 +84,7 @@ const ResourceCard = ({ icon, title, description, resources }) => {
                       <button
                         onClick={() => toggleResource(index)}
                         className="p-1 text-darkGrey hover:text-darkTeal transition-colors"
-                        aria-expanded={isExpanded}
+                        aria-expanded={Boolean(isExpanded)}
                         aria-label={`${isExpanded ? 'Hide' : 'Show'} quiz for ${resource.name}`}
                       >
                         {isExpanded ? <ChevronUp size={20} aria-hidden="true" /> : <ChevronDown size={20} aria-hidden="true" />}

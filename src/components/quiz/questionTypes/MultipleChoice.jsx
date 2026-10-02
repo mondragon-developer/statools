@@ -74,6 +74,7 @@ const MultipleChoice = ({
               }
             }}
             disabled={showResult}
+            aria-pressed={selectedAnswer === optionId}
             className={getOptionStyle(optionId)}
           >
             <div className="flex items-center justify-between">

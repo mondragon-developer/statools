@@ -53,7 +53,9 @@ const MAX_DELAY = 300;
 
 function readStoredZoom() {
   try {
-    const stored = Number(localStorage.getItem(ZOOM_STORAGE_KEY));
+    const raw = localStorage.getItem(ZOOM_STORAGE_KEY);
+    if (raw === null) return DEFAULT_ZOOM;
+    const stored = Number(raw);
     return Number.isInteger(stored) && stored >= 0 && stored < ZOOM_LEVELS.length ? stored : DEFAULT_ZOOM;
   } catch {
     return DEFAULT_ZOOM;
@@ -83,6 +85,8 @@ function randomFood(grid, currentSnake) {
 
 const SnakeGame = () => {
   const canvasRef = useRef(null);
+  const gameRef = useRef(null);
+  const [stepMode, setStepMode] = useState(false);
   const [zoomIndex, setZoomIndex] = useState(readStoredZoom);
   const grid = ZOOM_LEVELS[zoomIndex];
   const [snake, setSnake] = useState(() => initialSnake(grid));
@@ -238,6 +242,7 @@ const SnakeGame = () => {
 
   // Handle keyboard input
   const handleKeyPress = useCallback((e) => {
+    if (!gameRef.current?.contains(e.target) || e.target.closest('input, select, textarea')) return;
     const key = e.key;
 
     if (key === 'Escape' && isPlaying) {
@@ -251,32 +256,36 @@ const SnakeGame = () => {
     switch (key) {
       case 'ArrowUp':
         changeDirection({ x: 0, y: -1 });
+        if (stepMode) moveSnake();
         e.preventDefault();
         break;
       case 'ArrowDown':
         changeDirection({ x: 0, y: 1 });
+        if (stepMode) moveSnake();
         e.preventDefault();
         break;
       case 'ArrowLeft':
         changeDirection({ x: -1, y: 0 });
+        if (stepMode) moveSnake();
         e.preventDefault();
         break;
       case 'ArrowRight':
         changeDirection({ x: 1, y: 0 });
+        if (stepMode) moveSnake();
         e.preventDefault();
         break;
       default:
         break;
     }
-  }, [isPlaying, isPaused, changeDirection, togglePause]);
+  }, [isPlaying, isPaused, changeDirection, togglePause, stepMode, moveSnake]);
 
   // Game loop
   useEffect(() => {
-    if (!isPlaying || isPaused) return;
+    if (!isPlaying || isPaused || stepMode) return;
 
     const gameLoop = setInterval(moveSnake, gameSpeed);
     return () => clearInterval(gameLoop);
-  }, [isPlaying, isPaused, moveSnake, gameSpeed]);
+  }, [isPlaying, isPaused, moveSnake, gameSpeed, stepMode]);
 
   // Keyboard event listener
   useEffect(() => {
@@ -328,11 +337,11 @@ const SnakeGame = () => {
     snake.forEach((segment, index) => {
       if (index === 0) {
         // Head
-        ctx.fillStyle = '#4ECDC4';
+        ctx.fillStyle = '#0D6861';
         ctx.fillRect(segment.x * CELL_SIZE, segment.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 
         // Draw eyes on head
-        ctx.fillStyle = '#2A2A2A';
+        ctx.fillStyle = '#FFFFFF';
         const eyeSize = 2 * unit;
         const eyeOffset = 4 * unit;
         const near = 3 * unit;
@@ -354,7 +363,7 @@ const SnakeGame = () => {
         }
       } else {
         // Body with letters
-        ctx.fillStyle = '#4ECDC4';
+        ctx.fillStyle = '#0D6861';
         ctx.fillRect(segment.x * CELL_SIZE + 1, segment.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2);
 
         // Draw letter
@@ -390,7 +399,8 @@ const SnakeGame = () => {
 
   const startGame = () => {
     initializeGameState(true);
-    announcePolite('Game started. Use arrow keys to move.');
+    gameRef.current?.focus();
+    announcePolite(stepMode ? 'Game started. Each arrow key or direction button moves one cell. No timer.' : 'Game started. Use arrow keys to move. Escape pauses. Leaving the game pauses it.');
   };
 
 
@@ -417,7 +427,9 @@ const SnakeGame = () => {
   const sliderFill = ((sliderValue - MIN_DELAY) / (MAX_DELAY - MIN_DELAY)) * 100;
 
   return (
-    <div className="flex flex-col items-center justify-center bg-white p-4 rounded-lg">
+    <div ref={gameRef} tabIndex={0} role="group" aria-label="Math Snake game controls" aria-describedby="snake-instructions"
+      onBlur={e => { if (isPlaying && !isPaused && !e.currentTarget.contains(e.relatedTarget)) { setIsPaused(true); announcePolite('Game paused after leaving its controls.'); } }}
+      className="w-full min-w-0 flex flex-col items-center justify-center bg-white p-4 rounded-lg">
       <style>{`
         @keyframes floatUp {
           0% { transform: translateY(0); opacity: 1; }
@@ -430,7 +442,7 @@ const SnakeGame = () => {
         }
       `}</style>
 
-      <div className="mb-4 text-center relative w-full h-16 flex flex-col items-center justify-center">
+      <div className="mb-4 text-center relative w-full min-h-16 flex flex-col items-center justify-center">
         <div className={`transition-opacity duration-200 ${feedback ? 'opacity-10' : 'opacity-100'}`}>
           <h3 className="text-xl font-bold text-darkGrey mb-2">Math Snake Game</h3>
           <p className="text-sm text-darkGrey opacity-70">Eat math symbols to grow!</p>
@@ -449,7 +461,7 @@ const SnakeGame = () => {
       </div>
 
       {/* Game Canvas */}
-      <div className="relative mb-4 w-full max-w-[1200px] flex justify-center">
+      <div className="relative mb-4 min-h-40 w-full max-w-[1200px] flex justify-center">
         <canvas
           ref={canvasRef}
           width={grid.cols * grid.cell}
@@ -518,6 +530,19 @@ const SnakeGame = () => {
         )}
       </div>
 
+      <label className="flex items-center gap-2 mb-4 text-sm text-darkGrey">
+        <input type="checkbox" checked={stepMode} onChange={e => { setStepMode(e.target.checked); initializeGameState(false); }} />
+        Step-by-step play (no timer; changing this resets the game)
+      </label>
+      <p className="text-sm text-darkGrey mb-3" role={stepMode ? 'status' : undefined}>
+        Board: {grid.rows} rows by {grid.cols} columns. Head: row {snake[0].y + 1}, column {snake[0].x + 1}.
+        Target: {SYMBOL_NAMES[food.symbol]}, row {food.y + 1}, column {food.x + 1}.
+        Direction: {direction.x === 1 ? 'right' : direction.x === -1 ? 'left' : direction.y === 1 ? 'down' : 'up'}.
+      </p>
+      <details className="text-sm text-darkGrey mb-4 w-full">
+        <summary className="cursor-pointer p-2">Snake body positions</summary>
+        <p>{snake.slice(1).map(part => `row ${part.y + 1}, column ${part.x + 1}`).join('; ') || 'No body segments yet.'}</p>
+      </details>
       {/* Speed control — SC 2.2.1 Timing Adjustable */}
       <div className="mb-4 w-full max-w-md">
         <label htmlFor="snake-speed" className="block text-sm font-medium text-darkGrey mb-1">
@@ -536,12 +561,12 @@ const SnakeGame = () => {
             setBaseSpeed(delay);
           }}
           aria-valuetext={`${speedLabel} speed`}
-          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          className="w-full h-6 bg-gray-200 rounded-lg cursor-pointer accent-darkTeal"
           style={{
             background: `linear-gradient(to right, #0F766E 0%, #0F766E ${sliderFill}%, #e0e0e0 ${sliderFill}%, #e0e0e0 100%)`
           }}
         />
-        <div className="flex justify-between text-xs text-darkGrey/60 mt-1">
+        <div className="flex justify-between text-xs text-darkGrey/80 mt-1">
           <span>Slow</span>
           <span>Fast</span>
         </div>
@@ -573,7 +598,7 @@ const SnakeGame = () => {
         <div></div>
         <button 
           className="bg-darkGrey text-white p-4 rounded-lg active:bg-darkTeal transition-colors flex items-center justify-center shadow-md"
-          onClick={() => changeDirection({ x: 0, y: -1 })}
+          onClick={() => { changeDirection({ x: 0, y: -1 }); if (stepMode && isPlaying && !isPaused) moveSnake(); }}
           aria-label="Up"
         >
           <ArrowUp size={24} />
@@ -582,21 +607,21 @@ const SnakeGame = () => {
         
         <button 
           className="bg-darkGrey text-white p-4 rounded-lg active:bg-darkTeal transition-colors flex items-center justify-center shadow-md"
-          onClick={() => changeDirection({ x: -1, y: 0 })}
+          onClick={() => { changeDirection({ x: -1, y: 0 }); if (stepMode && isPlaying && !isPaused) moveSnake(); }}
           aria-label="Left"
         >
           <ArrowLeft size={24} />
         </button>
         <button 
           className="bg-darkGrey text-white p-4 rounded-lg active:bg-darkTeal transition-colors flex items-center justify-center shadow-md"
-          onClick={() => changeDirection({ x: 0, y: 1 })}
+          onClick={() => { changeDirection({ x: 0, y: 1 }); if (stepMode && isPlaying && !isPaused) moveSnake(); }}
           aria-label="Down"
         >
           <ArrowDown size={24} />
         </button>
         <button 
           className="bg-darkGrey text-white p-4 rounded-lg active:bg-darkTeal transition-colors flex items-center justify-center shadow-md"
-          onClick={() => changeDirection({ x: 1, y: 0 })}
+          onClick={() => { changeDirection({ x: 1, y: 0 }); if (stepMode && isPlaying && !isPaused) moveSnake(); }}
           aria-label="Right"
         >
           <ArrowRight size={24} />
@@ -617,7 +642,7 @@ const SnakeGame = () => {
         {isPlaying && (
           <button
             onClick={resetGame}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-opacity-90 transition-all flex items-center gap-2"
+            className="bg-red-700 text-white px-4 py-2 rounded-lg font-bold hover:bg-opacity-90 transition-all flex items-center gap-2"
           >
             <RotateCcw size={16} />
             Reset
@@ -626,9 +651,9 @@ const SnakeGame = () => {
       </div>
 
       {/* Instructions */}
-      <div className="text-center text-sm text-darkGrey opacity-70 max-w-xs">
+      <div id="snake-instructions" className="text-center text-sm text-darkGrey opacity-70 max-w-xs">
         <p className="font-bold mb-1">How to Play:</p>
-        <p>Eat math symbols and use the arrows or on-screen buttons to move!</p>
+        <p>Use arrow keys while focused inside the game, or the direction buttons. Escape pauses or resumes. Leaving the game pauses it. For untimed play and position descriptions, turn on step-by-step mode before starting.</p>
       </div>
     </div>
   );

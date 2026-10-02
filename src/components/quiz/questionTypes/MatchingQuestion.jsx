@@ -61,10 +61,10 @@ const MatchingQuestion = ({
   };
 
   const getSelectStyle = (leftId) => {
-    const baseStyle = 'flex-1 p-2 rounded border-2 transition-all ';
+    const baseStyle = 'w-full min-w-0 p-2 rounded border-2 transition-all ';
 
     if (!showResult) {
-      return baseStyle + 'border-darkTeal/30 focus:border-darkTeal focus:outline-none';
+      return baseStyle + 'border-darkTeal focus:border-darkTeal';
     }
 
     const correct = isCorrectMatch(leftId);
@@ -85,9 +85,9 @@ const MatchingQuestion = ({
       <div className="space-y-3">
         {question.options.map((option) => (
           <div key={option.id} className={getMatchStyle(option.id)}>
-            <div className="flex items-center gap-3 flex-1">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1 min-w-0">
               {/* Left side - the term */}
-              <div className="w-1/3">
+              <div className="w-full sm:w-1/3">
                 <span className="font-semibold text-darkGrey">
                   {option.id}. {option.left}
                 </span>
@@ -96,8 +96,9 @@ const MatchingQuestion = ({
               <ArrowRight className="text-darkTeal opacity-50" size={20} />
 
               {/* Right side - dropdown selector */}
-              <div className="w-2/3">
+              <div className="w-full sm:w-2/3">
                 <select
+                  aria-label={`Match ${option.id}. ${option.left}`}
                   value={matches[option.id] || ''}
                   onChange={(e) => handleMatch(option.id, e.target.value)}
                   disabled={showResult}

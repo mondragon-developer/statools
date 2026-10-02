@@ -61,8 +61,8 @@ const AccessibilityPage = () => {
               <tr><td className="py-2 pr-4">Activate buttons and links</td><td><KeyCombo keys={['Enter']} /> or <KeyCombo keys={['Space']} /></td></tr>
               <tr><td className="py-2 pr-4">Close dialogs and tooltips</td><td><KeyCombo keys={['Escape']} /></td></tr>
               <tr><td className="py-2 pr-4">Adjust sliders</td><td><KeyCombo keys={['←']} /> <KeyCombo keys={['→']} /></td></tr>
-              <tr><td className="py-2 pr-4">Skip to main content</td><td><KeyCombo keys={['Tab']} /> on page load (first element)</td></tr>
-              <tr><td className="py-2 pr-4">Pause/resume Snake game</td><td><KeyCombo keys={['Escape']} /></td></tr>
+              <tr><td className="py-2 pr-4">Skip to main content</td><td><KeyCombo keys={['Tab']} /> until the Skip to main content link appears</td></tr>
+              <tr><td className="py-2 pr-4">Pause/resume Snake game (focus inside game)</td><td><KeyCombo keys={['Escape']} /></td></tr>
               <tr><td className="py-2 pr-4">Move snake</td><td><KeyCombo keys={['↑']} /> <KeyCombo keys={['↓']} /> <KeyCombo keys={['←']} /> <KeyCombo keys={['→']} /></td></tr>
             </tbody>
           </table>
@@ -71,7 +71,8 @@ const AccessibilityPage = () => {
         <Section icon={Volume2} title="Screen Reader Support">
           <p>The site uses headings, labels, and live announcements to support screen readers. Compatibility across NVDA, JAWS, and VoiceOver still needs a complete manual review.</p>
           <ul className="list-disc ml-6 mt-2 space-y-1">
-            <li>Charts and controls provide text labels; some visual relationships may need additional explanation</li>
+            <li>The homepage dataset has numeric results and a described dot plot. Other charts may need further review.</li>
+            <li>Math Snake offers step-by-step play without a timer, with text positions for the head, target, and body. Its usability with screen readers still needs user testing.</li>
             <li>Form inputs are labeled so your screen reader announces what each field is for</li>
             <li>Calculation results and errors are announced automatically without losing your place</li>
             <li>Dialogs (quizzes, box plots, chat) trap focus so you stay within the dialog until you close it</li>
@@ -114,7 +115,7 @@ const AccessibilityPage = () => {
         </Section>
 
         <Section icon={MessageCircle} title="Chat Assistant with Voice Input">
-          <p>The chat bubble in the bottom-right corner opens a statistics assistant you can ask questions.</p>
+          <p>The chat bubble opens an AI statistics tutor for users aged 18 and older. Keyboard users can confirm their age or choose Continue without AI.</p>
           <ul className="list-disc ml-6 mt-2 space-y-1">
             <li>Fully keyboard accessible — Tab into the chat, type, and press Enter to send</li>
             <li>Press <KeyCombo keys={['Escape']} /> to close the chat and return to where you were</li>
@@ -136,7 +137,7 @@ const AccessibilityPage = () => {
         <section className="mb-8">
           <h2 className="text-xl font-bold text-darkGrey mb-3">Standards</h2>
           <p className="text-darkGrey/80">
-            This site targets <strong>WCAG 2.2 Level AA</strong>. This is a development target, not a certification. A full manual audit of all calculators, quizzes, and PDFs is pending. Downloadable PDFs, external resources, and visual chart details may have accessibility limitations. Voice availability depends on your browser and provider.
+            This site targets <strong>WCAG 2.2 Level AA</strong>. This is a development target, not a certification. An October 2, 2026 homepage review included automated WCAG checks and keyboard, narrow-layout, dialog, contrast, and text-spacing checks. It does not establish full conformance. Manual testing with NVDA, JAWS, and VoiceOver, and a complete audit of all calculators, quiz content, and PDFs, remain pending. Downloadable PDFs, external resources, and visual chart details may have accessibility limitations. Voice availability depends on your browser and provider.
           </p>
         </section>
 

@@ -13,6 +13,7 @@ const AccessibilityBanner = () => {
 
   const dismiss = () => {
     setDismissed(true);
+    requestAnimationFrame(() => document.querySelector('.skip-link, main')?.focus());
     try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch { /* Storage may be unavailable. */ }
   };
 

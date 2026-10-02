@@ -14,7 +14,7 @@ const HomePage = () => {
 
   return (
     <>
-      <a className="skip-link" href="#main-content">Skip to main content</a>
+      <nav aria-label="Skip navigation"><a className="skip-link" href="#main-content">Skip to main content</a></nav>
       <Navbar />
       <main id="main-content" tabIndex={-1}>
         <Hero />

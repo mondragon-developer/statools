@@ -9,7 +9,7 @@ export default {
       colors: {
         darkGrey: '#2A2A2A',
         turquoise: '#4ECDC4',
-        darkTeal: '#0F766E',
+        darkTeal: '#0D6861',
         accent: '#F59E0B',
         accentDark: '#B45309',
         platinum: '#E6E6E6',

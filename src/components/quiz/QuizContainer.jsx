@@ -1,8 +1,8 @@
 /**
- * QuizContainer — manages quiz flow: question selection, navigation, answers, and grading.
+ * QuizContainer â€” manages quiz flow: question selection, navigation, answers, and grading.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import MultipleChoice from './questionTypes/MultipleChoice';
 import MultipleAnswer from './questionTypes/MultipleAnswer';
@@ -14,8 +14,10 @@ import { announcePolite } from '../../utils/announce';
 import useFocusTrap from '../../hooks/useFocusTrap';
 
 const QuizContainer = ({ questionBank, quizTitle, onClose }) => {
+  const questionRef = useRef(null);
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  useEffect(() => { questionRef.current?.focus(); }, [currentQuestionIndex]);
   const [userAnswers, setUserAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState(null);
@@ -146,21 +148,21 @@ const QuizContainer = ({ questionBank, quizTitle, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] p-4 overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-label={quizTitle}
       onKeyDown={handleKeyDown}
       ref={focusTrapRef}
     >
-      <div className="bg-white rounded-lg shadow-2xl max-w-3xl w-full my-8">
+      <div className="bg-white rounded-lg shadow-2xl max-w-3xl w-full my-auto">
         {/* Header */}
         <div className="border-b border-platinum p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold text-darkGrey">{quizTitle}</h2>
             <button
               onClick={onClose}
-              className="text-darkGrey hover:text-red-500 transition-colors"
+              className="shrink-0 p-2 text-darkGrey hover:text-red-700 transition-colors"
               aria-label="Close quiz"
             >
               <X size={24} aria-hidden="true" />
@@ -190,7 +192,7 @@ const QuizContainer = ({ questionBank, quizTitle, onClose }) => {
                 {currentQuestion.type.replace(/([A-Z])/g, ' $1').trim()}
               </span>
             </div>
-            <h3 className="text-xl font-semibold text-darkGrey mb-6">
+            <h3 ref={questionRef} tabIndex={-1} className="text-xl font-semibold text-darkGrey mb-6">
               {currentQuestion.question}
             </h3>
           </div>
@@ -199,7 +201,7 @@ const QuizContainer = ({ questionBank, quizTitle, onClose }) => {
 
         {/* Navigation footer */}
         <div className="border-t border-platinum p-6">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-wrap gap-3 justify-between items-center">
             <button
               onClick={goToPreviousQuestion}
               disabled={currentQuestionIndex === 0}
@@ -219,7 +221,7 @@ const QuizContainer = ({ questionBank, quizTitle, onClose }) => {
                 disabled={!areAllQuestionsAnswered()}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-all ${
                   areAllQuestionsAnswered()
-                    ? 'bg-green-500 text-white hover:bg-green-600'
+                    ? 'bg-green-700 text-white hover:bg-green-800'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >

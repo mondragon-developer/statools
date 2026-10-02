@@ -63,18 +63,18 @@ const QuizResults = ({ results, onClose, onRetake }) => {
       >
         <button
           onClick={() => toggleQuestion(question.id)}
-          aria-expanded={isExpanded}
+          aria-expanded={Boolean(isExpanded)}
           className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center gap-3">
             {isCorrect ? (
               <>
-                <CheckCircle className="text-green-500 flex-shrink-0" size={24} aria-hidden="true" />
+                <CheckCircle className="text-green-700 flex-shrink-0" size={24} aria-hidden="true" />
                 <span className="sr-only">Correct</span>
               </>
             ) : (
               <>
-                <XCircle className="text-red-500 flex-shrink-0" size={24} aria-hidden="true" />
+                <XCircle className="text-red-700 flex-shrink-0" size={24} aria-hidden="true" />
                 <span className="sr-only">Incorrect</span>
               </>
             )}
@@ -109,11 +109,11 @@ const QuizResults = ({ results, onClose, onRetake }) => {
   };
 
   const getGradeColor = () => {
-    if (grade.percentage >= 90) return 'text-green-600';
-    if (grade.percentage >= 80) return 'text-green-500';
-    if (grade.percentage >= 70) return 'text-yellow-600';
-    if (grade.percentage >= 60) return 'text-orange-500';
-    return 'text-red-500';
+    if (grade.percentage >= 90) return 'text-green-700';
+    if (grade.percentage >= 80) return 'text-green-700';
+    if (grade.percentage >= 70) return 'text-yellow-800';
+    if (grade.percentage >= 60) return 'text-orange-800';
+    return 'text-red-700';
   };
 
   const getGradeBgColor = () => {
@@ -126,21 +126,21 @@ const QuizResults = ({ results, onClose, onRetake }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] p-4 overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-label="Quiz Results"
       onKeyDown={handleKeyDown}
       ref={focusTrapRef}
     >
-      <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full my-8">
+      <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full my-auto">
         {/* Header */}
         <div className="border-b border-platinum p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-darkGrey">Quiz Results</h2>
             <button
               onClick={onClose}
-              className="text-darkGrey hover:text-red-500 transition-colors"
+              className="shrink-0 p-2 text-darkGrey hover:text-red-700 transition-colors"
               aria-label="Close results"
             >
               <X size={24} aria-hidden="true" />
@@ -169,9 +169,9 @@ const QuizResults = ({ results, onClose, onRetake }) => {
               </p>
             </div>
 
-            <div className="mt-4 flex justify-center gap-8">
+            <div className="mt-4 flex flex-wrap justify-center gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{correctCount}</div>
+                <div className="text-2xl font-bold text-green-700">{correctCount}</div>
                 <div className="text-sm text-darkGrey opacity-75">Correct</div>
               </div>
               <div className="text-center">
@@ -206,7 +206,7 @@ const QuizResults = ({ results, onClose, onRetake }) => {
 
         {/* Footer actions */}
         <div className="border-t border-platinum p-6">
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             <button
               onClick={onRetake}
               className="flex items-center gap-2 px-6 py-3 bg-darkTeal text-white rounded-lg font-bold hover:bg-darkTeal/90 transition-all"
