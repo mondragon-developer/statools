@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Calculator, BookOpen, Compass } from 'lucide-react';
+import InteractiveDataset from './InteractiveDataset';
+import { Calculator, BookOpen } from 'lucide-react';
 
 const Hero = () => (
   <section className="container mx-auto px-4 py-12 sm:py-20 grid lg:grid-cols-2 gap-10 items-center" aria-labelledby="hero-heading">
@@ -15,18 +16,7 @@ const Hero = () => (
       </div>
       <p className="text-sm text-darkGrey/80">Calculations run on your device. Optional AI help sends messages to an outside service. <Link to="/privacy" className="underline text-darkTeal">How privacy works</Link></p>
     </div>
-    <div className="bg-white border border-darkTeal/20 rounded-2xl p-6 sm:p-8 shadow-sm">
-      <p className="text-sm font-semibold text-darkTeal">A small dataset, a clearer picture</p>
-      <p className="text-2xl font-mono tracking-wide text-darkGrey mt-4">2, 4, 4, 6, 9</p>
-      <dl className="grid grid-cols-3 gap-3 my-6">
-        {[['Mean', '5'], ['Median', '4'], ['Sample SD', '2.65']].map(([label, value]) => (
-          <div key={label} className="rounded-lg bg-platinum/60 p-3"><dt className="text-sm text-darkGrey">{label}</dt><dd className="text-2xl font-bold text-darkTeal mt-1">{value}</dd></div>
-        ))}
-      </dl>
-      <p className="text-darkGrey/80">The largest value pulls the mean above the median. Explore how center and spread describe your data.</p>
-      <Link to="/calculators/statistics" className="inline-flex items-center gap-2 mt-5 font-semibold text-darkTeal underline">Try the statistics calculator <ArrowRight size={18} aria-hidden="true" /></Link>
-      <a href="#calculator-coach" className="flex items-center gap-2 mt-5 pt-5 border-t border-platinum font-semibold text-darkTeal underline"><Compass size={18} aria-hidden="true" /> Help me choose a calculator</a>
-    </div>
+    <InteractiveDataset />
   </section>
 );
 export default Hero;
