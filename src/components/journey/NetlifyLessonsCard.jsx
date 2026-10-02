@@ -18,6 +18,7 @@ const NetlifyLessonsCard = () => {
             {!url && <span className="text-xs font-bold uppercase tracking-wide bg-accent text-darkGrey px-2 py-1 rounded-full">Coming soon</span>}
           </div>
           <p className="text-darkGrey/80">{description}</p>
+          <p className="text-sm text-darkGrey/80">This link opens a separate service with its own access requirements and privacy practices. Statools is an independent study resource; linking to these lessons does not imply college endorsement. No MDC account is needed for the calculators or learning journey here.</p>
 
           <div className="grid md:grid-cols-2 gap-4">
             <div className="bg-platinum/50 rounded-md p-4">

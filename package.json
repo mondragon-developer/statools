@@ -9,11 +9,12 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "preview:open": "vite preview --open /",
-    "test-production": "npm run build && echo '\n\n Preview server starting...\n\nIMPORTANT: Visit http://localhost:4173/ \n\n' && vite preview"
+    "test-production": "npm run build && echo '\n\n Preview server starting...\n\nIMPORTANT: Visit http://localhost:4173/ \n\n' && vite preview",
+    "test": "node --test tests/*.test.js",
+    "notices": "node scripts/third-party-notices.js",
+    "check": "npm run lint && npm test && node scripts/third-party-notices.js --check && npm run build"
   },
   "dependencies": {
-    "@splinetool/react-spline": "^4.0.0",
-    "@splinetool/runtime": "^1.10.2",
     "chart.js": "^4.4.9",
     "jstat": "^1.9.6",
     "katex": "^0.18.9",

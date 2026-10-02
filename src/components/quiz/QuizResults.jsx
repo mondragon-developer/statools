@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import { CheckCircle, XCircle, RotateCcw, X, ChevronDown, ChevronUp } from 'lucide-react';
-import { getGradeMessage, formatAnswerText } from '../../utils/quizUtils';
+import { getGradeMessage } from '../../utils/quizUtils';
 import MultipleChoice from './questionTypes/MultipleChoice';
 import MultipleAnswer from './questionTypes/MultipleAnswer';
 import OrderingQuestion from './questionTypes/OrderingQuestion';

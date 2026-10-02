@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Keyboard, Mic, MessageCircle, Eye, Volume2 } from 'lucide-react';
+import { CONTACT_EMAIL } from '../data/site';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
-const Section = ({ icon: Icon, title, children }) => (
+const Section = ({ icon, title, children }) => (
   <section className="mb-8">
     <h2 className="text-xl font-bold text-darkGrey mb-3 flex items-center gap-2">
-      <Icon size={22} className="text-darkTeal" aria-hidden="true" />
+      {React.createElement(icon, { size: 22, className: 'text-darkTeal', 'aria-hidden': true })}
       {title}
     </h2>
     <div className="text-darkGrey/80 space-y-2">{children}</div>
@@ -45,7 +46,7 @@ const AccessibilityPage = () => {
         </p>
 
         <Section icon={Keyboard} title="Keyboard Navigation">
-          <p>Every feature on this site can be used with a keyboard alone — no mouse required.</p>
+          <p>The site provides keyboard controls for navigation, calculators, quizzes, and the game. Please report any control you cannot reach or operate.</p>
           <table className="w-full mt-3 text-sm">
             <caption className="sr-only">Keyboard shortcuts reference</caption>
             <thead>
@@ -68,9 +69,9 @@ const AccessibilityPage = () => {
         </Section>
 
         <Section icon={Volume2} title="Screen Reader Support">
-          <p>The site works with screen readers like NVDA, JAWS, and VoiceOver.</p>
+          <p>The site uses headings, labels, and live announcements to support screen readers. Compatibility across NVDA, JAWS, and VoiceOver still needs a complete manual review.</p>
           <ul className="list-disc ml-6 mt-2 space-y-1">
-            <li>All images, charts, and icons have text descriptions</li>
+            <li>Charts and controls provide text labels; some visual relationships may need additional explanation</li>
             <li>Form inputs are labeled so your screen reader announces what each field is for</li>
             <li>Calculation results and errors are announced automatically without losing your place</li>
             <li>Dialogs (quizzes, box plots, chat) trap focus so you stay within the dialog until you close it</li>
@@ -124,20 +125,18 @@ const AccessibilityPage = () => {
 
         <Section icon={Eye} title="Visual Accessibility">
           <ul className="list-disc ml-6 space-y-1">
-            <li>All text meets a minimum contrast ratio of 4.5:1 (WCAG AA)</li>
+            <li>We target WCAG AA text contrast (4.5:1 for normal text and 3:1 for large text)</li>
             <li>Interactive elements (buttons, links, inputs) have a visible focus indicator</li>
-            <li>The site works at 200% browser zoom without horizontal scrolling</li>
-            <li>No content relies on color alone to convey meaning</li>
-            <li>You can use browser extensions or settings to increase text spacing without breaking the layout</li>
+            <li>Layouts are designed to reflow with zoom; wide data tables may require horizontal scrolling</li>
+            <li>Labels and symbols supplement color in results and controls</li>
+            <li>Browser zoom and text-spacing settings can be used to adjust readability</li>
           </ul>
         </Section>
 
         <section className="mb-8">
           <h2 className="text-xl font-bold text-darkGrey mb-3">Standards</h2>
           <p className="text-darkGrey/80">
-            This site targets <strong>WCAG 2.1 Level AA</strong> conformance. The third-party content
-            (if any external widgets are present) may not be fully within our control. If you encounter
-            any accessibility barrier, please contact us so we can address it.
+            This site targets <strong>WCAG 2.2 Level AA</strong>. This is a development target, not a certification. A full manual audit of all calculators, quizzes, and PDFs is pending. Downloadable PDFs, external resources, and visual chart details may have accessibility limitations. Voice availability depends on your browser and provider.
           </p>
         </section>
 
@@ -145,7 +144,7 @@ const AccessibilityPage = () => {
           <h2 className="text-lg font-bold text-darkGrey mb-2">Feedback</h2>
           <p className="text-darkGrey/80 text-sm">
             If you find any part of this site difficult to use, we want to hear about it.
-            Please reach out through the chat assistant or the Contact section on the home page.
+            Email <a className="underline text-darkTeal" href={`mailto:${CONTACT_EMAIL}?subject=Statools%20accessibility`}>{CONTACT_EMAIL}</a> with the page, the barrier, and your browser or assistive technology. Do not include personal student data. The AI assistant is not a support ticket system.
             We are committed to making these tools accessible to all learners.
           </p>
         </section>

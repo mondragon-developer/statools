@@ -25,7 +25,7 @@ const CalculatorCoach = ({ defaultOpen = false }) => {
   const restart = () => { moved.current = true; setPath([COACH_START]); };
 
   return (
-    <section aria-labelledby="coach-heading" className="bg-white rounded-lg shadow-md">
+    <section id="calculator-coach" tabIndex={-1} aria-labelledby="coach-heading" className="bg-white rounded-lg shadow-md">
       <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
         <div className="flex items-center gap-3">
           <Compass size={28} className="text-darkTeal" aria-hidden="true" />

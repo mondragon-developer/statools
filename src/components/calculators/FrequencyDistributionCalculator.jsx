@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Line, LineChart, ComposedChart } from 'recharts';
 import { Info, Table2, BarChart3, AlertCircle, Trash2, X, Plus, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import useDocumentTitle from '../../hooks/useDocumentTitle';

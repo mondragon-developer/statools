@@ -12,9 +12,9 @@ const Navbar = () => {
 
   return (
     <nav className="bg-darkGrey text-white p-4 shadow-md" aria-label="Main navigation">
-      <div className="container mx-auto flex justify-between items-center">
+      <div className="container mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <a href="#main-content" onClick={(e) => scrollToSection(e, 'main-content')} aria-label="MDragon Data Tools — home">
-          <span className="text-2xl font-bold text-darkTeal">MDragon Data Tools</span>{' '}
+          <span className="text-2xl font-bold text-turquoise">MDragon Data Tools</span>{' '}
           <span className="text-xl text-accent">Statistics</span>
         </a>
         <div className="flex flex-wrap justify-end gap-x-6 gap-y-1">

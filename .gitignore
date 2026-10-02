@@ -30,3 +30,8 @@ TRACKER.md
 SECURITY_BASELINE.md
 findings.yaml
 SECURITY_REPORT.md
+
+# Local credentials; keep only the documented example in version control.
+.env
+.env.*
+!.env.example

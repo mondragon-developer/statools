@@ -3,6 +3,8 @@ import { X, Send, GraduationCap } from 'lucide-react';
 import { sendMessage } from '../../api/chatApi';
 import { CALCULATOR_GUIDES } from '../../data/calculatorGuides';
 import AiNotice from './AiNotice';
+import AdultTutorGate from './AdultTutorGate';
+import { buildCalculatorContext } from '../../utils/calculatorContext';
 
 const ChatMarkdown = lazy(() => import('./ChatMarkdown'));
 const LOGO = `${import.meta.env.BASE_URL}mdragon.svg`;
@@ -42,21 +44,6 @@ function pageSnapshot() {
   ].join('\n\n');
 }
 
-function buildContext(guide) {
-  const list = (title, items) => (items?.length ? `${title}:\n- ${items.join('\n- ')}` : '');
-  return [
-    `Calculator: ${guide.name}`,
-    `Purpose: ${guide.purpose}`,
-    list('Use it when', guide.whenToUse),
-    list('Not the right tool for', guide.notFor),
-    list('Modes', guide.modes),
-    list('Inputs', guide.inputs),
-    list('Steps', guide.steps),
-    list('Outputs', guide.outputs),
-    list('Common mistakes', guide.mistakes),
-    `ON THE STUDENT'S SCREEN RIGHT NOW\n${pageSnapshot()}`,
-  ].filter(Boolean).join('\n\n');
-}
 
 /**
  * AI tutor docked beside a calculator. It is deliberately not modal: the student keeps
@@ -71,6 +58,8 @@ const CalculatorTutor = ({ calcKey, onOpenChange }) => {
     content: `Hi! I'm your tutor for the ${guide.name}. I won't just hand you answers - I'll guide you step by step so you can do it yourself. Ask how the calculator works, or paste the problem you're working on.`,
   }] : []));
   const [input, setInput] = useState('');
+  const [adultConfirmed, setAdultConfirmed] = useState(false);
+  const [shareCalculator, setShareCalculator] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   // crypto.randomUUID only exists on secure origins; plain-http LAN testing falls back.
@@ -83,11 +72,11 @@ const CalculatorTutor = ({ calcKey, onOpenChange }) => {
 
   useEffect(() => { onOpenChange?.(open); }, [open, onOpenChange]);
   useEffect(() => {
-    if (!open) return;
+    if (!open || !adultConfirmed) return;
     // Loaded ahead of the first reply so it never flashes raw markdown inside the live log.
     import('./ChatMarkdown');
     inputRef.current?.focus();
-  }, [open]);
+  }, [open, adultConfirmed]);
   useEffect(() => { endRef.current?.scrollIntoView({ block: 'end' }); }, [messages, loading]);
 
   if (!guide) return null;
@@ -99,7 +88,7 @@ const CalculatorTutor = ({ calcKey, onOpenChange }) => {
 
   const send = async (textArg) => {
     const text = (textArg ?? input).trim();
-    if (!text || loading) return;
+    if (!adultConfirmed || !text || loading) return;
     const userMsg = { id: `u-${Date.now()}`, role: 'user', content: text };
     const history = [...messages, userMsg].filter(m => m.id !== 'welcome' && !m.failed).map(({ role, content }) => ({ role, content }));
     setMessages(prev => [...prev, userMsg]);
@@ -109,7 +98,7 @@ const CalculatorTutor = ({ calcKey, onOpenChange }) => {
     setError('');
     setLoading(true);
     try {
-      const reply = await sendMessage(history, conversationId, buildContext(guide));
+      const reply = await sendMessage(history, conversationId, buildCalculatorContext(guide, shareCalculator, pageSnapshot), adultConfirmed);
       setMessages(prev => [...prev, { id: `a-${Date.now()}`, role: 'assistant', content: reply }]);
     } catch {
       setMessages(prev => prev.map(m => (m.id === userMsg.id ? { ...m, failed: true } : m)));
@@ -141,7 +130,7 @@ const CalculatorTutor = ({ calcKey, onOpenChange }) => {
             border-2 border-white hover:bg-darkTeal/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accentDark focus-visible:ring-offset-2"
         >
           <img src={LOGO} alt="" className="w-9 h-9 rounded-full object-cover" />
-          Ask the AI tutor
+          Ask the AI tutor (18+)
         </button>
       )}
 
@@ -158,7 +147,7 @@ const CalculatorTutor = ({ calcKey, onOpenChange }) => {
             <h2 id={headingId} className="flex items-center gap-2 font-semibold">
               <img src={LOGO} alt="" className="w-8 h-8 rounded-full object-cover bg-white" />
               <span>
-                AI Tutor
+                AI Tutor (18+)
                 <span className="block text-xs font-normal text-white/80">{guide.name}</span>
               </span>
             </h2>
@@ -172,6 +161,7 @@ const CalculatorTutor = ({ calcKey, onOpenChange }) => {
             </button>
           </div>
 
+          {!adultConfirmed ? <AdultTutorGate onConfirm={() => setAdultConfirmed(true)} onClose={close} /> : <>
           <div role="log" aria-label="Tutor conversation" aria-live="polite" className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0">
             {messages.map(msg => (
               <div key={msg.id} className={`flex items-start gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -212,6 +202,11 @@ const CalculatorTutor = ({ calcKey, onOpenChange }) => {
           </div>
 
           <AiNotice />
+          <div className="px-4 py-2 border-t border-platinum text-xs text-darkGrey space-y-2">
+            <label className="flex items-start gap-2"><input type="checkbox" checked={shareCalculator} onChange={e => setShareCalculator(e.target.checked)} /> Share calculator inputs and results with the AI service</label>
+            <p>Off by default. Turning this off stops future snapshots; it does not erase earlier messages or snapshots.</p>
+            <p className="break-all">Conversation reference: {conversationId}</p>
+          </div>
 
           {error && <p role="alert" className="px-4 py-2 text-sm text-red-700 bg-red-50 border-t border-red-200">{error}</p>}
 
@@ -243,9 +238,10 @@ const CalculatorTutor = ({ calcKey, onOpenChange }) => {
             </div>
             <p id={noteId} className="flex items-start gap-1 text-xs text-darkGrey/70">
               <GraduationCap size={14} className="flex-shrink-0 mt-0.5" aria-hidden="true" />
-              Enter sends, Shift+Enter adds a line. Your messages and what you typed in this calculator are sent to the AI service; it can make mistakes.
+              Enter sends, Shift+Enter adds a line. Your messages go to the AI service. Calculator data is included only when sharing is on. AI can make mistakes.
             </p>
           </form>
+          </>}
         </aside>
       )}
     </>

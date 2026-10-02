@@ -1,5 +1,4 @@
 // Vercel serverless proxy for Chatbase API — keeps API key server-side
-/* global process */
 import { TUTOR_GUARD } from './_tutorGuard.js';
 
 // Bounds how much a caller can push through our Chatbase quota per request.
@@ -63,7 +62,19 @@ export default async function handler(req, res) {
     return res.status(403).json({ error: 'Origin not allowed' });
   }
 
+  if (process.env.CHAT_ENABLED === 'false') {
+    return res.status(503).json({ error: 'AI help is temporarily unavailable. Calculators and lessons still work.' });
+  }
+
+  // Self-declaration, not verified identity or proof of age. Fail closed for old clients.
+  if (req.body?.adultConfirmed !== true) {
+    return res.status(403).json({ error: "The AI tutor requires confirmation that you are 18 or older." });
+  }
+
   const { messages, message, conversationId, context } = req.body || {};
+  if (conversationId !== undefined && (typeof conversationId !== 'string' || !/^[a-zA-Z0-9._-]{1,100}$/.test(conversationId))) {
+    return res.status(400).json({ error: 'Invalid conversation reference' });
+  }
   // Stripping the fence markers keeps typed field values from closing the data block early.
   const calculatorContext = typeof context === 'string'
     ? context.replace(/<<<|>>>/g, '').slice(0, MAX_CONTEXT_LENGTH).trim()
@@ -95,6 +106,7 @@ export default async function handler(req, res) {
   try {
     const response = await fetch('https://www.chatbase.co/api/v1/chat', {
       method: 'POST',
+      signal: AbortSignal.timeout(25000),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
@@ -124,8 +136,8 @@ ${calculatorContext}
     });
 
     if (!response.ok) {
-      // Upstream error text can name the bot, plan, or quota; keep it in the function logs.
-      console.error('Chatbase responded', response.status, (await response.text()).slice(0, 500));
+      // Log status only: upstream error bodies can contain conversation data or identifiers.
+      console.error('Chatbase responded', response.status);
       return res.status(502).json({ error: 'The tutor is unavailable right now. Please try again in a moment.' });
     }
 

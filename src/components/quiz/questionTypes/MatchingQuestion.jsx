@@ -11,7 +11,7 @@
  * @param {Object} correctAnswer - Object with correct matches
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Check, X, ArrowRight } from 'lucide-react';
 import { announcePolite } from '../../../utils/announce';
 
@@ -22,19 +22,9 @@ const MatchingQuestion = ({
   showResult = false,
   correctAnswer = {}
 }) => {
-  const [matches, setMatches] = useState({});
-  const [shuffledChoices, setShuffledChoices] = useState([]);
-
-  // Initialize with shuffled choices
-  useEffect(() => {
-    if (Object.keys(userMatches).length > 0) {
-      setMatches(userMatches);
-    }
-
-    // Shuffle the right-side choices
-    const shuffled = [...question.choices].sort(() => Math.random() - 0.5);
-    setShuffledChoices(shuffled);
-  }, []);
+  // The parent keys this component by question so choices remain stable while answering.
+  const [matches, setMatches] = useState(userMatches);
+  const [shuffledChoices] = useState(() => [...question.choices].sort(() => Math.random() - 0.5));
 
   const handleMatch = (leftId, rightValue) => {
     const newMatches = {

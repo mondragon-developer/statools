@@ -5,11 +5,12 @@ const API_URL = import.meta.env.VITE_CHAT_API_URL || 'https://statools.mdragonso
 // Chatbase's chat endpoint is stateless, so the whole history goes with every
 // request; conversationId only groups the exchange in the Chatbase dashboard.
 // `context` (optional) describes the calculator the student is using; see CalculatorTutor.
-export async function sendMessage(messages, conversationId, context) {
+export async function sendMessage(messages, conversationId, context, adultConfirmed = false) {
+  if (adultConfirmed !== true) throw new Error("The AI tutor is available only to users who confirm they are 18 or older.");
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages, conversationId, context }),
+    body: JSON.stringify({ messages, conversationId, context, adultConfirmed }),
   });
 
   if (!res.ok) {

@@ -1,0 +1,21 @@
+Educational content and branding
+
+Original educational content published by MDragon Solutions is available for
+personal study and classroom teaching with attribution to MDragon Data Tools
+and https://statools.mdragonsolutions.com. Resale or republication requires
+written permission from the applicable rights holder. This permission does
+not grant trademark rights or imply endorsement.
+
+Excluded from the code's MIT license: public/resources; src/data/journey
+(lesson prose and exercises); src/data/quizzes; src/data/calculatorGuides.js;
+instructional prose and worked examples embedded in UI components; and
+artwork, logos, names, and other brand assets.
+
+Third-party educational resources and assets remain subject to their own
+licenses. Linking to a resource does not grant permission to copy it.
+No ownership of third-party materials is claimed. Contact mondradev@gmail.com
+for permission requests or to report a rights concern, identifying the item
+and its original source.
+
+The operator must verify authorship and any employment or institutional rights
+before distributing material created for or obtained from another organization.

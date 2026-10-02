@@ -15,6 +15,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import InfoIcon from "./InfoIcon";
+import { calculateAllStatistics, formatResult } from "../../utils/descriptiveStatistics";
 import useDocumentTitle from "../../hooks/useDocumentTitle";
 import useFocusTrap from "../../hooks/useFocusTrap";
 import { announcePolite } from "../../utils/announce";
@@ -280,7 +281,6 @@ const StatisticsCalculator = () => {
 
   // State management
   const [input, setInput] = useState("");
-  const [result, setResult] = useState({});
   const [chartType, setChartType] = useState(CHART_TYPES.HISTOGRAM);
   const [binCount, setBinCount] = useState(DEFAULT_BIN_COUNT);
   const [classWidth, setClassWidth] = useState(10);
@@ -291,11 +291,8 @@ const StatisticsCalculator = () => {
   const [showOutliers, setShowOutliers] = useState(true);
   const [showChartModal, setShowChartModal] = useState(false);
   const [error, setError] = useState("");
-  const [rawStats, setRawStats] = useState(null);
   const [inputB, setInputB] = useState("");
   const [compareMode, setCompareMode] = useState(false);
-  const [resultB, setResultB] = useState({});
-  const [rawStatsB, setRawStatsB] = useState(null);
   const [varianceMode, setVarianceMode] = useState('sample');
   const [draggingTarget, setDraggingTarget] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -303,6 +300,10 @@ const StatisticsCalculator = () => {
   // stays consistent while the user edits the textareas
   const [calcNumbers, setCalcNumbers] = useState([]);
   const [calcNumbersB, setCalcNumbersB] = useState([]);
+  const rawStats = useMemo(() => calcNumbers.length && (varianceMode === 'population' || calcNumbers.length > 1) ? calculateAllStatistics(calcNumbers, varianceMode) : null, [calcNumbers, varianceMode]);
+  const rawStatsB = useMemo(() => calcNumbersB.length && (varianceMode === 'population' || calcNumbersB.length > 1) ? calculateAllStatistics(calcNumbersB, varianceMode) : null, [calcNumbersB, varianceMode]);
+  const result = useMemo(() => rawStats ? formatResult(rawStats) : {}, [rawStats]);
+  const resultB = useMemo(() => rawStatsB ? formatResult(rawStatsB) : {}, [rawStatsB]);
   const chartRef = useRef(null);
   const boxPlotRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -315,41 +316,6 @@ const StatisticsCalculator = () => {
   }, []);
 
   /**
-   * Update visualizations when parameters change
-   * Triggered by changes to histogram configuration
-   */
-  useEffect(() => {
-    if (rawStats) {
-      const numbers = parseInputNumbers();
-      if (numbers.length > 0) {
-        const numbersB = compareMode && rawStatsB ? parseInputNumbersB() : [];
-        generateChartData(numbers, rawStats.outlierMin, rawStats.outlierMax, numbersB);
-      }
-    }
-  }, [binCount, classWidth, minBoundary, chartType, rawStats, rawStatsB, compareMode]);
-
-  /**
-   * Recalculate measures when switching between sample and population formulas
-   */
-  useEffect(() => {
-    if (!rawStats) return;
-    const numbers = parseInputNumbers();
-    if (numbers.length > 0) {
-      const stats = calculateAllStatistics(numbers);
-      setRawStats(stats);
-      setResult(formatResult(stats));
-    }
-    if (compareMode && rawStatsB) {
-      const numbersB = parseInputNumbersB();
-      if (numbersB.length > 0) {
-        const statsB = calculateAllStatistics(numbersB);
-        setRawStatsB(statsB);
-        setResultB(formatResult(statsB));
-      }
-    }
-  }, [varianceMode]);
-
-  /**
    * Parse input string into array of numbers
    * @returns {number[]} Array of parsed numbers
    */
@@ -359,7 +325,7 @@ const StatisticsCalculator = () => {
       .split(/[\s,;]+/)
       .filter(token => token !== "")
       .map(Number)
-      .filter(n => !isNaN(n));
+      .filter(Number.isFinite);
   };
 
   const parseInputNumbers = () => extractNumbers(input);
@@ -515,19 +481,16 @@ const StatisticsCalculator = () => {
       }
     }
 
-    // Calculate statistical measures
-    const stats = calculateAllStatistics(numbers);
-    setRawStats(stats);
-    setResult(formatResult(stats));
+    if (varianceMode === 'sample' && (numbers.length < 2 || (compareMode && numbersB.length < 2))) {
+      setError('Sample statistics require at least two numbers in each dataset. Use population mode for a single value.');
+      return;
+    }
+    // Calculate statistical measures.
+    const stats = calculateAllStatistics(numbers, varianceMode);
 
     let statsB = null;
     if (compareMode) {
-      statsB = calculateAllStatistics(numbersB);
-      setRawStatsB(statsB);
-      setResultB(formatResult(statsB));
-    } else {
-      setRawStatsB(null);
-      setResultB({});
+      statsB = calculateAllStatistics(numbersB, varianceMode);
     }
 
     // Set intelligent defaults for histogram, covering both datasets when comparing
@@ -551,125 +514,10 @@ const StatisticsCalculator = () => {
   };
 
   /**
-   * Calculate all statistical measures
-   * @param {number[]} numbers - Input data array
-   * @returns {Object} Object containing all statistical measures
-   */
-  const calculateAllStatistics = (numbers) => {
-    const sorted = [...numbers].sort((a, b) => a - b);
-    const n = numbers.length;
-    
-    // Basic measures
-    const min = sorted[0];
-    const max = sorted[n - 1];
-    const range = max - min;
-    const sum = numbers.reduce((a, b) => a + b, 0);
-    const mean = sum / n;
-    
-    // Median calculation
-    const median = n % 2 === 0
-      ? (sorted[n / 2 - 1] + sorted[n / 2]) / 2
-      : sorted[Math.floor(n / 2)];
-    
-    // Variance and standard deviation (sample uses n-1, population uses n)
-    const divisor = varianceMode === 'population' ? n : n - 1;
-    const variance = divisor > 0
-      ? numbers.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / divisor
-      : 0;
-    const stdDev = Math.sqrt(variance);
-    
-    // Mode calculation (can be multimodal)
-    const freqMap = {};
-    numbers.forEach(num => {
-      freqMap[num] = (freqMap[num] || 0) + 1;
-    });
-    const maxFreq = Math.max(...Object.values(freqMap));
-    let modeValues = Object.keys(freqMap).filter(key => freqMap[key] === maxFreq);
-    if (modeValues.length === Object.keys(freqMap).length) {
-      modeValues = ["No mode"];
-    } else {
-      modeValues = modeValues.map(v => Number(v));
-    }
-
-    // Quartiles
-    const q1 = calculatePercentile(sorted, 0.25);
-    const q3 = calculatePercentile(sorted, 0.75);
-    const iqr = q3 - q1;
-    
-    // Outlier boundaries (1.5 * IQR method)
-    const outlierMin = q1 - 1.5 * iqr;
-    const outlierMax = q3 + 1.5 * iqr;
-    const outlierCount = numbers.filter(num => num < outlierMin || num > outlierMax).length;
-
-    return {
-      min, max, range, mean, median, mode: modeValues,
-      stdDev, variance, q1, q3, iqr, outlierMin, outlierMax,
-      count: n, outlierCount
-    };
-  };
-
-  /**
-   * Calculate percentile using linear interpolation
-   * @param {number[]} sortedNumbers - Sorted array of numbers
-   * @param {number} percentile - Percentile value (0-1)
-   * @returns {number} Calculated percentile value
-   */
-  const calculatePercentile = (sortedNumbers, percentile) => {
-    const index = percentile * (sortedNumbers.length - 1);
-    const lower = Math.floor(index);
-    const upper = lower + 1;
-    const weight = index % 1;
-
-    if (upper >= sortedNumbers.length) return sortedNumbers[lower];
-    return sortedNumbers[lower] * (1 - weight) + sortedNumbers[upper] * weight;
-  };
-
-  /**
-   * Format statistical results to 4 decimal places
-   * @param {Object} stats - Raw statistical values
-   * @returns {Object} Formatted values
-   */
-  const formatResult = (stats) => {
-    const formatted = {};
-    Object.keys(stats).forEach(key => {
-      if (key === 'count' || key === 'outlierCount') {
-        formatted[key] = String(stats[key]);
-      } else if (typeof stats[key] === 'number') {
-        formatted[key] = stats[key].toFixed(4);
-      } else if (Array.isArray(stats[key])) {
-        formatted[key] = stats[key].map(val =>
-          typeof val === 'number' ? val.toFixed(4) : val
-        ).join(', ');
-      } else {
-        formatted[key] = stats[key];
-      }
-    });
-    return formatted;
-  };
-
-  /**
-   * Generate appropriate chart data based on selected type
-   * @param {number[]} numbers - Input data
-   * @param {number} outlierMin - Lower outlier boundary
-   * @param {number} outlierMax - Upper outlier boundary
-   */
-  const generateChartData = (numbers, outlierMin, outlierMax, numbersB = []) => {
-    switch (chartType) {
-      case CHART_TYPES.HISTOGRAM:
-        generateHistogram(numbers, outlierMin, outlierMax, numbersB);
-        break;
-      case CHART_TYPES.BAR:
-        generateBarChart(numbers, outlierMin, outlierMax, numbersB);
-        break;
-      // Box plots are rendered directly from the stats by BoxPlotSVG — no Chart.js data needed
-    }
-  };
-
-  /**
    * Generate histogram data with frequency distribution
    * Creates bins and calculates frequencies for each class interval
    */
-  const generateHistogram = (numbers, outlierMin, outlierMax, numbersB = []) => {
+  const generateHistogram = useCallback((numbers, outlierMin, outlierMax, numbersB = []) => {
     const comparing = numbersB.length > 0;
 
     // Distribute a dataset into the shared class intervals
@@ -759,13 +607,13 @@ const StatisticsCalculator = () => {
         categoryPercentage: 1.0
       }]
     });
-  };
+  }, [binCount, minBoundary, classWidth]);
 
   /**
    * Generate bar chart for discrete values
    * Shows frequency of each unique value
    */
-  const generateBarChart = (numbers, outlierMin, outlierMax, numbersB = []) => {
+  const generateBarChart = useCallback((numbers, outlierMin, outlierMax, numbersB = []) => {
     const comparing = numbersB.length > 0;
 
     // Count frequencies
@@ -834,7 +682,24 @@ const StatisticsCalculator = () => {
         borderWidth: 2
       }]
     });
-  };
+  }, []);
+
+  const generateChartData = useCallback((numbers, outlierMin, outlierMax, numbersB = []) => {
+    switch (chartType) {
+      case CHART_TYPES.HISTOGRAM:
+        generateHistogram(numbers, outlierMin, outlierMax, numbersB);
+        break;
+      case CHART_TYPES.BAR:
+        generateBarChart(numbers, outlierMin, outlierMax, numbersB);
+        break;
+      // Box plots are rendered directly from the stats by BoxPlotSVG — no Chart.js data needed
+    }
+  }, [chartType, generateHistogram, generateBarChart]);
+
+  useEffect(() => {
+    if (rawStats) generateChartData(calcNumbers, rawStats.outlierMin, rawStats.outlierMax, compareMode && rawStatsB ? calcNumbersB : []);
+  }, [rawStats, rawStatsB, calcNumbers, calcNumbersB, compareMode, generateChartData]);
+
 
   /**
    * Generate box plot visualization
@@ -1040,8 +905,7 @@ const StatisticsCalculator = () => {
                   onChange={(e) => {
                     setCompareMode(e.target.checked);
                     if (!e.target.checked) {
-                      setRawStatsB(null);
-                      setResultB({});
+                      setCalcNumbersB([]);
                     }
                     announcePolite(e.target.checked ? 'Comparison mode on. A second dataset input is now available.' : 'Comparison mode off.');
                   }}
@@ -1109,7 +973,7 @@ const StatisticsCalculator = () => {
                     name="variance-mode"
                     value="sample"
                     checked={varianceMode === 'sample'}
-                    onChange={() => setVarianceMode('sample')}
+                    onChange={() => { if (calcNumbers.length === 1 || (compareMode && calcNumbersB.length === 1)) { setError('Sample statistics require at least two numbers in each dataset. Add data and calculate again.'); return; } setError(''); setVarianceMode('sample'); }}
                     className="w-4 h-4 text-darkTeal focus:ring-darkTeal"
                   />
                   <span><strong>Sample (s)</strong> — divides by n−1; for data drawn from a larger group</span>
@@ -1498,7 +1362,7 @@ const StatisticsCalculator = () => {
                           ×
                         </button>
                       </div>
-                      
+
                       {/* How to read this chart */}
                       {chartType === CHART_TYPES.BOXPLOT ? (
                         <div className="mb-4 p-4 bg-blue-50 rounded">

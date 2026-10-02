@@ -52,7 +52,7 @@ export default function useSpeechRecognition({ onResult, lang = 'en-US' } = {}) 
     }, 150);
     setIsListening(true);
     setTranscript('');
-  }, [isSupported, isListening, lang, onResult]);
+  }, [SpeechRecognition, isSupported, isListening, lang, onResult]);
 
   // Stopping inside the start delay must cancel the pending start, or the mic comes on anyway.
   const cancelPendingStart = () => {

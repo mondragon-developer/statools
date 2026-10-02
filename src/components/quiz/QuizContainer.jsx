@@ -79,9 +79,9 @@ const QuizContainer = ({ questionBank, quizTitle, onClose }) => {
       case 'multipleAnswer':
         return <MultipleAnswer {...commonProps} selectedAnswers={currentAnswer || []} />;
       case 'ordering':
-        return <OrderingQuestion {...commonProps} currentOrder={currentAnswer || []} />;
+        return <OrderingQuestion key={currentQuestion.id} {...commonProps} currentOrder={currentAnswer || []} />;
       case 'matching':
-        return <MatchingQuestion {...commonProps} userMatches={currentAnswer || {}} />;
+        return <MatchingQuestion key={currentQuestion.id} {...commonProps} userMatches={currentAnswer || {}} />;
       default:
         return <div>Unknown question type</div>;
     }

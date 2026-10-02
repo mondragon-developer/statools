@@ -1,3 +1,7 @@
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+const require = createRequire(import.meta.url);
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 // Simple script to convert markdown files to PDFs using markdown-pdf
 const fs = require('fs');
 const path = require('path');

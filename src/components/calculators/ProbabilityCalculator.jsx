@@ -111,7 +111,6 @@ const InfoIcon = ({ info }) => {
 
     // Boundary checks - like bumpers in bowling
     const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
     
     // Keep tooltip on screen horizontally
     if (left < 10) {
@@ -327,7 +326,7 @@ const ProbabilityRulesModule = ({ MathEngine }) => {
   // Memoized calculations - like caching frequently accessed data
   const results = useMemo(() => 
     MathEngine.calculateProbabilityRules(probA, probB, probAandB, ruleType),
-    [probA, probB, probAandB, ruleType]
+    [MathEngine, probA, probB, probAandB, ruleType]
   );
 
   // Visualization data for the complete probability space
@@ -668,7 +667,7 @@ const CombinatoricsModule = ({ MathEngine }) => {
     } else {
       return MathEngine.factorial(n);           // Factorial
     }
-  }, [n, r, combType, withReplacement]);
+  }, [MathEngine, n, r, combType, withReplacement]);
 
   // Preset examples - like recipe cards for common scenarios
   const presetExamples = [
@@ -866,7 +865,7 @@ const ExpectedValueModule = ({ MathEngine }) => {
     const ev = MathEngine.calculateExpectedValue(outcomes);
     const tp = outcomes.reduce((sum, o) => sum + o.probability, 0);
     return { expectedValue: ev, totalProb: tp };
-  }, [outcomes]);
+  }, [MathEngine, outcomes]);
 
   // Chart data for visualization
   const chartData = useMemo(() => ({
@@ -1044,7 +1043,7 @@ const DiceSimulatorModule = () => {
   }, [diceCount]);
 
   // Calculate frequency distribution
-  const { sumFrequency, chartData } = useMemo(() => {
+  const { chartData } = useMemo(() => {
     const freq = {};
     rollHistory.forEach(roll => {
       freq[roll.sum] = (freq[roll.sum] || 0) + 1;

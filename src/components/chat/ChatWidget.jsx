@@ -6,6 +6,7 @@ import useSpeechRecognition from '../../hooks/useSpeechRecognition';
 import { announcePolite, announceAssertive } from '../../utils/announce';
 import { sendMessage } from '../../api/chatApi';
 import AiNotice from './AiNotice';
+import AdultTutorGate from './AdultTutorGate';
 
 const loadChatMarkdown = () => import('./ChatMarkdown');
 const LOGO = `${import.meta.env.BASE_URL}mdragon.svg`;
@@ -13,11 +14,12 @@ const ChatMarkdown = lazy(loadChatMarkdown);
 
 // Generate unique ID per browser session
 function getConversationId() {
-  let id = sessionStorage.getItem('chat-conversation-id');
-  if (!id) {
-    id = crypto.randomUUID();
-    sessionStorage.setItem('chat-conversation-id', id);
-  }
+  try {
+    const existing = sessionStorage.getItem('chat-conversation-id');
+    if (existing) return existing;
+  } catch { /* Storage can be blocked by browser settings. */ }
+  const id = window.crypto?.randomUUID ? crypto.randomUUID() : `chat-${Date.now()}-${Math.random()}`;
+  try { sessionStorage.setItem('chat-conversation-id', id); } catch { /* Keep the in-memory reference. */ }
   return id;
 }
 
@@ -28,6 +30,7 @@ const ChatWidget = () => {
     { id: 'welcome', role: 'assistant', content: 'Hi! I can help you with statistics questions. Ask me anything!' }
   ]);
   const [input, setInput] = useState('');
+  const [adultConfirmed, setAdultConfirmed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -37,7 +40,7 @@ const ChatWidget = () => {
   const panelRef = useFocusTrap(isOpen);
   const headingId = useId();
   const errorId = useId();
-  const conversationId = useRef(getConversationId());
+  const [conversationId] = useState(getConversationId);
 
   // Voice input handler — appends transcript to input field
   const handleVoiceResult = useCallback((text) => {
@@ -55,12 +58,12 @@ const ChatWidget = () => {
 
   // Focus input when panel opens
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && adultConfirmed) {
       // Preloaded so the first reply does not flash raw markdown inside the live region.
       loadChatMarkdown();
       setTimeout(() => inputRef.current?.focus(), 100);
     }
-  }, [isOpen]);
+  }, [isOpen, adultConfirmed]);
 
   const toggleOpen = () => {
     setIsOpen(prev => {
@@ -95,7 +98,7 @@ const ChatWidget = () => {
   const handleSend = async (e) => {
     e?.preventDefault();
     const text = input.trim();
-    if (!text || isLoading) return;
+    if (!adultConfirmed || !text || isLoading) return;
 
     const userMsg = { id: `u-${Date.now()}`, role: 'user', content: text };
     setMessages(prev => [...prev, userMsg]);
@@ -108,7 +111,7 @@ const ChatWidget = () => {
       const history = [...messages, userMsg]
         .filter(m => m.id !== 'welcome' && !m.failed)
         .map(({ role, content }) => ({ role, content }));
-      const reply = await sendMessage(history, conversationId.current);
+      const reply = await sendMessage(history, conversationId, undefined, adultConfirmed);
       const assistantMsg = { id: `a-${Date.now()}`, role: 'assistant', content: reply };
       // No separate announcement: the role="log" region already reads new messages.
       setMessages(prev => [...prev, assistantMsg]);
@@ -124,6 +127,7 @@ const ChatWidget = () => {
 
   // Toggle voice input
   const toggleVoice = () => {
+    if (!adultConfirmed) return;
     if (isListening) {
       stopListening();
       announcePolite('Voice input stopped');
@@ -143,7 +147,7 @@ const ChatWidget = () => {
         ref={toggleBtnRef}
         onClick={toggleOpen}
         aria-expanded={isOpen}
-        aria-label={isOpen ? 'Close chat assistant' : 'Open chat assistant'}
+        aria-label={isOpen ? 'Close chat assistant' : 'Open AI tutor (18+)' }
         className="print:hidden fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full overflow-hidden bg-darkTeal text-white shadow-lg
           border-2 border-white hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accentDark focus-visible:ring-offset-2
           flex items-center justify-center transition-transform"
@@ -169,7 +173,7 @@ const ChatWidget = () => {
           <div className="flex items-center justify-between px-4 py-3 bg-darkGrey text-white rounded-t-xl">
             <h2 id={headingId} className="flex items-center gap-2 text-sm font-semibold">
               <img src={LOGO} alt="" className="w-7 h-7 rounded-full object-cover bg-white" />
-              Statistics Assistant
+              AI Statistics Tutor (18+)
             </h2>
             <button
               onClick={closePanel}
@@ -181,6 +185,7 @@ const ChatWidget = () => {
             </button>
           </div>
 
+          {!adultConfirmed ? <AdultTutorGate onConfirm={() => setAdultConfirmed(true)} onClose={closePanel} /> : <>
           {/* Message list */}
           <div
             role="log"
@@ -234,6 +239,7 @@ const ChatWidget = () => {
           </div>
 
           <AiNotice />
+          <p className="px-4 py-1 text-xs text-darkGrey break-all">Conversation reference: {conversationId}</p>
 
           {/* Error display */}
           {error && (
@@ -295,6 +301,7 @@ const ChatWidget = () => {
               <Send size={18} aria-hidden="true" />
             </button>
           </form>
+          </>}
         </div>
       )}
     </>

@@ -1,142 +1,27 @@
-import React, { lazy, Suspense } from "react";
-import { BookOpen, Calculator, HouseIcon, Dices } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import CalculatorResourcesCard from "../ui/CalculatorResourcesCard";
-import QuietBoundary from "../ui/QuietBoundary";
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
+import { CALCULATORS } from '../../data/journey/calculators';
+import CalculatorResourcesCard from '../ui/CalculatorResourcesCard';
 
-const Spline = lazy(() => import("@splinetool/react-spline"));
-
-const Features = () => {
-  const navigate = useNavigate();
-
-  const handleLocalCalculatorsClick = () => {
-    navigate('/calculators');
-  };
-
-  const localCalculators = [
-    {
-      name: "Frequency Distribution",
-      path: "/calculators/frequency-distribution",
-      description: "Frequency tables, histograms, polygons"
-    },
-    {
-      name: "Basic Statistics",
-      path: "/calculators/statistics",
-      description: "Mean, median, variance, SD"
-    },
-    {
-      name: 'Probability Calculator',
-      path: '/calculators/probability',
-      description: 'Comprehensive probability tools with 3D dice simulator',
-
-    },
-    {
-      name: "Binomial Distribution",
-      path: "/calculators/binomial",
-      description: "Interactive probability calc"
-    },
-    {
-      name: "Poisson Distribution",
-      path: "/calculators/poisson",
-      description: "Event probability calculator"
-    },
-    {
-      name: 'Normal Distribution',
-      path: '/calculators/normal',
-      description: 'Compute z-scores and probabilities'
-    },
-    {
-      name: "Hypothesis Testing",
-      path: "/calculators/hypothesis-test",
-      description: "Z-test, t-test, p-values"
-    },
-    {
-      name: "Two-Sample Comparison",
-      path: "/calculators/two-sample",
-      description: "Compare two means or proportions"
-    },
-    {
-      name: "Correlation & Regression",
-      path: "/calculators/correlation-regression",
-      description: "Correlation, R², linear regression"
-    }
-  ];
-
-  return (
-    <section className="bg-white py-16" id="tools" tabIndex={-1} aria-labelledby="features-heading">
-      <div className="container mx-auto px-4">
-        <h2 id="features-heading" className="text-4xl font-bold text-center text-darkGrey mb-12">
-          Statistical Resources
-        </h2>
-        <div className="grid md:grid-cols-3 gap-8 items-stretch">
-          {/* Spline Visualization Card */}
-          <div className="bg-platinum p-6 rounded-lg hover:shadow-lg transition-shadow">
-            <div className="w-full h-80 mb-6">
-              <QuietBoundary>
-                <Suspense fallback={null}>
-                  <Spline
-                    scene="https://prod.spline.design/1GfxCCZbNPvMURDn/scene.splinecode"
-                    className="rounded-lg"
-                    aria-hidden="true"
-                  />
-                </Suspense>
-              </QuietBoundary>
-            </div>
-            <h3 className="text-2xl font-bold text-darkGrey my-4 text-center">Statistical Calculators</h3>
-            <p className="text-darkGrey opacity-80 text-center">
-              Easy-to-use calculators for hypothesis testing, regression analysis, confidence intervals, and more.
-            </p>
-          </div>
-
-          {/* Calculator Links Card */}
-          <CalculatorResourcesCard />
-
-          {/* Local Calculators Card with Navigation */}
-          <div className="bg-platinum p-6 rounded-lg hover:shadow-lg transition-shadow">
-            <div className="flex justify-center">
-                <button 
-                onClick={handleLocalCalculatorsClick}
-                className=" bg-accent border-2 border-darkGrey text-darkGrey px-4 py-2 rounded-lg font-bold hover:bg-darkGrey hover:text-white transition-all mb-2 flex items-center space-x-2"
-              >
-                <HouseIcon size={48} className="text-darkTeal" aria-hidden="true" />
-                Open Full Calculators Suite
-              </button>
-              
-            </div>
-            <h3 className="text-2xl font-bold text-darkGrey mb-4 text-center">
-              Local Calculators
-            </h3>
-            <p className="text-darkGrey opacity-80 text-center mb-4">
-              Same tools as online calculators but better and good for your privacy.
-            </p>
-            
-            
-            {/* Quick Links to Individual Calculators */}
-            
-            <div className="max-h-72 overflow-y-auto pr-2 custom-scrollbar" aria-label="Quick access to individual calculators">
-              <p className="text-sm text-darkGrey opacity-75 mb-2 text-center">Quick Access:</p>
-              <div className="space-y-2">
-                {localCalculators.map((calc, index) => (
-                  <button
-                    key={index}
-                    onClick={() => navigate(calc.path)}
-                    className="w-full text-left px-3 py-2 bg-white rounded-md hover:bg-accent transition-colors group"
-                  >
-                    <div className="font-bold text-darkGrey text-sm">
-                      {calc.name}
-                    </div>
-                    <div className="text-xs text-darkGrey opacity-75 mt-1 line-clamp-1">
-                      {calc.description}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-            </div>
-          </div>
-        </div>
-    </section>
-  );
-};
-
+const Features = () => (
+  <section className="bg-white py-12" id="tools" tabIndex={-1} aria-labelledby="features-heading">
+    <div className="container mx-auto px-4">
+      <h2 id="features-heading" className="text-3xl font-bold text-darkGrey">Find the right calculator</h2>
+      <p className="text-darkGrey/80 mt-3 mb-6 max-w-2xl">Explore distributions, compare groups, or summarize a dataset. Calculations work without AI, sign-in, or a subscription.</p>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Object.entries(CALCULATORS).map(([key, calc]) => (
+          <Link key={key} to={calc.path} className="group rounded-xl border border-darkTeal/20 p-5 hover:bg-platinum/50 hover:border-darkTeal transition-colors">
+            <h3 className="font-bold text-darkTeal flex items-start justify-between gap-3">{calc.name}<ArrowRight size={18} className="flex-shrink-0 mt-1" aria-hidden="true" /></h3>
+            <p className="text-sm text-darkGrey/80 mt-2">{calc.summary}</p>
+          </Link>
+        ))}
+      </div>
+      <details className="mt-8 rounded-lg border border-platinum p-4">
+        <summary className="cursor-pointer font-semibold text-darkTeal">More calculators from other websites</summary>
+        <p className="text-sm text-darkGrey/80 my-3">These external resources have their own terms and privacy practices.</p>
+        <CalculatorResourcesCard />
+      </details>
+    </div>
+  </section>
+);
 export default Features;

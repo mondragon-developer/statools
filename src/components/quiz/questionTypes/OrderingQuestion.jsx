@@ -22,20 +22,11 @@ const OrderingQuestion = ({
   showResult = false,
   correctAnswer = []
 }) => {
-  const [order, setOrder] = useState([]);
+  const [order, setOrder] = useState(() => currentOrder.length ? currentOrder : question.options.map((_, idx) => String.fromCharCode(65 + idx)).sort(() => Math.random() - 0.5));
 
-  // Initialize order with shuffled options on first render
   useEffect(() => {
-    if (currentOrder.length > 0) {
-      setOrder(currentOrder);
-    } else {
-      // Create initial shuffled order
-      const optionIds = question.options.map((_, idx) => String.fromCharCode(65 + idx));
-      const shuffled = [...optionIds].sort(() => Math.random() - 0.5);
-      setOrder(shuffled);
-      onAnswerChange(shuffled);
-    }
-  }, []);
+    if (!currentOrder.length && !showResult) onAnswerChange(order);
+  }, [currentOrder.length, showResult, onAnswerChange, order]);
 
   const moveItem = (index, direction) => {
     if (showResult) return;

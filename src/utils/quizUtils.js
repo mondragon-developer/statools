@@ -45,7 +45,7 @@ export const validateAnswer = (userAnswer, correctAnswer, questionType) => {
     case 'multipleChoice':
       return userAnswer === correctAnswer;
 
-    case 'multipleAnswer':
+    case 'multipleAnswer': {
       if (!Array.isArray(userAnswer) || !Array.isArray(correctAnswer)) {
         return false;
       }
@@ -54,6 +54,7 @@ export const validateAnswer = (userAnswer, correctAnswer, questionType) => {
       const sortedUser = [...userAnswer].sort();
       const sortedCorrect = [...correctAnswer].sort();
       return sortedUser.every((val, idx) => val === sortedCorrect[idx]);
+    }
 
     case 'ordering':
       if (!Array.isArray(userAnswer) || !Array.isArray(correctAnswer)) {
@@ -63,7 +64,7 @@ export const validateAnswer = (userAnswer, correctAnswer, questionType) => {
       return userAnswer.length === correctAnswer.length &&
         userAnswer.every((val, idx) => val === correctAnswer[idx]);
 
-    case 'matching':
+    case 'matching': {
       if (typeof userAnswer !== 'object' || typeof correctAnswer !== 'object') {
         return false;
       }
@@ -72,6 +73,7 @@ export const validateAnswer = (userAnswer, correctAnswer, questionType) => {
       const correctKeys = Object.keys(correctAnswer);
       if (userKeys.length !== correctKeys.length) return false;
       return userKeys.every(key => userAnswer[key] === correctAnswer[key]);
+    }
 
     default:
       return false;
@@ -151,9 +153,10 @@ export const formatAnswerText = (answer, options, questionType) => {
   const formattedOptions = formatOptions(options, questionType);
 
   switch (questionType) {
-    case 'multipleChoice':
+    case 'multipleChoice': {
       const option = formattedOptions.find(opt => opt.id === answer);
       return option ? `${answer}: ${option.text}` : answer;
+    }
 
     case 'multipleAnswer':
       if (!Array.isArray(answer)) return 'Invalid answer';

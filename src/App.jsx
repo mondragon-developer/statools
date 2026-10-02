@@ -3,20 +3,21 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LocalCalculatorsPage from './pages/LocalCalculatorsPage';
 import CalculatorLayout from './components/layout/CalculatorLayout';
-import StatisticsCalculator from './components/calculators/StatisticsCalculator';
-import BinomialCalculator from './components/calculators/BinomialCalculator';
-import PoissonCalculator from './components/calculators/PoissonCalculator';
-import HypothesisTestCalculator from './components/calculators/HypothesisTestCalculator';
-import TwoSampleCalculator from './components/calculators/TwoSampleCalculator';
-import ProbabilityCalculator from './components/calculators/ProbabilityCalculator';
-import NormalDistributionCalculator from './components/calculators/NormalDistributionCalculator';
-import CorrelationRegressionCalculator from './components/calculators/CorrelationRegressionCalculator';
-import FrequencyDistributionCalculator from './components/calculators/FrequencyDistributionCalculator';
 import AccessibilityPage from './pages/AccessibilityPage';
 import JourneyLayout from './components/layout/JourneyLayout';
 import ChatWidget from './components/chat/ChatWidget';
 import VoiceCommands from './components/ui/VoiceCommands';
 import AccessibilityBanner from './components/ui/AccessibilityBanner';
+
+const StatisticsCalculator = lazy(() => import('./components/calculators/StatisticsCalculator'));
+const BinomialCalculator = lazy(() => import('./components/calculators/BinomialCalculator'));
+const PoissonCalculator = lazy(() => import('./components/calculators/PoissonCalculator'));
+const HypothesisTestCalculator = lazy(() => import('./components/calculators/HypothesisTestCalculator'));
+const TwoSampleCalculator = lazy(() => import('./components/calculators/TwoSampleCalculator'));
+const ProbabilityCalculator = lazy(() => import('./components/calculators/ProbabilityCalculator'));
+const NormalDistributionCalculator = lazy(() => import('./components/calculators/NormalDistributionCalculator'));
+const CorrelationRegressionCalculator = lazy(() => import('./components/calculators/CorrelationRegressionCalculator'));
+const FrequencyDistributionCalculator = lazy(() => import('./components/calculators/FrequencyDistributionCalculator'));
 
 const LearnHubPage = lazy(() => import('./pages/learn/LearnHubPage'));
 const StagePage = lazy(() => import('./pages/learn/StagePage'));
@@ -34,6 +35,7 @@ function App() {
     <>
       <AccessibilityBanner />
       <Router basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
+        <Suspense fallback={pageLoading}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/accessibility" element={<AccessibilityPage />} />
@@ -60,6 +62,7 @@ function App() {
             <Route path="frequency-distribution" element={<FrequencyDistributionCalculator />} />
           </Route>
         </Routes>
+        </Suspense>
         {/* Inside the router so spoken navigation stays client-side and the mic keeps listening. */}
         <VoiceCommands />
         <ChatWidget />

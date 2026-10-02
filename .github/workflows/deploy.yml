@@ -29,8 +29,8 @@ jobs:
 
       # The build still runs so a broken main fails CI, but the app itself is served by
       # Vercel. GitHub Pages only forwards old /statools/ links there.
-      - name: Build
-        run: npm run build
+      - name: Validate release
+        run: npm run check
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0

@@ -96,13 +96,6 @@ const CorrelationRegressionCalculator = () => {
     return arr.reduce((sum, val) => sum + val, 0) / arr.length;
   };
 
-  /**
-   * Calculate standard deviation
-   */
-  const calculateStdDev = (arr, mean) => {
-    const variance = arr.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / arr.length;
-    return Math.sqrt(variance);
-  };
 
   /**
    * Calculate correlation and regression statistics

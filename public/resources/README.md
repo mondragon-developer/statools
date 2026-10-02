@@ -2,10 +2,13 @@
 
 This directory contains educational materials for statistics learning, organized into 4 categories.
 
-## Current Status
+## Current status
 
-✅ **Markdown source files created** (16 guides)
-📝 **PDF conversion needed**
+The resource library links 18 PDFs. Markdown and HTML sources are included alongside
+published PDFs. `npm test` checks that every linked PDF exists and has a PDF header.
+This does not verify document accessibility or mathematical accuracy. Review rendered
+output before publishing regenerated resources. PDF conversion scripts are local
+authoring tools; use the current Node environment and verify their output.
 
 ## File Structure
 

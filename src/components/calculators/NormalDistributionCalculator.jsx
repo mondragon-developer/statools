@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { jStat } from 'jstat';
@@ -174,18 +174,20 @@ const NormalDistributionCalculator = () => {
         probability = 1 - NormalMath.cdf(x1, safeMean, safeSd);
         description = `P(X > ${x1.toFixed(2)})`;
         break;
-      case 'between':
+      case 'between': {
         const lower = Math.min(x1, x2);
         const upper = Math.max(x1, x2);
         probability = NormalMath.cdf(upper, safeMean, safeSd) - NormalMath.cdf(lower, safeMean, safeSd);
         description = `P(${lower.toFixed(2)} < X < ${upper.toFixed(2)})`;
         break;
-      case 'outside':
+      }
+      case 'outside': {
         const innerLower = Math.min(x1, x2);
         const innerUpper = Math.max(x1, x2);
         probability = 1 - (NormalMath.cdf(innerUpper, safeMean, safeSd) - NormalMath.cdf(innerLower, safeMean, safeSd));
         description = `P(X < ${innerLower.toFixed(2)} or X > ${innerUpper.toFixed(2)})`;
         break;
+      }
     }
 
     // Calculate important percentiles

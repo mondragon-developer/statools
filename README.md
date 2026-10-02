@@ -1,217 +1,104 @@
 # MDragon Data Tools
 
-A comprehensive web-based statistics education platform providing interactive calculators, curated learning resources, and statistical analysis tools.
+Free statistics calculators, lessons, quizzes, and an optional AI study assistant for ages 18 and older.
+Live site: https://statools.mdragonsolutions.com/
 
-## Overview
+## What is included
 
-MDragon Data Tools is a React-based single-page application designed to support statistics education through interactive tools and comprehensive learning materials. The platform combines custom-built calculators with curated external resources and an AI-powered chatbot assistant to create a complete statistical learning environment.
+Nine calculators: descriptive statistics, frequency distributions, probability,
+normal, binomial, Poisson, one-sample hypothesis tests, two-sample comparisons,
+and correlation/regression. The seven-stage learning journey includes practice,
+local progress, progress transfer codes, and a self-reported completion certificate.
+The resource library includes downloadable guides and quizzes. External tools and
+the separate MDC lesson service are labeled as external resources.
 
-**Live Site**: [https://statools.mdragonsolutions.com/](https://statools.mdragonsolutions.com/)
+## Privacy and limitations
 
-## Features
+Calculations run in the browser. Progress and preferences use browser storage;
+there are no learner accounts or application database. AI chat sends messages and
+conversation history through `api/chat.js` to Chatbase. The calculator tutor sends
+inputs/results only when the learner turns on sharing (off by default). Switching
+sharing off does not delete previously submitted material. Browser speech services
+may process microphone audio remotely. Hosting requests produce technical logs.
 
-### Interactive Calculators
-
-The platform includes several custom-built statistical calculators:
-
-- **Probability Calculator**: Multi-function tool covering probability rules, combinatorics, expected value calculations, and dice simulation
-- **Poisson Distribution Calculator**: Specialized tool for rare event probability calculations with visualization
-- **Additional Calculators**: Binomial distribution, normal distribution, and other statistical tools (in development)
-
-### Statistics Chatbot Assistant
-
-- **Free AI-powered support**: Real-time assistance for statistics questions
-- **Concept explanations**: Clear explanations of statistical concepts and methods
-- **Problem-solving help**: Step-by-step guidance through statistical problems
-- **Available 24/7**: Instant help whenever needed
-
-### External Calculator Directory
-
-Curated collection of 14 third-party statistical calculators organized by category:
-
-**Descriptive Statistics**
-
-- Grouped Frequency Distribution Calculator
-- Histogram Generator
-- Mean, Median, Variance, Standard Deviation Calculator
-
-**Probability Distributions**
-
-- Z-Score Calculator
-- Comprehensive Distribution Calculator (Normal, Binomial, t, F, Chi-square)
-- Confidence Intervals Calculator
-
-**Hypothesis Testing**
-
-- One and Two Sample Proportion Tests
-- Dependent and Independent t-Tests
-- General Hypothesis Test Calculator
-
-**Advanced Analysis**
-
-- Correlation and Regression Calculator
-- Prediction Interval Calculator
-
-### Educational Resources
-
-- PDF presentations for core statistical concepts
-- Embedded video content from educational channels
-- Interactive activities and quizzes
-- Local calculator downloads for offline use
-
-### Statistics Chatbot
-
-- **Free AI Assistant**: Interactive chatbot for statistics questions and support
-- **24/7 Availability**: Get help with statistical concepts anytime
-- **Features**:
-  - Answer questions about statistical concepts
-  - Provide step-by-step problem-solving guidance
-  - Explain calculator results and interpretations
-  - Offer practice problems and examples
-  - Clarify statistical terminology and formulas
-
-## Technical Stack
-
-- **Framework**: React 19.0.0
-- **Build Tool**: Vite 6.3.1
-- **Styling**: Tailwind CSS 3.3.3
-- **Charts**: Chart.js with react-chartjs-2
-- **3D Graphics**: Spline 3D
-- **Icons**: Lucide React
-- **Statistical Computations**: jStat library
-- **AI Chatbot**: Integrated statistics assistant for real-time help
-- **Deployment**: GitHub Pages with automated CI/CD
-
-## Project Structure
-
-```
-statools/
-├── src/
-│   ├── components/
-│   │   ├── calculators/      # Statistical calculator components
-│   │   ├── chatbot/          # AI chatbot assistant
-│   │   ├── layout/           # Navigation and footer
-│   │   ├── sections/         # Homepage sections
-│   │   └── ui/               # Reusable UI components
-│   ├── pages/                # Page components
-│   ├── App.jsx               # Main application component
-│   └── main.jsx              # Application entry point
-├── public/                   # Static assets and PDFs
-├── .github/workflows/        # CI/CD configuration
-└── package.json              # Project dependencies
-```
-
-## Installation
-
-### Prerequisites
-
-- Node.js 18.0 or higher
-- npm or yarn package manager
-
-### Setup
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/mondragon-developer/statools.git
-cd statools
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Start development server:
-
-```bash
-npm run dev
-```
-
-4. Build for production:
-
-```bash
-npm run build
-```
+This is an independent educational project, not an accredited course or a source
+of professional advice. AI replies and calculator interpretations require review.
+See the site's Privacy, Terms of Use, and Accessibility pages. Do not upload student
+records, medical data, or other personal information to AI features.
 
 ## Development
 
-### Available Scripts
+Use Node.js 22 or later and npm. Install the locked dependency tree with `npm ci`.
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+```sh
+npm run dev
+npm run lint
+npm test
+npm run notices
+npm run check
+npm run preview
+```
 
-### Adding New Calculators
+`check` runs lint, regression tests, dependency-notice verification, and a production
+build. Tests cover descriptive statistics, relay guards, calculator-context sharing,
+and existence of linked resource PDFs. They are not a complete numeric audit of all
+calculators, accessibility certification, or legal review.
 
-1. Create component in `src/components/calculators/`
-2. Implement calculation logic and visualization
-3. Add routing in main application
-4. Update navigation menu
+Vite serves the frontend only. For AI development, configure a local backend or an
+approved Vercel preview and `VITE_CHAT_API_URL`. Production rejects localhost origins.
+See `.env.example`; never place a secret in a variable beginning with `VITE_`.
 
-### Deployment
+## Architecture and deployment
 
-The project uses GitHub Actions for continuous deployment. Any push to the `main` branch automatically builds and deploys to GitHub Pages.
+React 19, Vite 6, Tailwind, Chart.js, Recharts, jStat, and React Router. Calculators
+and learning pages load by route. Markdown/KaTeX loads when AI rendering is needed.
+The homepage uses local HTML/CSS rather than external 3D scenes.
 
-## Component Architecture
+- `src/components/calculators`: calculator UI and charting.
+- `src/utils/descriptiveStatistics.js`: tested descriptive-statistics engine;
+  quartiles use inclusive linear interpolation at `(n - 1) * p`.
+- `src/data/journey`, `src/data/quizzes`: instructional content.
+- `src/components/chat`: optional AI interfaces and sharing control.
+- `api/chat.js`: Vercel relay with origin/input checks, timeout, and emergency switch.
+- `src/data/site.js`: published identity, contact, and legal revision date.
+- `public/resources`: educational Markdown, HTML, and PDF artifacts.
 
-### Calculator Components
+Vercel hosts the application and `/api/chat`. Configure `CHATBASE_API_KEY` and
+`CHATBASE_BOT_ID` server-side. Set `CHAT_ENABLED=false` and redeploy to disable AI
+without disabling calculators. The edge firewall and billing controls are account
+settings, not provisioned by this repository. Origin checks alone cannot prevent
+scripted quota abuse.
 
-Each calculator follows a modular architecture:
+The GitHub Pages workflow validates the app and publishes only the legacy redirect
+files. It does not host the AI backend. Pull requests run release checks separately.
+Vercel deployment triggers and branch protections must be verified in project settings.
 
-- Mathematical computation engine (pure functions)
-- User interface with parameter controls
-- Real-time visualization using Chart.js
-- Educational tooltips and explanations
+## Launch and maintenance
 
-### Chatbot Integration
+Read [the launch checklist](docs/LAUNCH_CHECKLIST.md) before public promotion.
+It records unresolved operator, vendor, legal, accessibility, and content-rights
+checks, plus privacy-request and incident procedures. Re-run security verification
+after changes to the relay, headers, dependencies, or provider configuration.
+Run `npm audit` after dependency changes and regularly during operation.
 
-- AI-powered conversation interface
-- Context-aware responses for statistics questions
-- Integration with calculator results for explanations
-- Persistent chat history during session
+The security baseline/report describe a prior point-in-time self-assessment and
+are not proof that new changes are secure or that legal obligations are satisfied.
 
-### Responsive Design
+## Licensing
 
-- Mobile-first approach using Tailwind CSS
-- Breakpoints: mobile (<768px), tablet (768px-1279px), desktop (1280px+)
-- Touch-optimized interactions for mobile devices
-
-## Color Scheme
-
-- Dark Grey: `#2A2A2A` - Primary text and headers
-- Turquoise: `#4ECDC4` - Primary accent and interactions
-- Yellow: `#FFFF00` - Call-to-action elements
-- Platinum: `#E6E6E6` - Background and secondary elements
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-
-## Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/new-calculator`)
-3. Commit changes (`git commit -m 'Add new calculator'`)
-4. Push to branch (`git push origin feature/new-calculator`)
-5. Open Pull Request
-
-## License
-
-The source code is licensed under the MIT License. The educational content (lessons, quizzes, guides, PDFs, artwork, and the MDragon Data Tools name and logo) is not covered by that license and remains the property of MDragon Solutions; see the Terms of Use page on the site.
+Original application code and technical documentation use the [MIT license](LICENSE).
+Educational content and branding are excluded; see [CONTENT_LICENSE.txt](CONTENT_LICENSE.txt).
+Third-party code retains its own licenses. `npm run notices` generates
+`public/third-party-notices.txt` from installed runtime dependencies. Include it in
+releases and check [content provenance](docs/CONTENT_RIGHTS.md) before distributing
+materials. Do not assume a repository file proves authorship or institutional permission.
 
 ## Contact
 
-For questions or support, please open an issue on GitHub or contact the development team.
+Questions, accessibility barriers, privacy requests, and rights concerns:
+mondradev@gmail.com. Include a page URL or conversation reference as appropriate;
+do not send sensitive datasets. The AI assistant is not a support ticket system.
 
-## Acknowledgments
-
-- Statistical computation powered by jStat
-- 3D visualizations by Spline
-- AI chatbot assistance for enhanced learning support
-- Educational content sourced from leading statistics educators
+AI chat requires an adult self-declaration in each mounted tutor. The relay requires
+`adultConfirmed: true`; this is not identity or age verification. Deploy frontend
+and API together. Lessons and calculators do not require this confirmation.

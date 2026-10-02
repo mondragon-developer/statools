@@ -40,8 +40,7 @@ const TermsPage = () => (
       <p>
         You are responsible for following the academic integrity rules of your school, college, or employer. Those
         rules, not this site, decide what help is allowed on an assignment, quiz, or exam. The AI tutor is a study
-        aid, like a textbook or a classmate: if your instructor says a task must be done alone, do it alone. We are
-        not responsible for how you use what you learn here, and we cannot see or report your use to anyone.
+        aid, like a textbook or a classmate: if your instructor says a task must be done alone, do it alone. Your local learning progress is not automatically reported to a school. AI conversations can be reviewed by the operator as described in the Privacy notice; do not treat chat as confidential communication with your instructor.
       </p>
     </InfoSection>
 
@@ -74,8 +73,8 @@ const TermsPage = () => (
 
     <InfoSection title="Ownership and license">
       <p>
-        The lessons, quizzes, guides, PDFs, artwork, and the {SITE_NAME} name and logo are the property of {OWNER}.
-        You may use them for personal study and classroom teaching with attribution; other uses need written
+        Original lessons, quizzes, guides, PDFs, artwork, and branding created for {SITE_NAME} belong to their respective rights holders. Third-party materials and software remain subject to their own licenses.
+        You may use our original educational materials for personal study and classroom teaching with attribution; other uses need written
         permission. The site&apos;s source code is published separately under the MIT License at{' '}
         <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className={linkClass}>GitHub</a>; that license
         covers the code, not the content.
@@ -94,22 +93,23 @@ const TermsPage = () => (
       <p>
         To the fullest extent permitted by law, {OWNER} and its contributors are not liable for any loss or damage
         arising from use of the site, including lost grades, lost data, decisions made on the basis of a calculation
-        or an AI reply, or unavailability of the service. Where liability cannot be excluded, it is limited to the
-        amount you paid to use the site, which is nothing.
+        or an AI reply, or unavailability of the service. Nothing in these terms excludes or limits liability or consumer rights that cannot lawfully be excluded or limited. Applicable law controls where these limitations are not permitted.
       </p>
     </InfoSection>
 
     <InfoSection title="Age">
       <p>
         The site is intended for users aged 13 and older. If you are under 18, use it with the knowledge of a parent,
-        guardian, or teacher.
+        guardian, or teacher. The AI assistant and calculator tutor are restricted to users aged 18 and older.
+        Users under 18 may use the lessons, quizzes, and calculators without AI chat. Teachers must not direct
+        students under 18 to use the AI tutor.
       </p>
     </InfoSection>
 
     <InfoSection title="Governing law">
       <p>
         These terms are governed by the laws of the State of Florida, United States, without regard to conflict of
-        law rules. Any dispute will be brought in the state or federal courts located in Miami-Dade County, Florida.
+        law rules. Subject to any mandatory rights you have under applicable law, disputes will be brought in the state or federal courts located in Miami-Dade County, Florida.
       </p>
     </InfoSection>
 

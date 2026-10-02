@@ -229,6 +229,13 @@ const SnakeGame = () => {
     });
   }, [food, gameOver, isPaused, generateFood, updateMondragronText, grid]);
 
+  const togglePause = useCallback(() => {
+    if (isPlaying) {
+      setIsPaused(!isPaused);
+      announcePolite(isPaused ? 'Game resumed.' : 'Game paused.');
+    }
+  }, [isPlaying, isPaused]);
+
   // Handle keyboard input
   const handleKeyPress = useCallback((e) => {
     const key = e.key;
@@ -261,7 +268,7 @@ const SnakeGame = () => {
       default:
         break;
     }
-  }, [isPlaying, isPaused, changeDirection]);
+  }, [isPlaying, isPaused, changeDirection, togglePause]);
 
   // Game loop
   useEffect(() => {
@@ -386,12 +393,6 @@ const SnakeGame = () => {
     announcePolite('Game started. Use arrow keys to move.');
   };
 
-  const togglePause = () => {
-    if (isPlaying) {
-      setIsPaused(!isPaused);
-      announcePolite(isPaused ? 'Game resumed.' : 'Game paused.');
-    }
-  };
 
   const resetGame = () => {
     initializeGameState(false);

@@ -12,7 +12,7 @@ const Footer = () => (
       <div>
         <p className="text-xl font-bold text-turquoise">MDragon Data Tools</p>
         <p className="text-white/80 mt-1">
-          Free statistics calculators, lessons, and a learning journey for students. Everything runs in your browser.
+          Free statistics calculators, lessons, and a learning journey for students. Calculations run on your device and learning progress is saved locally. Optional AI help uses an outside service.
         </p>
       </div>
 
@@ -58,6 +58,7 @@ const Footer = () => (
               <Github size={16} aria-hidden="true" /> Source code<span className="sr-only"> (opens in a new tab)</span>
             </a>
           </li>
+          <li><a href={`${import.meta.env.BASE_URL}third-party-notices.txt`} className={linkClass}>Third-party software notices</a></li>
         </ul>
       </nav>
     </div>

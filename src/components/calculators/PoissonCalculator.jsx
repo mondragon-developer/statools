@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useId } from 'react';
+import React, { useState, useCallback, useMemo, useId } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { jStat } from 'jstat';
