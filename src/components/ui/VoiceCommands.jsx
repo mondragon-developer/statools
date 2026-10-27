@@ -312,7 +312,7 @@ const VoiceCommands = () => {
         onClick={toggle}
         aria-pressed={isActive}
         aria-label={isActive ? 'Turn off voice commands' : 'Turn on voice commands'}
-        className={`print:hidden fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-colors
+        className={`voice-fab print:hidden fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-colors
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accentDark focus-visible:ring-offset-2
           ${isActive ? 'bg-red-600 text-white motion-safe:animate-pulse' : 'bg-darkGrey text-white hover:bg-darkTeal'}`}
       >
@@ -324,7 +324,7 @@ const VoiceCommands = () => {
       {(feedback || (isActive && (transcript || showHelp))) && (
         <div
           data-voice-ignore
-          className="print:hidden fixed bottom-20 left-6 z-50 max-w-xs bg-darkGrey text-white text-sm px-4 py-3 rounded-lg shadow-lg space-y-1"
+          className="voice-feedback print:hidden fixed bottom-20 left-6 z-50 max-w-xs bg-darkGrey text-white text-sm px-4 py-3 rounded-lg shadow-lg space-y-1"
         >
           <button type="button" onClick={() => { setFeedback(''); setShowHelp(false); setTranscript(''); }} className="underline p-1 focus-visible:outline-white">Dismiss voice feedback</button>
           {isActive && (

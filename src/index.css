@@ -21,6 +21,18 @@
   transform: translateY(0);
 }
 
+/* The WebPenPresenter bar also sits bottom-left (public/presenter.js). It marks <html>
+   with data-webpen-presenter once it builds, so the voice button moves above its bar,
+   which wraps to two rows on a phone. */
+html[data-webpen-presenter] .voice-fab { bottom: 6.5rem; }
+html[data-webpen-presenter] .voice-feedback { bottom: 10.5rem; }
+/* Below about 52rem the bar reaches the bottom-right buttons as well. */
+@media (max-width: 52rem) {
+  html[data-webpen-presenter] .tutor-fab,
+  html[data-webpen-presenter] .chat-fab { bottom: 6.5rem; }
+  html[data-webpen-presenter] .chat-panel { bottom: 11.5rem; }
+}
+
 /* Global focus-visible styles for keyboard navigation */
 :focus-visible {
   outline: 3px solid #0F766E;

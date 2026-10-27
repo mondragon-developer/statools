@@ -148,7 +148,7 @@ const ChatWidget = () => {
         onClick={toggleOpen}
         aria-expanded={isOpen}
         aria-label={isOpen ? 'Close chat assistant' : 'Open AI tutor (18+)' }
-        className="print:hidden fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full overflow-hidden bg-darkTeal text-white shadow-lg
+        className="chat-fab print:hidden fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full overflow-hidden bg-darkTeal text-white shadow-lg
           border-2 border-white hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accentDark focus-visible:ring-offset-2
           flex items-center justify-center transition-transform"
       >
@@ -165,7 +165,7 @@ const ChatWidget = () => {
           aria-modal="true"
           aria-labelledby={headingId}
           onKeyDown={handlePanelKeyDown}
-          className="fixed bottom-24 right-4 z-50 w-[calc(100vw-2rem)] sm:w-96
+          className="chat-panel fixed bottom-24 right-4 z-50 w-[calc(100vw-2rem)] sm:w-96
             max-h-[70vh] bg-white rounded-xl shadow-2xl border border-platinum
             flex flex-col overflow-y-auto"
         >

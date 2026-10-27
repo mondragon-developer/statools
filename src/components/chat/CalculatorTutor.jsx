@@ -126,7 +126,7 @@ const CalculatorTutor = ({ calcKey, onOpenChange }) => {
           type="button"
           onClick={() => setOpen(true)}
           data-tutor-toggle
-          className="print:hidden fixed bottom-6 right-6 z-40 flex items-center gap-2 pl-2 pr-4 py-2 rounded-full bg-darkTeal text-white font-bold shadow-lg
+          className="tutor-fab print:hidden fixed bottom-6 right-6 z-40 flex items-center gap-2 pl-2 pr-4 py-2 rounded-full bg-darkTeal text-white font-bold shadow-lg
             border-2 border-white hover:bg-darkTeal/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accentDark focus-visible:ring-offset-2"
         >
           <img src={LOGO} alt="" className="w-9 h-9 rounded-full object-cover" />
