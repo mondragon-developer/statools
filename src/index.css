@@ -22,15 +22,18 @@
 }
 
 /* The WebPenPresenter bar also sits bottom-left (public/presenter.js). It marks <html>
-   with data-webpen-presenter once it builds, so the voice button moves above its bar,
-   which wraps to two rows on a phone. */
-html[data-webpen-presenter] .voice-fab { bottom: 6.5rem; }
-html[data-webpen-presenter] .voice-feedback { bottom: 10.5rem; }
-/* Below about 52rem the bar reaches the bottom-right buttons as well. */
-@media (max-width: 52rem) {
+   with data-webpen-presenter once it builds and keeps --webpen-presenter-bar there at
+   the px from the bottom edge to the top of its bar, which wraps to two or three rows
+   on a phone, so the voice button rides just above it. The 88px fallback is two rows,
+   for a copy of presenter.js older than the variable. */
+html[data-webpen-presenter] .voice-fab { bottom: calc(var(--webpen-presenter-bar, 88px) + 1rem); }
+html[data-webpen-presenter] .voice-feedback { bottom: calc(var(--webpen-presenter-bar, 88px) + 5rem); }
+/* One row of the bar is about 44rem wide and the tutor button about 15rem, so below
+   about 61rem they meet; 64rem leaves room for wider system fonts. */
+@media (max-width: 64rem) {
   html[data-webpen-presenter] .tutor-fab,
-  html[data-webpen-presenter] .chat-fab { bottom: 6.5rem; }
-  html[data-webpen-presenter] .chat-panel { bottom: 11.5rem; }
+  html[data-webpen-presenter] .chat-fab { bottom: calc(var(--webpen-presenter-bar, 88px) + 1rem); }
+  html[data-webpen-presenter] .chat-panel { bottom: calc(var(--webpen-presenter-bar, 88px) + 6rem); }
 }
 
 /* Global focus-visible styles for keyboard navigation */
